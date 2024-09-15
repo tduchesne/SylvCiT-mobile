@@ -1,11 +1,27 @@
-version: '3'
+version: "3"
 services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inm5151_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
   backend:
     build: ./backend
     ports:
       - "5001:5000"
+    volumes:
+      - ./backend:/app
     environment:
-      - FLASK_ENV=production
+      - FLASK_ENV=development
+    depends_on:
+      - db
 
   frontend:
     build: ./frontend
@@ -19,3 +35,6 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+
+volumes:
+  mysql_data:
