@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DB')}"
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DATABASE')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -23,8 +23,8 @@ def hello_world():
 
 @app.route('/api/trees', methods=['GET'])
 def get_trees():
-    tree = Tree.query.all()
-    return jsonify([{'id': p.id, 'name': p.name, 'price': p.price, 'in_stock': p.in_stock} for p in products])
+    trees = Tree.query.all()
+    return jsonify([{'id': t.id, 'name': t.name, 'age': t.age, 'type': t.type} for t in trees])
 
 
 if __name__== '__main__':

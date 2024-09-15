@@ -11,6 +11,8 @@ services:
       - mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
+    networks:
+      - backend-network
 
   backend:
     build: ./backend
@@ -18,8 +20,14 @@ services:
       - "5001:5000"
     volumes:
       - ./backend:/app
+    networks:
+      - backend-network
     environment:
-      - FLASK_ENV=development
+      FLASK_ENV: development
+      MYSQL_HOST: db
+      MYSQL_DATABASE: inm5151_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
     depends_on:
       - db
 
@@ -38,3 +46,7 @@ services:
 
 volumes:
   mysql_data:
+
+networks:
+  backend-network:
+    driver: bridge
