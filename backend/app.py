@@ -1,5 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from sqlalchemy import MetaData
+
 import os
 
 app = Flask(__name__)
@@ -7,14 +10,20 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DATABASE')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+# Initialize db
+metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'));
+db = SQLAlchemy(app, metadata=metadata)
+
+# Initialize flask-migrate
+migrate = Migrate(app, db)
+
+# Import models after db initialization
+from models import Tree
+
 
 @app.before_first_request
 def create_tables():
     db.create_all()
-
-# Import models after db initialization
-from models import Tree
 
 # Routes
 @app.route('/')
