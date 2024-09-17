@@ -1,7 +1,7 @@
 Flask==2.2
 Werkzeug==2.2
 
-Flask-SQLAlchemy==2.5.1
-SQLAlchemy==1.4.47
+Flask-SQLAlchemy==3.0.3 #2.5.1
+SQLAlchemy==2.0 #1.4.47
 PyMySQL==1.0.2
 cryptography==41.0.3
