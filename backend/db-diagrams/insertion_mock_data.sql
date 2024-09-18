@@ -55,6 +55,16 @@ INSERT INTO `inm5151_db`.`location` (`latitude`, `longitude`) VALUES ('45.73708'
 
 COMMIT;
 
+-- -----------------------------------------------------
+-- Data for table `inm5151_db`.`type`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`type` (`name_fr`, `name_en`, `name_la`) VALUES ('Catalpa de lOuest', 'Western Catalpa', 'Catalpa speciosa');
+INSERT INTO `inm5151_db`.`type` (`name_fr`, `name_en`, `name_la`) VALUES ('Phellodendron de lAmour Maelio', 'Maelio Amur Cork Tree', 'Phellodendron amurensis Maelio');
+INSERT INTO `inm5151_db`.`type` (`name_fr`, `name_en`, `name_la`) VALUES ('Érable à Giguère', 'Manitoba Maple', 'Acer negundo');
+
+COMMIT;
 
 -- -----------------------------------------------------
 -- Data for table `inm5151_db`.`tree`

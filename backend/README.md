@@ -24,26 +24,9 @@
 
   Ensuite, on relance les services avec `docker-compose up --build` et on applique les migrations comme indiqué ci-dessus.
 
-# Gestion de la base de données pour le développement
+# Gestion de la base de données et insertion de données de test (mock data)
 
-Il est possible de gérer la base de données avec un outil externe comme MySQL Workbench. Pour ce faire, il faut utiliser les informations suivantes:
-
-- Le service `db` utilise MySQL comme base de données. Utilisez `localhost:3306` pour vous connecter.
-- L'utilisateur du backend est `user` et le mot de passe est `user`.
-- L'utilisateur root est `root` et le mot de passe est `root`.
-
-Dans la wiki du projet, vous trouverez la **configuration de MySQL Workbench** pour se connecter à la base de données.
-
-# Insertion de données de test (mock data)
-
-Un jeu de données de test est disponible dans le fichier `/backend/db-diagrams/insertion_mock_data.sql`.
-
-Il est possible d'insérer ces données dans la base de données de deux façons:
-
-1. Utilisez un client MySQL (comme MySQL Workbench) pour exécuter ce script (recommandé) ou
-2. Copiez le script `.sql` dans le conteneur `db` et exécutez le script à partir de là.
-
-Dans la wiki du projet, vous trouverez un guide pour **insérer les données de test** dans la base de données à l'aide de MySQL Workbench.
+Voir wiki: [Gestion de la base de données pour le développement](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Configuration-MySQL-Workbench)
 
 # Création d'une nouvelle migration
 
