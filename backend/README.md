@@ -50,3 +50,8 @@ Assurez-vous d'avoir défini ou modifié les modèles SQLAlchemy correctement av
    ```
 
 - Si vous voulez revenir en arrière, utilisez la commande `flask db downgrade`.
+
+> Note: Il est possible de générer un script SQL à partir des schémas créés avec MySQL Workbench. Voir [Database Design and Modeling](https://dev.mysql.com/doc/workbench/en/wb-data-modeling.html) et voir [Forward Engineering](https://dev.mysql.com/doc/workbench/en/wb-forward-engineering-sql-scripts.html).
+
+> Note 2: Il existe des outils pour générer des modèles SQLAlchemy à partir d'une base de données existante. Voir [sqlacodegen](https://pypi.org/project/sqlacodegen/).
+
