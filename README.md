@@ -1,72 +1,81 @@
-# inm5151-a2024-sylvcit
+# SylvCiT Mobile
+
+SylvCiT Mobile est une application mobile pour la foresterie urbaine, conçue pour faciliter la collecte de données sur les arbres en ville. Ce projet vise à améliorer la compréhension de l'écosystème urbain et à aider à la prise de décision pour la gestion des espaces verts.
 
 ## Table des matières
 
-1. [Installation de Docker](#installation-de-docker)
-2. [Configuration du projet](#configuration-du-projet)
-3. [Utilisation quotidienne](#utilisation-quotidienne)
+1. [Prérequis](#prérequis)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Utilisation](#utilisation)
+5. [Développement](#développement)
+6. [Base de données](#base-de-données)
+7. [Documentation supplémentaire](#documentation-supplémentaire)
 
-## Installation de Docker
+## Prérequis
 
-### Pour macOS et Windows:
+- Docker et Docker Compose
+- Node.js et npm
+- Un compte Expo
 
-1. Téléchargez et lancez Docker Desktop:
-   https://www.docker.com/products/docker-desktop
+## Installation
 
-### Pour Linux:
-
-1. Suivez les instructions spécifiques à votre distribution: https://docs.docker.com/engine/install/
-
-### Vérification de l'installation
-
-Ouvrez un terminal et exécutez:
-
+1. Clonez ce dépôt :
+```shell
+git clone https://github.com/joe-from-mtl/inm5151-a2024-sylvcit.git
+cd inm5151-inm5151-a2024-sylvcit.git
 ```
+2. Installez Docker en suivant les instructions dans le [Wiki Docker](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Docker).
+
+3. Vérifiez l'installation de Docker :
+
+```shell
 docker --version
 docker-compose --version
 ```
 
-## Configuration du projet
+## Configuration
 
-1. Construisez l'image Docker et lancez les conteneurs:
+1. Créez un compte sur [Expo](https://expo.dev) si ce n'est pas déjà fait.
 
-   ```
-   docker-compose up --build
-   ```
+2. Générez un token Expo en suivant les instructions dans le [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile).
 
-2. Dans un autre terminal, initialisez la base de données:
+3. Dans le dossier racine du projet, créez un fichier `.env` et ajoutez votre token Expo :
 
-   ```
-   docker-compose exec backend flask db upgrade
-   ```
+```shell
+EXPO_TOKEN=votre_token_ici
+```   
 
-   Pour plus de détails, voir `README.md` dans le dossier backend.
+## Utilisation
 
-3. Une fois terminé, l'application devrait être accessible à `http://localhost:5001`
+1. Lancez les conteneurs Docker :
+```shell
+docker-compose up --build
+```
 
-## Utilisation quotidienne
+2. Dans un nouveau terminal, démarrez l'application Expo :
 
-1. Au début de votre session de travail, lancez les conteneurs:
+```shell
+npx expo start
+```
 
-   ```
-   docker-compose up
-   ```
+3. Sur votre téléphone, suivez les instructions dans le [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile) pour installer et utiliser l'application Expo Go.
 
-2. Travaillez sur votre code comme d'habitude. Les changements seront automatiquement reflétés dans le conteneur grâce au montage de volume.
+## Développement
 
-3. Si Flask ne détecte pas automatiquement vos changements, vous pouvez redémarrer le conteneur:
+Les changements dans le code seront automatiquement reflétés dans le conteneur Docker grâce au montage de volume. Si Flask ne détecte pas les changements, redémarrez le conteneur avec `docker-compose restart`. Pour arrêter les conteneurs, utilisez `docker-compose down`.
 
-   ```
-   docker-compose restart
-   ```
+Pour plus de détails sur l'utilisation de Docker pendant le développement, consultez le [Wiki Docker](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Docker).
 
-4. Pour arrêter les conteneurs à la fin de votre session:
+## Base de données
 
-   ```
-   docker-compose down
-   ```
+Nous utilisons MySQL comme base de données. Pour configurer et utiliser MySQL Workbench pour la gestion de la base de données, suivez les instructions détaillées dans le [Wiki MySQL Workbench](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Configuration-MySQL-Workbench).
 
-5. Si vous modifiez le `Dockerfile`, `requirements.txt`, ou `docker-compose.yml`, reconstruisez l'image:
-   ```
-   docker-compose up --build
-   ```
+## Documentation supplémentaire
+
+Pour des informations plus détaillées sur la configuration et l'utilisation des différents outils, consultez les wikis :
+
+- [Wiki Docker](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Docker) - Installation, configuration et utilisation de Docker
+- [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile) - Configuration d'Expo et utilisation d'Expo Go
+- [Wiki MySQL Workbench](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Configuration-MySQL-Workbench) - Gestion de la base de données avec MySQL Workbench
+
