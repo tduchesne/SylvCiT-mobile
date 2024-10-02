@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
+    "entryPoint": "./app/_layout.tsx",
     "userInterfaceStyle": "automatic",
     "splash": {
       "resizeMode": "contain",

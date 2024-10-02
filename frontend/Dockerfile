@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:18
 
 WORKDIR /app
 
@@ -10,7 +10,8 @@ COPY babel.config.js ./
 RUN npm install
 
 # Installer expo-cli localement dans le projet
-RUN npm install expo-cli
+RUN npm install -g expo-cli
+RUN npm install -g @expo/ngrok
 
 # Copier le reste des fichiers du projet
 COPY . .
@@ -19,4 +20,5 @@ COPY . .
 EXPOSE 19000 19001 19002 19006
 
 # Commande pour démarrer l'application
-CMD ["npx", "expo", "start", "--web", "--non-interactive"]
+CMD ["npx", "expo", "start"]
+

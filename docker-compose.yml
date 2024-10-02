@@ -24,7 +24,7 @@ services:
     networks:
       - backend-network
     environment:
-      FLASK_ENV: development
+      FLASK_DEBUG: 1
       MYSQL_HOST: db
       MYSQL_DATABASE: inm5151_db
       MYSQL_USER: user
@@ -35,13 +35,15 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "19006:19006"
+      - "19006:19006"  # Port pour l'interface Expo
+      - "8081:8081"    # Port pour Metro Bundler
+    command: npx expo start --tunnel
     environment:
       - REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
       - NODE_ENV=development
+      - EXPO_TOKEN=${EXPO_TOKEN}
     volumes:
       - ./frontend:/app
-      - /app/node_modules
     depends_on:
       - backend
 

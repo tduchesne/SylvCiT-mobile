@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "inm5151-a2024-sylvcit",
+    "slug": "inm5151-a2024-sylvcit",
+    "version": "1.0.0",
+    "sdkVersion": "51.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "android": {
+      "package": "com.android"
+    },
+    "ios": {
+      "bundleIdentifier": "com.ios"
+    }
+  }
+}
