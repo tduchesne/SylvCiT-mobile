@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize db
-metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'));
+metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'))
 db = SQLAlchemy(app, metadata=metadata)
 
 # Initialize flask-migrate
@@ -21,7 +21,7 @@ migrate = Migrate(app, db)
 from models import Tree
 
 
-@app.before_first_request
+@app.before_request
 def create_tables():
     db.create_all()
 

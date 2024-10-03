@@ -76,3 +76,9 @@ INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url
 INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`) VALUES ('2017-10-12', '2023-01-11', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4705', 2, 3, 3, 4, 3);
 
 COMMIT;
+
+START TRANSACTION;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`add_tree` (`latitude`, `longitude`, `date_releve`) VALUES ('45.72587', '-73.45703', '2021-06-05');
+
+COMMIT;
