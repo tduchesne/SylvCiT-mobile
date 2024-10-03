@@ -7,6 +7,7 @@ import os
 
 app = Flask(__name__)
 # Database configuration
+# {os.getenv('MYSQL_USER')}, {os.getenv('MYSQL_PASSWORD')}, os.getenv('MYSQL_HOST')}, {os.getenv('MYSQL_DATABASE')}
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DATABASE')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -18,7 +19,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree
+from models import Tree, AddTree
 
 
 @app.before_request
@@ -45,6 +46,19 @@ def get_trees():
             } for t in trees
         ])
 
+
+
+@app.route('/api/add_tree', methods=['POST'])
+def add_tree():
+    latitude = request.form['latitude']
+    longitude = request.form['longitude']
+    date_releve = request.form['date_releve']
+    new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
+    db.session.add(new_tree)
+    db.session.commit()
+    return jsonify({'latitude': new_tree.latitude,
+                    'longitude': new_tree.longitude,
+                    'date_releve': new_tree.date_releve}), 201
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
