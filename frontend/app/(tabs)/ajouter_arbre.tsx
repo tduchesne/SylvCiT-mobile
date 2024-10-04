@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet } from 'react-native';
+import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert } from 'react-native';
 import Screen from "@/components/Screen";
-import { ThemedText } from "@/components/ThemedText";
+import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import { Colors } from "@/constants/Colors";
 
 export default function Ajouter_arbre() {
 
@@ -36,21 +37,26 @@ export default function Ajouter_arbre() {
                     <TextInput onChangeText={setLongitude} value={longitude} placeholder="Longitude" keyboardType="numeric" />
                     <TextInput onChangeText={setLatitude} value={latitude} placeholder="Latitude" keyboardType="numeric" />
 
-                    <Button title="Sauvegarder" />
-                    <Button title="Annuler" />
+                    <Button title="Sauvegarder" color="green" onPress={sauvegarder} />
+                    <Button title="Annuler" color="lightgrey" onPress={annuler} />
                 </ScrollView>
             </SafeAreaView>
         );
     }
 
-    return (<Screen title="Ajouter arbre"
-        content={<Form_ajout_arbre />}
-        headerImage={<Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />}
+    return (<Form_ajout_arbre />);
 
 
-    />);
+}
 
+function sauvegarder() {
 
+    Alert.alert("Sauvegarder")
+}
+
+function annuler() {
+
+    Alert.alert("Annuler?")
 }
 
 const styles = StyleSheet.create({
@@ -61,6 +67,12 @@ const styles = StyleSheet.create({
         left: 36,
         position: "absolute",
     },
+
+    form: {
+        alignContent: "space-between"
+    }
+
+
 });
 
 
