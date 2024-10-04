@@ -45,7 +45,7 @@ export default function Ajouter_arbre() {
 
     return (<Screen title="Ajouter arbre"
         content={<Form_ajout_arbre />}
-        headerImage={<Image source={require("@/assets/images/adaptive-icon.png")} />}
+        headerImage={<Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />}
 
 
     />);
@@ -53,5 +53,14 @@ export default function Ajouter_arbre() {
 
 }
 
+const styles = StyleSheet.create({
+    treeLogo: {
+        height: 230,
+        width: 310,
+        bottom: 0,
+        left: 36,
+        position: "absolute",
+    },
+});
 
 
