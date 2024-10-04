@@ -21,13 +21,21 @@ SylvCiT Mobile est une application mobile pour la foresterie urbaine, conçue po
 ## Installation
 
 1. Clonez ce dépôt :
+
 ```shell
 git clone https://github.com/joe-from-mtl/inm5151-a2024-sylvcit.git
 cd inm5151-inm5151-a2024-sylvcit.git
 ```
+
 2. Installez Docker en suivant les instructions dans le [Wiki Docker](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Docker).
 
-3. Vérifiez l'installation de Docker :
+3. Appliquez la dernière migration de la base de données :
+
+```shell
+docker-compose exec backend flask db upgrade
+```
+
+4. Vérifiez l'installation de Docker :
 
 ```shell
 docker --version
@@ -44,11 +52,12 @@ docker-compose --version
 
 ```shell
 EXPO_TOKEN=votre_token_ici
-```   
+```
 
 ## Utilisation
 
 1. Lancez les conteneurs Docker :
+
 ```shell
 docker-compose up --build
 ```
@@ -69,7 +78,7 @@ Pour plus de détails sur l'utilisation de Docker pendant le développement, con
 
 ## Base de données
 
-Nous utilisons MySQL comme base de données. Pour configurer et utiliser MySQL Workbench pour la gestion de la base de données, suivez les instructions détaillées dans le [Wiki MySQL Workbench](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Configuration-MySQL-Workbench).
+Nous utilisons MySQL comme base de données. Pour configurer et utiliser MySQL Workbench pour la gestion de la base de données, suivez les instructions détaillées dans le [Wiki Gestion de la base de données](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Gestion-de-la-base-de-donn%C3%A9es).
 
 ## Documentation supplémentaire
 
@@ -77,5 +86,4 @@ Pour des informations plus détaillées sur la configuration et l'utilisation de
 
 - [Wiki Docker](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Docker) - Installation, configuration et utilisation de Docker
 - [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile) - Configuration d'Expo et utilisation d'Expo Go
-- [Wiki MySQL Workbench](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Configuration-MySQL-Workbench) - Gestion de la base de données avec MySQL Workbench
-
+- [Wiki Gestion de la base de données](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Gestion-de-la-base-de-donn%C3%A9es) - Gestion de la base de données avec MySQL Workbench
