@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert } from 'react-native';
+import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, Text, View } from 'react-native';
 import Screen from "@/components/Screen";
 import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import { Colors } from "@/constants/Colors";
@@ -23,8 +23,9 @@ export default function Ajouter_arbre() {
 
 
         return (
-            <SafeAreaView>
-                <ScrollView>
+            <SafeAreaView style={styles.form}>
+                <ScrollView >
+                    <Text style={styles.titrePage}>Ajouter arbre</Text>
                     <TextInput onChangeText={setEmpNo} value={empNo} placeholder="EMP_NO" />
                     <TextInput onChangeText={setRue} value={rue} placeholder="Rue" />
                     <TextInput onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
@@ -36,9 +37,12 @@ export default function Ajouter_arbre() {
                     <TextInput onChangeText={setLocalisation} value={localisation} placeholder="LOCALISATION" />
                     <TextInput onChangeText={setLongitude} value={longitude} placeholder="Longitude" keyboardType="numeric" />
                     <TextInput onChangeText={setLatitude} value={latitude} placeholder="Latitude" keyboardType="numeric" />
-
-                    <Button title="Sauvegarder" color="green" onPress={sauvegarder} />
-                    <Button title="Annuler" color="lightgrey" onPress={annuler} />
+                    <View style={styles.bouton}>
+                        <Button title="Sauvegarder" color="green" onPress={sauvegarder} />
+                    </View>
+                    <View style={styles.bouton}>
+                        <Button title="Annuler" color="lightgrey" onPress={annuler} />
+                    </View>
                 </ScrollView>
             </SafeAreaView>
         );
@@ -51,12 +55,12 @@ export default function Ajouter_arbre() {
 
 function sauvegarder() {
 
-    Alert.alert("Sauvegarder")
+    Alert.alert("Arbre ajouté")
 }
 
 function annuler() {
 
-    Alert.alert("Annuler?")
+    Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui" }, { text: "Non" }])
 }
 
 const styles = StyleSheet.create({
@@ -69,7 +73,22 @@ const styles = StyleSheet.create({
     },
 
     form: {
-        alignContent: "space-between"
+        padding: 30,
+        paddingTop: 200,
+        alignItems: "stretch"
+
+    },
+
+    bouton: {
+        padding: 10
+    },
+
+    titrePage: {
+        fontSize: 30,
+        textTransform: "uppercase",
+        color: "green",
+        paddingBottom: 50,
+        textAlign: "center"
     }
 
 
