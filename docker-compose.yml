@@ -38,6 +38,8 @@ services:
       - "19006:19006"  # Port pour l'interface Expo
       - "8081:8081"    # Port pour Metro Bundler
     command: npx expo start --tunnel
+    networks:
+      - backend-network
     environment:
       - REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0
       - NODE_ENV=development
