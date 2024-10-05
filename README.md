@@ -70,7 +70,15 @@ npx expo start
 
 3. Sur votre téléphone, suivez les instructions dans le [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile) pour installer et utiliser l'application Expo Go.
 
+L'application utilise les ports suivants par défaut:
+
+- Frontend: http://localhost:8081
+- Backend: http://localhost:5001
+
+Assurez-vous que ces ports sont disponibles sur votre machine avant de lancer l'application.
+
 ## Développement
+
 
 Les changements dans le code seront automatiquement reflétés dans le conteneur Docker grâce au montage de volume. Si Flask ne détecte pas les changements, redémarrez le conteneur avec `docker-compose restart`. Pour arrêter les conteneurs, utilisez `docker-compose down`.
 
