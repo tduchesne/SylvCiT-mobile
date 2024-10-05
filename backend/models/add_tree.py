@@ -9,4 +9,8 @@ class AddTree(db.Model):
 
     date_releve = db.Column(db.Date, nullable=False)
 
+    # __table_args__ = (
+    #     db.UniqueConstraint('latitude', 'longitude', name='unique_location'),
+    # )
+
     # flask_app_history

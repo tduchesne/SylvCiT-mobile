@@ -7,7 +7,6 @@ import os
 
 app = Flask(__name__)
 # Database configuration
-# {os.getenv('MYSQL_USER')}, {os.getenv('MYSQL_PASSWORD')}, os.getenv('MYSQL_HOST')}, {os.getenv('MYSQL_DATABASE')}
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DATABASE')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -29,6 +28,7 @@ def create_tables():
 # Routes
 @app.route('/')
 def hello_world():
+    print("Hello world")
     return  'Hi mom!'
 
 @app.route('/api/trees', methods=['GET'])
@@ -50,9 +50,12 @@ def get_trees():
 
 @app.route('/api/add_tree', methods=['POST'])
 def add_tree():
-    latitude = request.form['latitude']
-    longitude = request.form['longitude']
-    date_releve = request.form['date_releve']
+
+    info = request.get_json()
+
+    latitude = info['latitude']
+    longitude = info['longitude']
+    date_releve = info['date_releve']
     new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
     db.session.add(new_tree)
     db.session.commit()
