@@ -3,6 +3,8 @@ import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, 
 import Screen from "@/components/Screen";
 import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import { Colors } from "@/constants/Colors";
+import * as ImagePicker from 'expo-image-picker';
+
 
 export default function Ajouter_arbre() {
 
@@ -21,6 +23,26 @@ export default function Ajouter_arbre() {
         const [latitude, setLatitude] = useState('');
 
 
+        const sauvegarder = () => {
+
+            fetch('/api/add_tree', {
+                method: 'POST', headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "date_releve": dateReleve
+                })
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(erreur => Alert.alert("Erreur survenue lors du sauvegarde des données"))
+
+
+        }
+
 
         return (
             <SafeAreaView style={styles.form}>
@@ -37,6 +59,7 @@ export default function Ajouter_arbre() {
                     <TextInput onChangeText={setLocalisation} value={localisation} placeholder="LOCALISATION" />
                     <TextInput onChangeText={setLongitude} value={longitude} placeholder="Longitude" keyboardType="numeric" />
                     <TextInput onChangeText={setLatitude} value={latitude} placeholder="Latitude" keyboardType="numeric" />
+                    <ChargerPhoto />
                     <View style={styles.bouton}>
                         <Button title="Sauvegarder" color="green" onPress={sauvegarder} />
                     </View>
@@ -53,15 +76,42 @@ export default function Ajouter_arbre() {
 
 }
 
-function sauvegarder() {
-
-    Alert.alert("Arbre ajouté")
-}
 
 function annuler() {
 
     Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui" }, { text: "Non" }])
 }
+
+
+
+
+const ChargerPhoto = () => {
+    const [image, setImage] = useState<string | null>(null);
+
+    const ChargerImage = async () => {
+        // Ajout de permission dans le sprint 2
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Button title="Charger photo de l'arbre" onPress={ChargerImage} />
+            {image && <Image source={{ uri: image }} style={styles.image} />}
+        </View>
+    );
+}
+
 
 const styles = StyleSheet.create({
     treeLogo: {
@@ -89,6 +139,15 @@ const styles = StyleSheet.create({
         color: "green",
         paddingBottom: 50,
         textAlign: "center"
+    },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    image: {
+        width: 200,
+        height: 200,
     }
 
 
