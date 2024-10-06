@@ -62,7 +62,7 @@ EXPO_TOKEN=votre_token_ici
 docker-compose up --build
 ```
 
-2. Dans un nouveau terminal, démarrez l'application Expo :
+2. Dans un nouveau terminal, démarrez l'application Expo depuis le répertoire */frontend*:
 
 ```shell
 npx expo start
