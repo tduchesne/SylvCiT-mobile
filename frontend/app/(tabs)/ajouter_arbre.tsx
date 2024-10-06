@@ -29,6 +29,7 @@ export default function Ajouter_arbre() {
                 position => {
                     console.log(position);
                     setLocation(true);
+
                 },
                 error => {
                     // See error code charts below.
