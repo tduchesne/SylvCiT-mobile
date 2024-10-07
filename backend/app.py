@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+from datetime import datetime
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
@@ -53,15 +54,38 @@ def add_tree():
 
     info = request.get_json()
 
-    latitude = info['latitude']
-    longitude = info['longitude']
-    date_releve = info['date_releve']
-    new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
-    db.session.add(new_tree)
-    db.session.commit()
-    return jsonify({'latitude': new_tree.latitude,
-                    'longitude': new_tree.longitude,
-                    'date_releve': new_tree.date_releve}), 201
+    latitude = info.get('latitude')
+    longitude = info.get('longitude')
+    date_releve = info.get('date_releve')
+
+    # Validation des coordonnees gps
+    if not (-90 <= float(latitude) <= 90):
+        abort(400, description="Latitude invalide.")
+    if not (-180 <= float(longitude) <= 180):
+        abort(400, description="Longitude invalide.")
+
+    # validation de la date
+    if not date_releve:
+        abort(400, description="La date de relevé est requise.")
+
+    try:
+        date_releve = datetime.strptime(date_releve, '%Y-%m-%d').date()
+    except ValueError:
+        abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
+
+    try:
+        new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
+        db.session.add(new_tree)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        abort(500, description="Erreur lors de l'ajout de l'arbre.")
+
+    return jsonify({
+        'latitude': new_tree.latitude,
+        'longitude': new_tree.longitude,
+        'date_releve': new_tree.date_releve
+        }), 201
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
