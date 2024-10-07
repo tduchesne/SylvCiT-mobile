@@ -11,23 +11,24 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize db
-metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'));
+metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'))
 db = SQLAlchemy(app, metadata=metadata)
 
 # Initialize flask-migrate
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree
+from models import Tree, AddTree
 
 
-@app.before_first_request
+@app.before_request
 def create_tables():
     db.create_all()
 
 # Routes
 @app.route('/')
 def hello_world():
+    print("Hello world")
     return  'Hi mom!'
 
 @app.route('/api/trees', methods=['GET'])
@@ -45,6 +46,22 @@ def get_trees():
             } for t in trees
         ])
 
+
+
+@app.route('/api/add_tree', methods=['POST'])
+def add_tree():
+
+    info = request.get_json()
+
+    latitude = info['latitude']
+    longitude = info['longitude']
+    date_releve = info['date_releve']
+    new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
+    db.session.add(new_tree)
+    db.session.commit()
+    return jsonify({'latitude': new_tree.latitude,
+                    'longitude': new_tree.longitude,
+                    'date_releve': new_tree.date_releve}), 201
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
