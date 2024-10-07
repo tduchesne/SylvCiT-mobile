@@ -22,6 +22,7 @@ export default function AuthScreen({
   const colorScheme = useColorScheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Function to log in a user
   const login = async () => {
@@ -35,29 +36,28 @@ export default function AuthScreen({
       };
 
       const response = await fetch("http://172.20.10.4:5001/login", {
-        method: "POST", // Specify the method as POST
+        method: "POST",
         headers: {
-          "Content-Type": "application/json", // Indicate that the request body is JSON
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(requestBody), // Convert the request body to JSON
+        body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
-        const data = await response.json(); // Parse the JSON response
-        console.log("Login successful! User role:", data.role);
-        // Call the onPressLogin function with the user's role
+        const data = await response.json();
+        setErrorMessage("");
         onPressLogin(data.role);
       } else {
-        console.error("Login failed:", response.status, response.statusText);
-        // Handle login failure (e.g., show an error message)
+        setErrorMessage("Mauvais nom d'utilisateur ou mot de passe");
       }
     } catch (error) {
-      console.error("Error occurred during login:", error);
+      setErrorMessage("Une erreur est survenue. Veuillez réessayer.");
     }
   };
 
   const handleLogin = () => {
-    login(); // Call the login function when the login button is pressed
+    setErrorMessage("");
+    login();
   };
 
   return (
@@ -73,6 +73,10 @@ export default function AuthScreen({
         color={colorScheme === "dark" ? "#7bb586" : "#046122"}
         style={styles.icon}
       />
+      {errorMessage ? ( // Display error message if it exists
+        <Text style={styles.errorMessage}>{errorMessage}</Text>
+      ) : null}
+
       <TextInput
         placeholder="Username"
         value={username}
@@ -133,5 +137,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
+  },
+  errorMessage: {
+    color: "red",
+    marginBottom: 10,
+    textAlign: "center",
   },
 });
