@@ -22,7 +22,7 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const [isSplashScreenShown, setIsSplashScreenShown] = useState(true);
-  const [isAuth, setIsAuth] = useState(false);
+  const [userRole, setUserRole] = useState(-1);
 
   useEffect(() => {
     setTimeout(() => {
@@ -36,15 +36,22 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  const handleLogin = (role: number) => {
+    setUserRole(role);
+  };
+
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {isAuth ? (
+      {userRole >= 0 ? (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       ) : (
-        <AuthScreen onPressLogin={() => setIsAuth(true)} />
+        <AuthScreen
+          onPressLogin={handleLogin}
+          onPressVisitor={() => setUserRole(0)}
+        />
       )}
       {isSplashScreenShown ? <Splash /> : null}
     </ThemeProvider>
