@@ -27,9 +27,6 @@ export default function AuthScreen({
   // Function to log in a user
   const login = async () => {
     try {
-      console.log("Attempting to log in...");
-
-      // Create the request body
       const requestBody = {
         username: username,
         password: password,
