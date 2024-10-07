@@ -18,7 +18,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree
+from models import Tree, User
 
 
 @app.before_first_request
@@ -44,6 +44,24 @@ def get_trees():
             'id_type': t.id_type
             } for t in trees
         ])
+
+# pas sécuritaire vraiment
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required."}), 400
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and user.password == password:
+        return jsonify({"role": user.role}), 200
+
+    return jsonify({"role": -1}), 401
 
 
 if __name__== '__main__':

@@ -11,7 +11,7 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "./ThemedText";
 
-//logique a void en attendant l'implementation
+// Main component for authentication
 export default function AuthScreen({
   onPressLogin,
   onPressVisitor,
@@ -23,46 +23,41 @@ export default function AuthScreen({
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const pingServer = async () => {
+  // Function to log in a user
+  const login = async () => {
     try {
-      console.log("ping await...");
-      const response = await fetch("http://172.20.10.4:5001/");
+      console.log("Attempting to log in...");
+
+      // Create the request body
+      const requestBody = {
+        username: username,
+        password: password,
+      };
+
+      const response = await fetch("http://172.20.10.4:5001/login", {
+        method: "POST", // Specify the method as POST
+        headers: {
+          "Content-Type": "application/json", // Indicate that the request body is JSON
+        },
+        body: JSON.stringify(requestBody), // Convert the request body to JSON
+      });
 
       if (response.ok) {
-        const data = await response.json(); // Or response.text()
-        console.log("Ping successful! Response:", data);
+        const data = await response.json(); // Parse the JSON response
+        console.log("Login successful! User role:", data.role);
+        // Call the onPressLogin function with the user's role
+        onPressLogin(data.role);
       } else {
-        console.log("ca marche pas");
+        console.error("Login failed:", response.status, response.statusText);
+        // Handle login failure (e.g., show an error message)
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error occurred during login:", error);
     }
-  };
-
-  // Simulated function to verify user credentials
-  const verifyUserCredentials = (
-    username: string,
-    password: string
-  ): number => {
-    if (username === "admin" && password === "admin") {
-      pingServer();
-      console.log("ca marche admin");
-      return 2; // Role for admin
-    } else if (username === "guest" && password === "guest") {
-      console.log("ca marche guest");
-      return 1; // Role for regular user
-    }
-    console.log("marche pas");
-    return -1;
   };
 
   const handleLogin = () => {
-    const verifiedRole = verifyUserCredentials(username, password); //
-    if (verifiedRole > 0) {
-      onPressLogin(verifiedRole);
-    } else {
-      console.error("Invalid credentials");
-    }
+    login(); // Call the login function when the login button is pressed
   };
 
   return (
@@ -79,13 +74,13 @@ export default function AuthScreen({
         style={styles.icon}
       />
       <TextInput
-        placeholder="username"
+        placeholder="Username"
         value={username}
         onChangeText={setUsername}
         style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}
       />
       <TextInput
-        placeholder="password"
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
         style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}
@@ -131,7 +126,6 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    backgroundColor: "green",
     justifyContent: "center",
     alignItems: "center",
   },
