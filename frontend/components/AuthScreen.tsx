@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Config from "../config";
 import {
   Text,
   TextInput,
@@ -30,7 +31,7 @@ export default function AuthScreen({
         password: password,
       };
 
-      const response = await fetch("http://172.20.10.4:5001/login", {
+      const response = await fetch(`${Config.API_URL}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

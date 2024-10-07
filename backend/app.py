@@ -46,7 +46,7 @@ def get_trees():
         ])
 
 # pas sécuritaire vraiment
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
 
