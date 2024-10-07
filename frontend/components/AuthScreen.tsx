@@ -11,7 +11,6 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "./ThemedText";
 
-// Main component for authentication
 export default function AuthScreen({
   onPressLogin,
   onPressVisitor,
@@ -24,7 +23,6 @@ export default function AuthScreen({
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Function to log in a user
   const login = async () => {
     try {
       const requestBody = {
@@ -70,7 +68,7 @@ export default function AuthScreen({
         color={colorScheme === "dark" ? "#7bb586" : "#046122"}
         style={styles.icon}
       />
-      {errorMessage ? ( // Display error message if it exists
+      {errorMessage ? ( // Message d'erreur s'il y en a un
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       ) : null}
 
