@@ -37,7 +37,7 @@ services:
     ports:
       - "19006:19006" # Port pour l'interface Expo
       - "8081:8081" # Port pour Metro Bundler
-    command: npx expo start --tunnel
+    command: npx expo start --tunnel --go
     networks:
       - backend-network
     environment:
