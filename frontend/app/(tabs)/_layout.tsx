@@ -5,7 +5,6 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -57,6 +56,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="tree-analyzer"
+        options={{
+          title: "Tree Analyzer",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "aperture-outline" : "aperture-sharp"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="account"
         options={{
           title: "Account",
@@ -69,7 +80,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-
-
   );
 }
