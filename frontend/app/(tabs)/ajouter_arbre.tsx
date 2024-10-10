@@ -48,7 +48,8 @@ export default function Ajouter_arbre() {
                 .then(data => console.log(data))
                 .then(() => Alert.alert("Informations sauvegardées"))
                 .then(nettoyerChamps)
-                .catch(erreur => Alert.alert("Erreur survenue lors du sauvegarde des données"))
+                .catch(remettreChamps)
+
 
 
         }
@@ -59,6 +60,10 @@ export default function Ajouter_arbre() {
 
         const nettoyerChamps = () => {
             initialiserChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, setDatePlantation, setLongitude, setLatitude)
+        }
+
+        const remettreChamps = () => {
+            remplirChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, dateReleve, setDatePlantation, setLongitude, longitude, setLatitude, latitude)
         }
 
         return (<Screen
@@ -102,8 +107,8 @@ export default function Ajouter_arbre() {
                                 <View style={styles.boutonPosition}>
                                     <Ionicons.Button name="earth" backgroundColor="green" size={32} onPress={trouverPosition} />
                                 </View></Text>
-                            <TextInput style={styles.input} onChangeText={setLongitude.toString} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
-                            <TextInput style={styles.input} onChangeText={setLatitude.toString} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
+                            <TextInput style={styles.input} onChangeText={setLongitude} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
+                            <TextInput style={styles.input} onChangeText={setLatitude} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
 
                         </View>
                         <View style={styles.bouton}>
@@ -170,6 +175,21 @@ function initialiserChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, se
     setLongitude('');
     setLatitude('');
 
+}
+
+function remplirChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, setEssenceLatin: any, setEssenceAng: any, setDhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any) {
+
+    setEmpNo('');
+    setAdresse('');
+    setEssenceFr('');
+    setEssenceLatin('');
+    setEssenceAng('');
+    setDhp('');
+    setDateReleve(dateReleve);
+    setDatePlantation('');
+    setLongitude(longitude);
+    setLatitude(latitude);
+    Alert.alert("Erreur lors de la sauvegarde des informations");
 }
 
 
