@@ -1,7 +1,36 @@
 import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Alert, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { TextInput, SafeAreaView, ScrollView, Alert, Text, View, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
 
 export default function Analyse_arbre() {
+
+    const colorScheme = useColorScheme();  // Detect the color scheme (light or dark)
+
+    // cond styling based on the color scheme
+    const isDarkMode = colorScheme === 'dark';
+
+    //cannot change the colors.ts cause will change all the colors in the app...
+
+    //light mode
+    const lightColors = {
+        backgroundColor: '#F0F4F8',
+        textColor: '#555',
+        borderColor: '#80CBC4',
+        buttonGreen: '#4CAF50',
+        buttonRed: '#f44336',
+        titleColor: "#2E7D32"
+    };
+
+    //dark mode
+    const darkColors = {
+        backgroundColor: '#232825',
+        textColor: '#E0E0E0',
+        borderColor: '#65976f',
+        buttonGreen: '#447346',
+        buttonRed: '#a3271d',
+        titleColor: "#E0E0E0"
+    };
+
+    const colors = isDarkMode ? darkColors : lightColors;
 
     const Form_analyse_arbre = () => {
 
@@ -18,41 +47,41 @@ export default function Analyse_arbre() {
         const [dateMesure, setDateMesure] = useState<string>('');
 
         return (
-            <SafeAreaView style={styles.form}>
+            <SafeAreaView style={[styles.form, { backgroundColor: colors.backgroundColor }]}>
                 <ScrollView>
-                    <Text style={styles.titrePage}>Votre arbre</Text>
+                    <Text style={[styles.titrePage, { color: colors.titleColor }]}>Votre arbre</Text>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Adresse</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Adresse</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setAdresse} 
                             value={adresse} 
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Essence (Latin)</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Essence (Latin)</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setEspeceLat} 
                             value={especeLat} 
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Essence (Français)</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Essence (Français)</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setEspeceFr} 
                             value={especeFr} 
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Essence (Anglais)</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Essence (Anglais)</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setEspeceAng} 
                             value={especeAng} 
                         />
@@ -60,61 +89,62 @@ export default function Analyse_arbre() {
 
                     <View style={styles.inputContainer}>  
                         <View style={styles.dhpContainer}>
-                            <Text style={styles.label}>DHP</Text>
-                            <Text style={styles.label}>DHP max</Text>
+                            <Text style={[styles.label, { color: colors.textColor }]}>DHP</Text>
+                            <Text style={[styles.label, { color: colors.textColor }]}>DHP max</Text>
                         </View>
                         <TextInput 
-                            style={[styles.input, styles.dhpInput]} 
+                            style={[styles.input, styles.dhpInput, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setDhp} 
                             value={dhp} 
                             placeholder="DHP (numeric/numeric)" 
-                            keyboardType="default"  // dhp/dhp max
+                            keyboardType="default"  // Allow numeric/numeric format
+                            placeholderTextColor={isDarkMode ? "#888" : "#ccc"}
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Famille</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Famille</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setFamille} 
                             value={famille} 
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Genre</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Genre</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setGenre} 
                             value={genre} 
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Date de Plantation</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Date de Plantation</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setDatePlantation} 
                             value={datePlantation} 
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Date de Mesure</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Date de Mesure</Text>
                         <TextInput 
-                            style={styles.input} 
+                            style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setDateMesure} 
                             value={dateMesure} 
                         />
                     </View>
 
                     <View style={styles.boutonContainer}>
-                        <TouchableOpacity style={styles.boutonFilled} onPress={confirmer}>
+                        <TouchableOpacity style={[styles.boutonFilled, { backgroundColor: colors.buttonGreen }]} onPress={confirmer}>
                             <Text style={styles.boutonText}>Confirmer</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.boutonContainer}>
-                        <TouchableOpacity style={styles.boutonFilledRed} onPress={annuler}>
+                        <TouchableOpacity style={[styles.boutonFilledRed, { backgroundColor: colors.buttonRed }]} onPress={annuler}>
                             <Text style={styles.boutonText}>Annuler</Text>
                         </TouchableOpacity>
                     </View>
@@ -137,26 +167,23 @@ function annuler() {
 const styles = StyleSheet.create({
     form: {
         flex: 1,
-        paddingHorizontal: 20, 
+        paddingHorizontal: 20,
         paddingVertical: 30,  
-        backgroundColor: '#F0F4F8',  
     },
     inputContainer: {
-        marginBottom: 20, 
-        marginHorizontal: 20, 
+        marginBottom: 20,  
+        marginHorizontal: 20,  
     },
     boutonContainer: {
         marginVertical: 10,
-        marginHorizontal: 20,
+        marginHorizontal: 20, 
     },
     boutonFilled: {
-        backgroundColor: '#4CAF50',  
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
     },
     boutonFilledRed: {
-        backgroundColor: '#f44336', 
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -169,7 +196,6 @@ const styles = StyleSheet.create({
     titrePage: {
         fontSize: 30,
         textTransform: "uppercase",
-        color: "#2E7D32", 
         paddingBottom: 50,
         textAlign: "center",
         fontWeight: 'bold',
@@ -177,15 +203,13 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 18,
         marginBottom: 5,
-        color: '#555',
         fontWeight: 'bold',
     },
     input: {
         borderWidth: 2,
-        borderColor: '#80CBC4', 
         padding: 12,
         borderRadius: 8,
-        backgroundColor: '#fff', 
+        backgroundColor: '#fff',
     },
     dhpContainer: {
         flexDirection: 'row',
