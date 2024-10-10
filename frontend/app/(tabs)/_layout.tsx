@@ -57,6 +57,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="analyse_arbre"
+        options={{
+          title: "Analyse Arbre",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "analytics" : "analytics-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="account"
         options={{
           title: "Account",
