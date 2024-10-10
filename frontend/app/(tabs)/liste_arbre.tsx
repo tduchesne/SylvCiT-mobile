@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Screen from "@/components/Screen";
-import { StyleSheet, TextInput, FlatList, Image, Pressable } from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, FlatList, Image, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -58,8 +58,7 @@ export default function TabTwoScreen() {
         {
             /* Not sure about all data that goes into a tree object, please change if necessary */
         }
-        const treeDetails =
-            `${tree.region} ${tree.species} ${tree.city} ${tree.datePlanted} ${tree.age} ${tree.height}`.toLowerCase();
+        const treeDetails =`${tree.region} ${tree.species} ${tree.city} ${tree.datePlanted} ${tree.age} ${tree.height}`.toLowerCase();
         return treeDetails.includes(searchText.toLowerCase());
     });
 
@@ -127,10 +126,16 @@ export default function TabTwoScreen() {
                 <ThemedView style={styles.fixedBox}>
                     <ThemedText style={styles.overlayText}>Actions Possibles</ThemedText>
                     <ThemedView style={styles.buttonContainer}>
-                        <Pressable style={styles.modifierButton}>
+                        <Pressable style={({ pressed }) => [
+                            styles.modifierButton,
+                            {opacity: pressed ? 0.5 : 1},
+                        ]}>
                             <ThemedText style={styles.modifierButtonText}>Modifier</ThemedText>
                         </Pressable>
-                        <Pressable style={styles.modalButton}>
+                        <Pressable style={({ pressed }) => [
+                            styles.modalButton,
+                            {opacity: pressed ? 0.5 : 1},
+                        ]}>
                             <ThemedText style={styles.modalButtonText}>Démarrer la validation</ThemedText>
                         </Pressable>
                     </ThemedView>
@@ -240,6 +245,7 @@ const styles = StyleSheet.create({
 
     buttonContainer: {
         flexDirection: "row",
+        backgroundColor: "#b2e3b5",
         justifyContent: "space-between",
         width: "100%",
     },
