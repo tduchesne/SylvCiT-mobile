@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Alert, Text, View, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
+import { TextInput, SafeAreaView, ScrollView, Alert, Text, View, StyleSheet, TouchableOpacity, useColorScheme, Image } from 'react-native';
 
 export default function Analyse_arbre() {
+
+    //TODO:
+    // - Add a way to upload an image of the tree
+    // - Add JSON data to frontend to display the tree's information
+    // - Add functionality to cancel the operation, need to go back to another page ('ajouter arbre' maybe ? TBD)
+
+
 
     const colorScheme = useColorScheme();  // Detect the color scheme (light or dark)
 
@@ -38,18 +45,31 @@ export default function Analyse_arbre() {
         const [especeLat, setEspeceLat] = useState<string>('');
         const [especeFr, setEspeceFr] = useState<string>('');
         const [especeAng, setEspeceAng] = useState<string>(''); 
-
         const [dhp, setDhp] = useState<string>('');  // Format: numeric/numeric
-
         const [famille, setFamille] = useState<string>('');
         const [genre, setGenre] = useState<string>('');
         const [datePlantation, setDatePlantation] = useState<string>('');
         const [dateMesure, setDateMesure] = useState<string>('');
 
+        // Image URL received from backend
+        const [imageUrl, setImageUrl] = useState<string>('');  // Empty by default
+
+        // Placeholder image for when the image URL isn't available
+        const placeholderImage = 'https://via.placeholder.com/150';
+
         return (
             <SafeAreaView style={[styles.form, { backgroundColor: colors.backgroundColor }]}>
                 <ScrollView>
                     <Text style={[styles.titrePage, { color: colors.titleColor }]}>Votre arbre</Text>
+
+                    {/* Display the image TODO*/}
+                    <View style={styles.imageContainer}>
+                        <Image
+                            source={{ uri: imageUrl ? imageUrl : placeholderImage }} // Display the image or a placeholder
+                            style={styles.treeImage}
+                            resizeMode="contain"
+                        />
+                    </View>
 
                     <View style={styles.inputContainer}>
                         <Text style={[styles.label, { color: colors.textColor }]}>Adresse</Text>
@@ -61,7 +81,7 @@ export default function Analyse_arbre() {
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={[styles.label, { color: colors.textColor }]}>Essence (Latin)</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Espèce (Latin)</Text>
                         <TextInput 
                             style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setEspeceLat} 
@@ -70,7 +90,7 @@ export default function Analyse_arbre() {
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={[styles.label, { color: colors.textColor }]}>Essence (Français)</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Espèce (Français)</Text>
                         <TextInput 
                             style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setEspeceFr} 
@@ -79,7 +99,7 @@ export default function Analyse_arbre() {
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <Text style={[styles.label, { color: colors.textColor }]}>Essence (Anglais)</Text>
+                        <Text style={[styles.label, { color: colors.textColor }]}>Espèce (Anglais)</Text>
                         <TextInput 
                             style={[styles.input, { borderColor: colors.borderColor, color: colors.textColor }]} 
                             onChangeText={setEspeceAng} 
@@ -97,7 +117,7 @@ export default function Analyse_arbre() {
                             onChangeText={setDhp} 
                             value={dhp} 
                             placeholder="DHP (numeric/numeric)" 
-                            keyboardType="default"  // Allow numeric/numeric format
+                            keyboardType="default"  
                             placeholderTextColor={isDarkMode ? "#888" : "#ccc"}
                         />
                     </View>
@@ -217,5 +237,14 @@ const styles = StyleSheet.create({
     },
     dhpInput: {
         textAlign: 'center', 
+    },
+    imageContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    treeImage: {
+        width: 200,
+        height: 200,
+        borderRadius: 10,
     },
 });
