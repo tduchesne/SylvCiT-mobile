@@ -46,6 +46,8 @@ export default function Ajouter_arbre() {
             })
                 .then(response => response.json())
                 .then(data => console.log(data))
+                .then(() => Alert.alert("Informations sauvegardées"))
+                .then(nettoyerChamps)
                 .catch(erreur => Alert.alert("Erreur survenue lors du sauvegarde des données"))
 
 
@@ -55,6 +57,10 @@ export default function Ajouter_arbre() {
             getLocation(setLatitude, setLongitude, setLocation, location)
         }
 
+        const nettoyerChamps = () => {
+            initialiserChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, setDatePlantation, setLongitude, setLatitude)
+        }
+
         return (<Screen
             title="Ajouter Arbre"
             content={
@@ -62,12 +68,12 @@ export default function Ajouter_arbre() {
                 <SafeAreaView >
                     <ScrollView >
                         <View>
-                            <TextInput onChangeText={setEmpNo} value={empNo} placeholder="Numéro employé" />
-                            <TextInput onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
-                            <TextInput onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
-                            <TextInput onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
-                            <TextInput onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
-                            <TextInput onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
+                            <TextInput style={styles.input} onChangeText={setEmpNo} value={empNo} placeholder="Numéro employé" />
+                            <TextInput style={styles.input} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
+                            <TextInput style={styles.input} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
+                            <TextInput style={styles.input} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
+                            <TextInput style={styles.input} onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
+                            <TextInput style={styles.input} onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
                             <Text>Date relevé
                                 <Ionicons.Button backgroundColor="green" name="calendar" onPress={() => setModalDatePreleve(true)} />
                                 <DatePicker modal open={modalDatePreleve} date={dateReleve} onConfirm={(dateReleveChoisie) => {
@@ -78,7 +84,7 @@ export default function Ajouter_arbre() {
                                         setModalDatePreleve(false)
                                     }}
                                 /></Text>
-                            <TextInput >{formatDate(dateReleve)}</TextInput>
+                            <TextInput style={styles.input}>{formatDate(dateReleve)}</TextInput>
                             <Text>Date de Plantation
                                 <Ionicons.Button backgroundColor="green" name="calendar" onPress={() => setModalDatePlantation(true)} />
                                 <DatePicker modal open={modalDatePlantation} date={new Date()} onConfirm={(datePlantationChoisie) => {
@@ -91,13 +97,13 @@ export default function Ajouter_arbre() {
                                     }}
                                 />
                             </Text>
-                            <TextInput editable={false} placeholder="Date de plantation">{datePlantation}</TextInput>
+                            <TextInput editable={false} placeholder="Date de plantation" style={styles.input}>{datePlantation}</TextInput>
                             <Text>Trouvez ma position
                                 <View style={styles.boutonPosition}>
                                     <Ionicons.Button name="earth" backgroundColor="green" size={32} onPress={trouverPosition} />
                                 </View></Text>
-                            <TextInput onChangeText={setLongitude.toString} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
-                            <TextInput onChangeText={setLatitude.toString} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
+                            <TextInput style={styles.input} onChangeText={setLongitude.toString} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
+                            <TextInput style={styles.input} onChangeText={setLatitude.toString} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
 
                         </View>
                         <View style={styles.bouton}>
@@ -125,7 +131,7 @@ export default function Ajouter_arbre() {
 
 
 function annuler() {
-    const navigation = useNavigation();
+
     Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui" }, { text: "Non" }])
 }
 
@@ -151,7 +157,20 @@ function getLocation(setLatitude: any, setLongitude: any, setLocation: any, loca
 };
 
 
+function initialiserChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, setEssenceLatin: any, setEssenceAng: any, setDhp: any, setDateReleve: any, setDatePlantation: any, setLongitude: any, setLatitude: any) {
 
+    setEmpNo('');
+    setAdresse('');
+    setEssenceFr('');
+    setEssenceLatin('');
+    setEssenceAng('');
+    setDhp('');
+    setDateReleve(new Date());
+    setDatePlantation('');
+    setLongitude('');
+    setLatitude('');
+
+}
 
 
 const ChargerPhoto = () => {
@@ -198,10 +217,14 @@ const styles = StyleSheet.create({
         position: "absolute",
     },
 
-    form: {
 
-        alignItems: "stretch",
-
+    input: {
+        height: 40,
+        width: 300,
+        borderColor: "#ccc",
+        borderWidth: 1,
+        marginBottom: 10,
+        paddingHorizontal: 10,
     },
 
     bouton: {
@@ -209,14 +232,6 @@ const styles = StyleSheet.create({
 
     },
 
-    titrePage: {
-        fontSize: 30,
-        textTransform: "uppercase",
-        fontWeight: "900",
-        color: "green",
-        paddingBottom: 50,
-        textAlign: "center"
-    },
     boutonPhoto: {
         flex: 1,
         alignItems: 'flex-start',
