@@ -20,50 +20,17 @@ export default function Ajouter_arbre() {
         const [essenceFr, setEssenceFr] = useState('');
         const [essenceAng, setEssenceAng] = useState('');
         const [dhp, setDhp] = useState('');
-        const [localisation, setLocalisation] = useState('');
         const [longitude, setLongitude] = useState(Number);
         const [latitude, setLatitude] = useState(Number);
         const [location, setLocation] = useState(false);
         const [dateReleve, setDateReleve] = useState(new Date())
-        const [datePlantation, setDatePlantation] = useState(new Date())
+        const [datePlantation, setDatePlantation] = useState("")
         const [modalDatePreleve, setModalDatePreleve] = useState(false)
         const [modalDatePlantation, setModalDatePlantation] = useState(false)
 
-
-        const formatDate = (date: Date) => {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        };
-
-
-
-
-        // function to check permissions and get Location
-        const getLocation = () => {
-
-            Geolocation.getCurrentPosition(
-                position => {
-                    setLatitude(position.coords.latitude);
-                    setLongitude(position.coords.longitude);
-                    setLocation(true);
-
-                },
-                error => {
-                    // See error code charts below.
-                    console.log(error.code, error.message);
-                    setLocation(false);
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-            );
-
-            console.log(location);
-        };
-
         const sauvegarder = () => {
 
-            fetch('${Config.API_URL}/api/add_tree', {
+            fetch(`${Config.API_URL}/api/add_tree`, {
                 method: 'POST', headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
@@ -71,7 +38,7 @@ export default function Ajouter_arbre() {
                 body: JSON.stringify({
                     "latitude": latitude,
                     "longitude": longitude,
-                    "date_releve": dateReleve
+                    "date_releve": formatDate(dateReleve)
                 })
             })
                 .then(response => response.json())
@@ -81,6 +48,9 @@ export default function Ajouter_arbre() {
 
         }
 
+        const trouverPosition = () => {
+            getLocation(setLatitude, setLongitude, setLocation, location)
+        }
 
         return (
             <SafeAreaView >
@@ -109,22 +79,23 @@ export default function Ajouter_arbre() {
                                     setModalDatePreleve(false)
                                 }}
                             /></Text>
-                        <TextInput editable={false}>{formatDate(dateReleve)}</TextInput>
+                        <TextInput >{formatDate(dateReleve)}</TextInput>
                         <Text>Date de Plantation
                             <Ionicons.Button backgroundColor="green" name="calendar" onPress={() => setModalDatePlantation(true)} />
-                            <DatePicker modal open={modalDatePlantation} date={datePlantation} onConfirm={(datePlantationChoisie) => {
+                            <DatePicker modal open={modalDatePlantation} date={new Date()} onConfirm={(datePlantationChoisie) => {
                                 setModalDatePlantation(false)
-                                setDatePlantation(datePlantationChoisie)
+                                setDatePlantation(formatDate(datePlantationChoisie))
+
                             }}
                                 onCancel={() => {
                                     setModalDatePlantation(false)
                                 }}
                             />
                         </Text>
-                        <TextInput editable={false}></TextInput>
+                        <TextInput editable={false}>{datePlantation}</TextInput>
                         <Text>Trouvez ma position
                             <View style={styles.boutonPosition}>
-                                <Ionicons.Button name="earth" backgroundColor="green" size={32} onPress={getLocation} />
+                                <Ionicons.Button name="earth" backgroundColor="green" size={32} onPress={trouverPosition} />
                             </View></Text>
                         <TextInput onChangeText={setLongitude.toString} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
                         <TextInput onChangeText={setLatitude.toString} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
@@ -155,6 +126,30 @@ function annuler() {
 
 
 
+// Fonction pour la localisation
+function getLocation(setLatitude: any, setLongitude: any, setLocation: any, location: any) {
+
+    Geolocation.getCurrentPosition(
+        position => {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
+            setLocation(true);
+
+        },
+        error => {
+            console.log(error.code, error.message);
+            setLocation(false);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+    );
+
+    console.log(location);
+};
+
+
+
+
+
 const ChargerPhoto = () => {
     const [image, setImage] = useState<string | null>(null);
 
@@ -181,6 +176,13 @@ const ChargerPhoto = () => {
         </View>
     );
 }
+
+function formatDate(date: Date) {
+    const year = String(date.getFullYear()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 
 const styles = StyleSheet.create({
