@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, Text, View } from 'react-native';
+
+import DatePicker from 'react-native-date-picker'
+//npx expo install expo-image-picker
 import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Config from '../../config';
+
+//npm install @react-native-community/geolocation --save
 import Geolocation from '@react-native-community/geolocation';
 
 export default function Ajouter_arbre() {
@@ -14,12 +20,24 @@ export default function Ajouter_arbre() {
         const [essenceFr, setEssenceFr] = useState('');
         const [essenceAng, setEssenceAng] = useState('');
         const [dhp, setDhp] = useState('');
-        const [dateReleve, setDateReleve] = useState('');
-        const [datePlantation, setDatePlantation] = useState('');
         const [localisation, setLocalisation] = useState('');
-        const [longitude, setLongitude] = useState('');
-        const [latitude, setLatitude] = useState('');
+        const [longitude, setLongitude] = useState(Number);
+        const [latitude, setLatitude] = useState(Number);
         const [location, setLocation] = useState(false);
+        const [dateReleve, setDateReleve] = useState(new Date())
+        const [datePlantation, setDatePlantation] = useState(new Date())
+        const [modalDatePreleve, setModalDatePreleve] = useState(false)
+        const [modalDatePlantation, setModalDatePlantation] = useState(false)
+
+
+        const formatDate = (date: Date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+
 
 
         // function to check permissions and get Location
@@ -27,7 +45,8 @@ export default function Ajouter_arbre() {
 
             Geolocation.getCurrentPosition(
                 position => {
-                    console.log(position);
+                    setLatitude(position.coords.latitude);
+                    setLongitude(position.coords.longitude);
                     setLocation(true);
 
                 },
@@ -44,7 +63,7 @@ export default function Ajouter_arbre() {
 
         const sauvegarder = () => {
 
-            fetch('/api/add_tree', {
+            fetch('${Config.API_URL}/api/add_tree', {
                 method: 'POST', headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
@@ -68,20 +87,47 @@ export default function Ajouter_arbre() {
                 <ScrollView >
                     <View style={styles.form}>
                         <Text style={styles.titrePage}>Ajouter arbre</Text>
-                        <TextInput onChangeText={setEmpNo} value={empNo} placeholder="Numéro d'employé" />
+                        <Text>Numéro employé</Text>
+                        <TextInput onChangeText={setEmpNo} value={empNo} />
+                        <Text>Adresse</Text>
                         <TextInput onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
+                        <Text>Nom latin</Text>
                         <TextInput onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
+                        <Text>Nom FR</Text>
                         <TextInput onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
+                        <Text>Nom EN</Text>
                         <TextInput onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
+                        <Text>Dimension</Text>
                         <TextInput onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
-                        <TextInput onChangeText={setDateReleve} value={dateReleve} placeholder="Date du Relevé" />
-                        <TextInput onChangeText={setDatePlantation} value={datePlantation} placeholder="Date de Plantation" />
-                        <TextInput onChangeText={setLocalisation} value={localisation} placeholder="Localisation" />
-                        <View style={styles.boutonPosition}>
-                            <Ionicons.Button name="earth" backgroundColor="green" size={32} onPress={getLocation} />
-                        </View>
-                        <TextInput onChangeText={setLongitude} value={longitude} placeholder="Longitude" keyboardType="numeric" />
-                        <TextInput onChangeText={setLatitude} value={latitude} placeholder="Latitude" keyboardType="numeric" />
+                        <Text>Date relevé
+                            <Ionicons.Button backgroundColor="green" name="calendar" onPress={() => setModalDatePreleve(true)} />
+                            <DatePicker modal open={modalDatePreleve} date={dateReleve} onConfirm={(dateReleveChoisie) => {
+                                setModalDatePreleve(false)
+                                setDateReleve(dateReleveChoisie)
+                            }}
+                                onCancel={() => {
+                                    setModalDatePreleve(false)
+                                }}
+                            /></Text>
+                        <TextInput editable={false}>{formatDate(dateReleve)}</TextInput>
+                        <Text>Date de Plantation
+                            <Ionicons.Button backgroundColor="green" name="calendar" onPress={() => setModalDatePlantation(true)} />
+                            <DatePicker modal open={modalDatePlantation} date={datePlantation} onConfirm={(datePlantationChoisie) => {
+                                setModalDatePlantation(false)
+                                setDatePlantation(datePlantationChoisie)
+                            }}
+                                onCancel={() => {
+                                    setModalDatePlantation(false)
+                                }}
+                            />
+                        </Text>
+                        <TextInput editable={false}></TextInput>
+                        <Text>Trouvez ma position
+                            <View style={styles.boutonPosition}>
+                                <Ionicons.Button name="earth" backgroundColor="green" size={32} onPress={getLocation} />
+                            </View></Text>
+                        <TextInput onChangeText={setLongitude.toString} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
+                        <TextInput onChangeText={setLatitude.toString} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
                         <ChargerPhoto />
                     </View>
                     <View style={styles.bouton}>
@@ -148,11 +194,7 @@ const styles = StyleSheet.create({
 
     form: {
         padding: 30,
-        paddingTop: 200,
         alignItems: "stretch",
-        borderWidth: 5,
-        borderColor: "green"
-
 
     },
 

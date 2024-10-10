@@ -1,4 +1,5 @@
-from flask import Flask, jsonify, request
+from datetime import datetime
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
@@ -11,23 +12,24 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize db
-metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'));
+metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'))
 db = SQLAlchemy(app, metadata=metadata)
 
 # Initialize flask-migrate
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree
+from models import Tree, AddTree
 
 
-@app.before_first_request
+@app.before_request
 def create_tables():
     db.create_all()
 
 # Routes
 @app.route('/')
 def hello_world():
+    print("Hello world")
     return  'Hi mom!'
 
 @app.route('/api/trees', methods=['GET'])
@@ -45,6 +47,45 @@ def get_trees():
             } for t in trees
         ])
 
+
+
+@app.route('/api/add_tree', methods=['POST'])
+def add_tree():
+
+    info = request.get_json()
+
+    latitude = info.get('latitude')
+    longitude = info.get('longitude')
+    date_releve = info.get('date_releve')
+
+    # Validation des coordonnees gps
+    if not (-90 <= float(latitude) <= 90):
+        abort(400, description="Latitude invalide.")
+    if not (-180 <= float(longitude) <= 180):
+        abort(400, description="Longitude invalide.")
+
+    # validation de la date
+    if not date_releve:
+        abort(400, description="La date de relevé est requise.")
+
+    try:
+        date_releve = datetime.strptime(date_releve, '%Y-%m-%d').date()
+    except ValueError:
+        abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
+
+    try:
+        new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
+        db.session.add(new_tree)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        abort(500, description="Erreur lors de l'ajout de l'arbre.")
+
+    return jsonify({
+        'latitude': new_tree.latitude,
+        'longitude': new_tree.longitude,
+        'date_releve': new_tree.date_releve
+        }), 201
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
