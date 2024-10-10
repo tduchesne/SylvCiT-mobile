@@ -55,6 +55,9 @@ export default function TreeAnalyzerCapture() {
     />
   );
 
+  // Add logic when the photo was taken and confirmed, then navigate to the
+  // next screen: router.navigate("analysis-results");
+
   return cameraPermission && galleryPermission ? (
     <CameraComponent onCapture={(photo) => console.log(photo)} />
   ) : (
