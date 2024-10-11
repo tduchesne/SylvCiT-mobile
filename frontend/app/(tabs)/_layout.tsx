@@ -45,7 +45,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="ajouter_arbre"
+        name="ajouterArbre"
         options={{
           title: "Ajouter Arbre",
           tabBarIcon: ({ color, focused }) => (
