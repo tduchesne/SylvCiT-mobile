@@ -1,8 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
 
+import json
+import google.generativeai as genai
 import os
 
 app = Flask(__name__)
@@ -20,6 +22,9 @@ migrate = Migrate(app, db)
 # Import models after db initialization
 from models import Tree
 
+API_KEY = 'AIzaSyD8wWO6ut7kROGgi_XZ_q1Nz4GPihqb67Q' # Your API key here
+
+genai.configure(api_key=API_KEY)
 
 @app.before_first_request
 def create_tables():
@@ -29,6 +34,29 @@ def create_tables():
 @app.route('/')
 def hello_world():
     return  'Hi mom!'
+
+@app.route("/api/generate", methods=["POST"])
+def generate_api():
+    if request.method == "POST":
+        if API_KEY == '':
+            return jsonify({ "error": '''
+                To get started, get an API key at
+                https://g.co/ai/idxGetGeminiKey and enter it in
+                main.py
+                '''.replace('\n', '') })
+        try:
+            req_body = request.get_json()
+            content = req_body.get("contents")
+            model = genai.GenerativeModel(model_name=req_body.get("model"))
+            response = model.generate_content(content, stream=True)
+            def stream():
+                for chunk in response:
+                    yield 'data: %s\n\n' % json.dumps({ "text": chunk.text })
+
+            return stream(), {'Content-Type': 'text/event-stream'}
+
+        except Exception as e:
+            return jsonify({ "error": str(e) })
 
 @app.route('/api/trees', methods=['GET'])
 def get_trees():
