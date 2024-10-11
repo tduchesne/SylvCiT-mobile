@@ -1,0 +1,34 @@
+name: Docker Build and Run
+
+on:
+  push:
+    branches:
+      - '**'  # Toutes les branches
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build and run Docker containers
+      run: |
+        docker-compose up --build -d
+        sleep 30  # Ajuster le temps si nécessaire
+
+    - name: Check if containers are running
+      run: |
+        if ! docker-compose ps --services --filter "status=running" | grep -q .; then
+          echo "Erreur: Tous les conteneurs ne sont pas en cours d'exécution"
+          docker-compose logs
+          exit 1
+        else
+          echo "Tous les conteneurs sont en cours d'exécution"
+          docker-compose ps
+        fi
+
+    - name: Stop containers
+      run: docker-compose down
+
