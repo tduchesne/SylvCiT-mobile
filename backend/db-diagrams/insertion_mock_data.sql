@@ -82,3 +82,7 @@ USE `inm5151_db`;
 INSERT INTO `inm5151_db`.`add_tree` (`latitude`, `longitude`, `date_releve`) VALUES ('45.72587', '-73.45703', '2021-06-05');
 
 COMMIT;
+
+# START TRANSACTION;
+# USE `inm5151_db`;
+# INSERT INTO `inm5151_db`.`tree_search` ()

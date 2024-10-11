@@ -19,7 +19,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree, AddTree
+from models import Tree, AddTree, tree_search
 
 
 @app.before_request
@@ -79,6 +79,7 @@ def add_tree():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
+        print(e)
         abort(500, description="Erreur lors de l'ajout de l'arbre.")
 
     return jsonify({
