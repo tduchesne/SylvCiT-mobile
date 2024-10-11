@@ -5,7 +5,6 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -27,6 +26,18 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "home" : "home-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="validationDonnes"
+        options={{
+          title: "Validation",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "checkmark-done" : "checkmark-done-outline"}
               color={color}
             />
           ),
@@ -69,7 +80,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-
-
   );
-}
+}  

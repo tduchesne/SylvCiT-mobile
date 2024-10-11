@@ -11,6 +11,8 @@ import "react-native-reanimated";
 import Splash from "@/components/Splash";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import AuthScreen from "@/components/AuthScreen";
+import React from 'react';
+
 
 SplashScreen.preventAutoHideAsync();
 

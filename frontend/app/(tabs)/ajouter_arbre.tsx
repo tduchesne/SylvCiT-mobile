@@ -3,7 +3,7 @@ import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, 
 import Screen from "@/components/Screen";
 import { green } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import { Colors } from "@/constants/Colors";
-
+import React from 'react';
 export default function Ajouter_arbre() {
 
     const Form_ajout_arbre = () => {

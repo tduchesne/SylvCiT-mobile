@@ -6,6 +6,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { TreeWave } from "@/components/TreeWave";
 
+
 type ScreenProps = {
   title: string;
   content: React.ReactNode;
