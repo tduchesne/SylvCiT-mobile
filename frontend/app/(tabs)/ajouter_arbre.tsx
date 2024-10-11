@@ -1,17 +1,18 @@
 import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, Text, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, Text, View, TouchableOpacity } from 'react-native';
 import DatePicker from 'react-native-date-picker'
 //npx expo install expo-image-picker
 import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Config from '../../config';
 import Screen from "@/components/Screen";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
+import { Colors } from "@/constants/Colors";
 //npm install @react-native-community/geolocation --save
 import Geolocation from '@react-native-community/geolocation';
-import { Navigator } from "expo-router";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function Ajouter_arbre() {
 
@@ -31,27 +32,34 @@ export default function Ajouter_arbre() {
         const [modalDatePreleve, setModalDatePreleve] = useState(false)
         const [modalDatePlantation, setModalDatePlantation] = useState(false)
 
+        const colorScheme = useColorScheme();
+
         const sauvegarder = () => {
 
-            fetch(`${Config.API_URL}/api/add_tree`, {
-                method: 'POST', headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    "latitude": latitude,
-                    "longitude": longitude,
-                    "date_releve": formatDate(dateReleve)
+            if (!dateReleve || !longitude || !latitude) {
+                Alert.alert("Merci de remplir tous les champs obligatoires");
+
+            } else {
+
+                fetch(`${Config.API_URL}/api/add_tree`, {
+                    method: 'POST', headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        "latitude": latitude,
+                        "longitude": longitude,
+                        "date_releve": formatDate(dateReleve)
+                    })
                 })
-            })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .then(() => Alert.alert("Informations sauvegardées"))
-                .then(nettoyerChamps)
-                .catch(remettreChamps)
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+                    .then(() => Alert.alert("Informations sauvegardées"))
+                    .then(nettoyerChamps)
+                    .catch(remettreChamps)
 
 
-
+            }
         }
 
         const trouverPosition = () => {
@@ -66,21 +74,24 @@ export default function Ajouter_arbre() {
             remplirChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, dateReleve, setDatePlantation, setLongitude, longitude, setLatitude, latitude)
         }
 
-        return (<Screen
+        return (<ThemedView style={{ flex: 1 }}><Screen
             title="Ajouter Arbre"
             content={
 
                 <SafeAreaView >
                     <ScrollView >
                         <View>
-                            <TextInput style={styles.input} onChangeText={setEmpNo} value={empNo} placeholder="Numéro employé" />
-                            <TextInput style={styles.input} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
-                            <TextInput style={styles.input} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
-                            <TextInput style={styles.input} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
-                            <TextInput style={styles.input} onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
-                            <TextInput style={styles.input} onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
-                            <Text>Date relevé
-                                <Ionicons.Button backgroundColor="green" name="calendar" onPress={() => setModalDatePreleve(true)} />
+                            <ThemedText>
+                                * Les champs en rouge sont obligatoires</ThemedText>
+
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="Numéro employé" keyboardType="numeric" />
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
+                            <ThemedText>Date relevé
+                                <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePreleve(true)} />
                                 <DatePicker modal open={modalDatePreleve} date={dateReleve} onConfirm={(dateReleveChoisie) => {
                                     setModalDatePreleve(false)
                                     setDateReleve(dateReleveChoisie)
@@ -88,10 +99,10 @@ export default function Ajouter_arbre() {
                                     onCancel={() => {
                                         setModalDatePreleve(false)
                                     }}
-                                /></Text>
-                            <TextInput style={styles.input}>{formatDate(dateReleve)}</TextInput>
-                            <Text>Date de Plantation
-                                <Ionicons.Button backgroundColor="green" name="calendar" onPress={() => setModalDatePlantation(true)} />
+                                /></ThemedText>
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{formatDate(dateReleve)}</TextInput>
+                            <ThemedText>Date de Plantation
+                                <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePlantation(true)} />
                                 <DatePicker modal open={modalDatePlantation} date={new Date()} onConfirm={(datePlantationChoisie) => {
                                     setModalDatePlantation(false)
                                     setDatePlantation(formatDate(datePlantationChoisie))
@@ -101,21 +112,21 @@ export default function Ajouter_arbre() {
                                         setModalDatePlantation(false)
                                     }}
                                 />
-                            </Text>
-                            <TextInput editable={false} placeholder="Date de plantation" style={styles.input}>{datePlantation}</TextInput>
-                            <Text>Trouvez ma position
+                            </ThemedText>
+                            <TextInput editable={false} placeholder="Date de plantation" style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{datePlantation}</TextInput>
+                            <ThemedText>Trouvez ma position
                                 <View style={styles.boutonPosition}>
-                                    <Ionicons.Button name="earth" backgroundColor="green" size={32} onPress={trouverPosition} />
-                                </View></Text>
-                            <TextInput style={styles.input} onChangeText={setLongitude} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
-                            <TextInput style={styles.input} onChangeText={setLatitude} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
+                                    <Ionicons.Button name="earth" backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} size={32} onPress={trouverPosition} />
+                                </View></ThemedText>
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setLongitude} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
+                            <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setLatitude} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
 
                         </View>
-                        <View style={styles.bouton}>
-                            <Button title="Sauvegarder" color="green" onPress={sauvegarder} />
+                        <View style={[styles.bouton]}>
+                            <Button title="Sauvegarder" color={Colors[colorScheme ?? "light"].buttonBackground} onPress={sauvegarder} />
                         </View>
                         <View style={styles.bouton}>
-                            <Button title="Annuler" color="grey" onPress={annuler} />
+                            <Button title="Annuler" color={"grey"} onPress={annuler} />
                         </View>
                     </ScrollView>
                 </SafeAreaView>
@@ -125,7 +136,7 @@ export default function Ajouter_arbre() {
                     source={require("@/assets/images/adaptive-icon.png")}
                     style={styles.treeLogo}
                 />
-            } />
+            } /></ThemedView>
         );
     }
 
@@ -237,6 +248,9 @@ const styles = StyleSheet.create({
         position: "absolute",
     },
 
+    champObligatoire: {
+        borderColor: "red"
+    },
 
     input: {
         height: 40,
