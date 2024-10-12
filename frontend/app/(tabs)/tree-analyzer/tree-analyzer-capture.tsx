@@ -24,6 +24,14 @@ export default function TreeAnalyzerCapture() {
     content = <ThemedText>Asking for permissions...</ThemedText>;
   }
 
+  const onConfirm = (photo:any)=> {
+    console.log("go to analysis");
+    console.log(photo);
+    
+    //alternative: router.push with same arguments
+    router.navigate({ pathname: "/tree-analyzer/analysis-results", params: {photo: JSON.stringify(photo)} });
+  }
+
   if (!cameraPermission || !galleryPermission) {
     content = (
       <View>
@@ -59,7 +67,7 @@ export default function TreeAnalyzerCapture() {
   // next screen: router.navigate("analysis-results");
 
   return cameraPermission && galleryPermission ? (
-    <CameraComponent onCapture={(photo) => console.log(photo)} />
+    <CameraComponent onCapture={onConfirm} />
   ) : (
     defaultScreen
   );
