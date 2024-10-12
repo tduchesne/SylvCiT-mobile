@@ -27,7 +27,6 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const onConfirm=()=>{
     console.log("go to next page");
     onCapture(photo); // photo must be sent to the parent component via the onCapture prop.
-    
   }
   const onDeny=()=>{
     console.log("take another picture");
@@ -45,12 +44,12 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
         >
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              padding: 20,
+              position: 'absolute', // Position the button container absolutely
+              bottom: '5%', // Set distance from the bottom
+              left: '50%', // Center horizontally
             }}
           >
-            <Button title="Take Picture" onPress={takePicture} />
+            <Button title="PHOTO" onPress={takePicture} color="#056122"/>
           </View>
         </CameraView>
       ) : (
@@ -72,11 +71,7 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
   },
-  buttonContainer: {
-    flex: 0.1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
 });
 
 export default CameraComponent;
