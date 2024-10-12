@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData, or_
@@ -98,20 +98,44 @@ def search_tree():
             conditions.append(column.ilike(f'%{recherche}%'))
     trees = tree_search.query.filter(or_(*conditions)).all()
 
-    return jsonify(
-        [{
-            'no_emp': ts.no_emp,
-            'arrondissement': ts.arrondissement,
-            'emplacement': ts.emplacement,
-            'essence_latin': ts.essence_latin,
-            'dhp': ts.dhp,
-            'date_releve': ts.date_releve,
-            'date_plantation': ts.date_plantation,
-            'longitude': ts.longitude,
-            'latitude': ts.latitude,
-            'inv_type': ts.inv_type
-            } for ts in trees
-        ])
+    list_tree = [tree.to_dict() for tree in trees]
+
+    return jsonify(list_tree), 200
+    #
+    # jsonify(
+    #     [{
+    #         'no_emp': ts.no_emp,
+    #         'arrondissement': ts.arrondissement,
+    #         'emplacement': ts.emplacement,
+    #         'essence_latin': ts.essence_latin,
+    #         'dhp': ts.dhp,
+    #         'date_releve': ts.date_releve,
+    #         'date_plantation': ts.date_plantation,
+    #         'longitude': ts.longitude,
+    #         'latitude': ts.latitude,
+    #         'inv_type': ts.inv_type
+    #         } for ts in trees
+    #     ])
+
+@app.route('/api/modifier_arbre/<no_emp>', methods=['POST'])
+def modifier_arbre(no_emp):
+    info = request.get_json()
+    tree = tree_search.query.get(no_emp)
+
+    if tree is None:
+        return jsonify({"message": "Arbre non-trouvé"}), 404
+
+    tree.arrondissement = info.get('arrondissement')
+    tree.emplacement = info.get('emplacement')
+    tree.essence_latin = info.get('essence_latin')
+    tree.dhp = info.get('dhp')
+    tree.date_releve = info.get('date_releve')
+    tree.date_plantation = info.get('date_plantation')
+    tree.longitude = info.get('longitude')
+    tree.latitude = info.get('latitude')
+    tree.inv_type = info.get('inv_type')
+
+    return jsonify(tree.to_dict()), 202
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')

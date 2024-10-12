@@ -23,10 +23,26 @@ class tree_search(db.Model):
     latitude = db.Column(db.Numeric(11,8), nullable=False)
     inv_type = db.Column(Enum('R', 'H', name = "inv_type_tree"), nullable=False)
 
+    def to_dict(self):
+        return {
+            'no_emp': self.no_emp,
+            'arrondissement': self.arrondissement,
+            'emplacement': self.emplacement,
+            'essence_latin': self.nom_tree.to_dict() if self.nom_tree else None,
+            'dhp': self.dhp,
+            'date_releve': self.date_releve,
+            'date_plantation': self.date_plantation,
+            'longitude': self.longitude,
+            'latitude': self.latitude,
+            'inv_type': self.inv_type
+        }
+
     __mapper_args__ = {
         "polymorphic_on": inv_type,
         "polymorphic_identity": "tree_search"
     }
+
+    nom_tree = db.relationship('nom_tree', backref='tree_search')
 
 class tree_rue(tree_search):
     __tablename__ = 'tree_rue'
@@ -42,6 +58,22 @@ class tree_rue(tree_search):
     distance_ligne_rue = db.Column(db.Float, nullable=False)
     stationnement_heure = db.Column(db.Time, nullable=False)
 
+    def to_dict(self):
+        attributes = super().to_dict()
+        attributes.update({
+            'no_civique': self.no_civique,
+            'no_rue': self.no_rue,
+            'nom_rue': self.nom_rue,
+            'cote': self.cote,
+            'localisation': self.localisation,
+            'rue_de': self.rue_de,
+            'rue_a': self.rue_a,
+            'distance_pave': self.distance_pave,
+            'distance_ligne_rue': self.distance_ligne_rue,
+            'stationnement_heure': self.stationnement_heure
+        })
+        return attributes
+
     __mapper_args__ = {
         "polymorphic_identity": "R"
     }
@@ -51,6 +83,14 @@ class tree_hors_rue(tree_search):
     no_emp = db.Column(db.Integer, db.ForeignKey('tree_search.no_emp'), primary_key=True, nullable=False)
     nom_parc = db.Column(db.String(45), nullable=False)
     nom_secteur = db.Column(db.String(45), nullable=False)
+
+    def to_dict(self):
+        attributes = super().to_dict()
+        attributes.update({
+            'nom_parc': self.nom_parc,
+            'nom_secteur': self.nom_secteur
+        })
+        return attributes
 
     __mapper_args__ = {
         "polymorphic_identity": "H"
@@ -63,3 +103,10 @@ class nom_tree(db.Model):
     essence_fr = db.Column(db.String(45), nullable=False)
     essence_en = db.Column(db.String(45), nullable=False)
 
+    def to_dict(self):
+        return {
+            'essence_latin': self.essence_latin,
+            'sigle': self.sigle,
+            'essence_fr': self.essence_fr,
+            'essence_en': self.essence_en
+        }
