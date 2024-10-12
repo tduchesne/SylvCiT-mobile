@@ -54,6 +54,16 @@ def add_tree():
 
     info = request.get_json()
 
+    no_emp = info.get('no_emp')
+    no_civique = info.get('no_civique')
+    nom_rue = info.get('nom_rue')
+    cote = info.get('cote')
+    essence_latin = info.get('essence_latin')
+    essence_fr = info.get('essence_fr')
+    essence_ang = info.get('essence_ang')
+    dhp = info.get('dhp')
+    date_plantation = info.get('date_plantation')
+
     latitude = info.get('latitude')
     longitude = info.get('longitude')
     date_releve = info.get('date_releve')
@@ -74,7 +84,20 @@ def add_tree():
         abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
 
     try:
-        new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
+        new_tree = AddTree(
+            no_emp=no_emp,
+            no_civique=no_civique,
+            nom_rue=nom_rue,
+            cote=cote,
+            essence_latin=essence_latin,
+            essence_ang=essence_ang,
+            essence_fr=essence_fr,
+            dhp=dhp,
+            date_plantation=date_plantation,
+            date_releve=date_releve,
+            latitude=latitude,
+            longitude=longitude
+        )
         db.session.add(new_tree)
         db.session.commit()
     except Exception as e:
@@ -83,9 +106,18 @@ def add_tree():
         abort(500, description="Erreur lors de l'ajout de l'arbre.")
 
     return jsonify({
+        'no_emp': new_tree.no_emp,
+        'no_civique': new_tree.no_civique,
+        'nom_rue': new_tree.nom_rue,
+        'cote': new_tree.cote,
+        'essence_latin': new_tree.essence_latin,
+        'essence_fr': new_tree.essence_fr,
+        'essence_ang': new_tree.essence_ang,
+        'dhp': new_tree.dhp,
+        'date_plantation': new_tree.date_plantation,
+        'date_releve': new_tree.date_releve,
         'latitude': new_tree.latitude,
-        'longitude': new_tree.longitude,
-        'date_releve': new_tree.date_releve
+        'longitude': new_tree.longitude
         }), 201
 
 

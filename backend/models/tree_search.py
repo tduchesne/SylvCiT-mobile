@@ -48,9 +48,8 @@ class tree_rue(tree_search):
     __tablename__ = 'tree_rue'
     no_emp = db.Column(db.Integer, db.ForeignKey('tree_search.no_emp'), primary_key=True, nullable=False)
     no_civique = db.Column(db.Integer, nullable=False)
-    no_rue = db.Column(db.Integer, nullable=False)
     nom_rue = db.Column(db.String(45), nullable=False)
-    cote = db.Column(Enum('N', 'S', 'E', 'O'), nullable=False)
+    cote = db.Column(Enum('N', 'S', 'E', 'O'), nullable=True)
     localisation = db.Column(db.String(45), nullable=False)
     rue_de= db.Column(db.String(45), nullable=False)
     rue_a = db.Column(db.String(45), nullable=False)
