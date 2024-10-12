@@ -11,6 +11,8 @@ import { Colors } from "@/constants/Colors";
 //npm install @react-native-community/geolocation --save
 import Geolocation from '@react-native-community/geolocation';
 import { ThemedText } from "@/components/ThemedText";
+import { useNavigation } from "expo-router";
+import { ThemedView } from "./ThemedView";
 
 export default function FormAjoutArbre() {
 
@@ -52,7 +54,11 @@ export default function FormAjoutArbre() {
                 .then(data => console.log(data))
                 .then(() => Alert.alert("Informations sauvegardées"))
                 .then(nettoyerChamps)
-                .catch(remettreChamps)
+                .catch(() => {
+                    Alert.alert("Erreur lors du sauvegarde des données. Merci de réessayer")
+                    remettreChamps;
+
+                })
 
 
         }
@@ -67,7 +73,12 @@ export default function FormAjoutArbre() {
     }
 
     const remettreChamps = () => {
-        remplirChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, dateReleve, setDatePlantation, setLongitude, longitude, setLatitude, latitude)
+        remplirChamps(setEmpNo, empNo, setAdresse, adresse, setEssenceFr, essenceFr, setEssenceLatin, essenceLatin, setEssenceAng, setEssenceAng, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude)
+    }
+
+    const annuler = () => {
+
+        Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui", onPress: () => nettoyerChamps() }, { text: "Non" }])
     }
 
     return (
@@ -83,7 +94,7 @@ export default function FormAjoutArbre() {
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
-                    <ThemedText style={styles.label}>Date relevé
+                    <View style={styles.labelCal}><ThemedText style={styles.label} >Date relevé</ThemedText>
                         <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePreleve(true)} />
                         <DatePicker modal open={modalDatePreleve} date={dateReleve} onConfirm={(dateReleveChoisie) => {
                             setModalDatePreleve(false)
@@ -92,29 +103,30 @@ export default function FormAjoutArbre() {
                             onCancel={() => {
                                 setModalDatePreleve(false)
                             }}
-                        /></ThemedText>
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{formatDate(dateReleve)}</TextInput>
-                    <View>
-                        <ThemedText style={styles.label}>Date de Plantation
-                            <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePlantation(true)} />
-                            <DatePicker modal open={modalDatePlantation} date={new Date()} onConfirm={(datePlantationChoisie) => {
-                                setModalDatePlantation(false)
-                                setDatePlantation(formatDate(datePlantationChoisie))
+                        />
+                    </View>
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, styles.champObligatoire]}>{formatDate(dateReleve)}</TextInput>
+                    <View style={styles.labelCal}><ThemedText style={styles.label} >Date de plantation</ThemedText>
+                        <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePlantation(true)} />
+                        <DatePicker modal open={modalDatePlantation} date={new Date()} onConfirm={(datePlantationChoisie) => {
+                            setModalDatePlantation(false)
+                            setDatePlantation(formatDate(datePlantationChoisie))
 
+                        }}
+                            onCancel={() => {
+                                setModalDatePlantation(false)
                             }}
-                                onCancel={() => {
-                                    setModalDatePlantation(false)
-                                }}
-                            />
-                        </ThemedText>
+                        />
                     </View>
                     <TextInput editable={false} placeholder="Date de plantation" style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{datePlantation}</TextInput>
-                    <ThemedText style={styles.label}>Trouvez ma position
+                    <View style={styles.labelCal}><ThemedText style={styles.label} >Trouvez ma position</ThemedText>
+
                         <View style={styles.boutonPosition}>
-                            <Ionicons.Button name="earth" backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} size={32} onPress={trouverPosition} />
-                        </View></ThemedText>
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setLongitude} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setLatitude} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
+                            <Ionicons.Button name="earth" backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} onPress={trouverPosition} />
+                        </View>
+                    </View>
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLongitude} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLatitude} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
 
                 </View>
                 <View style={[styles.bouton]}>
@@ -124,18 +136,13 @@ export default function FormAjoutArbre() {
                     <Button title="Annuler" color={"grey"} onPress={annuler} />
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </SafeAreaView >
 
 
     );
 
 }
 
-
-function annuler() {
-
-    Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui" }, { text: "Non" }])
-}
 
 
 // Fonction pour la localisation
@@ -174,19 +181,19 @@ function initialiserChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, se
 
 }
 
-function remplirChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, setEssenceLatin: any, setEssenceAng: any, setDhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any) {
+function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any, setEssenceFr: any, essenceFr: any, essenceLatin: any, setEssenceLatin: any, setEssenceAng: any, essenceAng: any, setDhp: any, dhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, datePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any) {
 
-    setEmpNo('');
-    setAdresse('');
-    setEssenceFr('');
-    setEssenceLatin('');
-    setEssenceAng('');
-    setDhp('');
+    setEmpNo(empNo);
+    setAdresse(adresse);
+    setEssenceFr(essenceFr);
+    setEssenceLatin(essenceLatin);
+    setEssenceAng(essenceAng);
+    setDhp(dhp);
     setDateReleve(dateReleve);
-    setDatePlantation('');
+    setDatePlantation(datePlantation);
     setLongitude(longitude);
     setLatitude(latitude);
-    Alert.alert("Erreur lors de la sauvegarde des informations");
+
 }
 
 
@@ -239,7 +246,15 @@ const styles = StyleSheet.create({
     },
 
     label: {
-        paddingTop: 20,
+
+        paddingRight: 10,
+
+    },
+
+    labelCal: {
+        flexDirection: "row",
+        paddingBottom: 10,
+
 
     },
 
