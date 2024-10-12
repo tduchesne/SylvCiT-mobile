@@ -133,21 +133,19 @@ def search_tree():
     list_tree = [tree.to_dict() for tree in trees]
 
     return jsonify(list_tree), 200
-    #
-    # jsonify(
-    #     [{
-    #         'no_emp': ts.no_emp,
-    #         'arrondissement': ts.arrondissement,
-    #         'emplacement': ts.emplacement,
-    #         'essence_latin': ts.essence_latin,
-    #         'dhp': ts.dhp,
-    #         'date_releve': ts.date_releve,
-    #         'date_plantation': ts.date_plantation,
-    #         'longitude': ts.longitude,
-    #         'latitude': ts.latitude,
-    #         'inv_type': ts.inv_type
-    #         } for ts in trees
-    #     ])
+
+
+@app.route('/api/delete_tree/<no_emp>', methods=['POST'])
+def delete_tree(no_emp):
+    tree = tree_search.query.get(no_emp)
+
+    if tree is None:
+        return jsonify({"message": "Arbre non-trouvable"}), 404
+
+    db.session.delete(tree)
+    db.session.commit()
+
+    return jsonify({"message": "Arbre supprimé"}), 200
 
 @app.route('/api/modifier_arbre/<no_emp>', methods=['POST'])
 def modifier_arbre(no_emp):
