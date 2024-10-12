@@ -2,7 +2,7 @@ import { useState } from "react";
 import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, } from 'react-native';
 import DatePicker from 'react-native-date-picker'
 //npx expo install expo-image-picker
-import * as ImagePicker from 'expo-image-picker';
+//import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Config from '../config';
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -26,7 +26,7 @@ export default function FormAjoutArbre() {
     const [latitude, setLatitude] = useState('');
     const [location, setLocation] = useState(false);
     const [dateReleve, setDateReleve] = useState(new Date())
-    const [datePlantation, setDatePlantation] = useState("")
+    const [datePlantation, setDatePlantation] = useState('')
     const [modalDatePreleve, setModalDatePreleve] = useState(false)
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
 
@@ -196,7 +196,7 @@ function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any,
 
 }
 
-
+/*
 const ChargerPhoto = () => {
     const [image, setImage] = useState<string | null>(null);
 
@@ -222,7 +222,7 @@ const ChargerPhoto = () => {
             {image && <Image source={{ uri: image }} style={styles.image} />}
         </View>
     );
-}
+}*/
 
 function formatDate(date: Date) {
     const year = String(date.getFullYear()).padStart(2, '0');
