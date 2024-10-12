@@ -1,23 +1,21 @@
 from app import db
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Enum
 
-Base = declarative_base()
 
-class tree_search(db.Model, Base):
+class tree_search(db.Model):
     __tablename__ = 'tree_search'
     no_emp = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
     arrondissement = db.Column(db.String(45), nullable=False)
     emplacement = db.Column(Enum("Banquette gazonnée",
-                                 "Banquette asphaltée",
+                                 "Banquette Asphaltée",
                                  "Fond de trottoir",
                                  "Parc",
-                                 "Parterre gazonné",
-                                 "Parterre asphalté",
+                                 "Parterre Gazonné",
+                                 "Parterre Asphalté",
                                  "Parterre",
                                  "Terre plein",
                                  "Trottoir entre autres", name = "emplacement_tree"), nullable=False)
-    essence_latin = db.Column(db.String(45), db.ForeignKey('nom_tree.essence_latin'), nullable=False)
+    essence_latin = db.Column(db.String(45), db.ForeignKey('nom_tree.essence_latin'), index = True, nullable=False)
     dhp = db.Column(db.Integer, nullable=False)
     date_releve = db.Column(db.Date, nullable=False)
     date_plantation = db.Column(db.Date, nullable=True)
@@ -44,10 +42,8 @@ class tree_rue(tree_search):
     distance_ligne_rue = db.Column(db.Float, nullable=False)
     stationnement_heure = db.Column(db.Time, nullable=False)
 
-    nom_tree = db.relationship('nom_tree', back_populates='tree_search')
-
     __mapper_args__ = {
-        "polymorphic_identity": "tree_rue"
+        "polymorphic_identity": "R"
     }
 
 class tree_hors_rue(tree_search):
@@ -57,5 +53,13 @@ class tree_hors_rue(tree_search):
     nom_secteur = db.Column(db.String(45), nullable=False)
 
     __mapper_args__ = {
-        "polymorphic_identity": "tree_hors_rue"
+        "polymorphic_identity": "H"
     }
+
+class nom_tree(db.Model):
+    __tablename__ = 'nom_tree'
+    essence_latin = db.Column(db.String(45), primary_key=True,nullable=False)
+    sigle = db.Column(db.String(45), nullable=False)
+    essence_fr = db.Column(db.String(45), nullable=False)
+    essence_en = db.Column(db.String(45), nullable=False)
+

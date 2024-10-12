@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, or_
 
 import os
 
@@ -87,6 +87,31 @@ def add_tree():
         'longitude': new_tree.longitude,
         'date_releve': new_tree.date_releve
         }), 201
+
+
+@app.route('/api/search_tree', methods=['GET'])
+def search_tree():
+    recherche = request.json.get('recherche')
+    conditions = []
+    for column in tree_search.__table__.columns :
+        if isinstance(column.type, db.String):
+            conditions.append(column.ilike(f'%{recherche}%'))
+    trees = tree_search.query.filter(or_(*conditions)).all()
+
+    return jsonify(
+        [{
+            'no_emp': ts.no_emp,
+            'arrondissement': ts.arrondissement,
+            'emplacement': ts.emplacement,
+            'essence_latin': ts.essence_latin,
+            'dhp': ts.dhp,
+            'date_releve': ts.date_releve,
+            'date_plantation': ts.date_plantation,
+            'longitude': ts.longitude,
+            'latitude': ts.latitude,
+            'inv_type': ts.inv_type
+            } for ts in trees
+        ])
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')

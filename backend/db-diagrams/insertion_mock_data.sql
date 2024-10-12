@@ -83,6 +83,14 @@ INSERT INTO `inm5151_db`.`add_tree` (`latitude`, `longitude`, `date_releve`) VAL
 
 COMMIT;
 
-# START TRANSACTION;
-# USE `inm5151_db`;
-# INSERT INTO `inm5151_db`.`tree_search` ()
+START TRANSACTION;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`nom_tree` (`essence_latin`, `sigle`, `essence_fr`,`essence_en`) VALUES ('Ulmus wilsoniana Prospector', 'ULWIPR', 'Orme japonais du prospecteur','Prospector\'s Elm');
+
+COMMIT ;
+
+START TRANSACTION;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`tree_search` (`no_emp`, `arrondissement`,`emplacement`, `essence_latin`, `dhp`, `date_releve`, `date_plantation`, `longitude`, `latitude`, `inv_type`) VALUES (31708, 6, 'Parterre Gazonné', 'Ulmus wilsoniana Prospector', '22', '2024-04-15', '2010-10-12', '-73.568412', '45.508639', 'H');
+
+COMMIT;
