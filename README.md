@@ -35,24 +35,7 @@ cd inm5151-inm5151-a2024-sylvcit.git
 docker-compose exec backend flask db upgrade
 ```
 
-4. Vérifiez l'installation de Docker :
-
-```shell
-docker --version
-docker-compose --version
-```
-
-## Configuration
-
-1. Créez un compte sur [Expo](https://expo.dev) si ce n'est pas déjà fait.
-
-2. Générez un token Expo en suivant les instructions dans le [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile).
-
-3. Dans le dossier racine du projet, créez un fichier `.env` et ajoutez votre token Expo :
-
-```shell
-EXPO_TOKEN=votre_token_ici
-```
+4. Configurez Expo Go pour tester l'application sur votre téléphone en suivant les instructions dans la [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile)
 
 ## Utilisation
 
@@ -62,13 +45,7 @@ EXPO_TOKEN=votre_token_ici
 docker-compose up --build
 ```
 
-2. Dans un nouveau terminal, démarrez l'application Expo depuis le répertoire */frontend*:
-
-```shell
-npx expo start
-```
-
-3. Sur votre téléphone, suivez les instructions dans le [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile) pour installer et utiliser l'application Expo Go.
+2. Sur votre téléphone, suivez les instructions dans le [Wiki Expo Go](https://github.com/joe-from-mtl/inm5151-a2024-sylvcit/wiki/Utilisation-d'Expo-Go-pour-accéder-à-l'application-SylvCiT-Mobile) pour installer et utiliser l'application Expo Go.
 
 L'application utilise les ports suivants par défaut:
 
@@ -78,7 +55,6 @@ L'application utilise les ports suivants par défaut:
 Assurez-vous que ces ports sont disponibles sur votre machine avant de lancer l'application.
 
 ## Développement
-
 
 Les changements dans le code seront automatiquement reflétés dans le conteneur Docker grâce au montage de volume. Si Flask ne détecte pas les changements, redémarrez le conteneur avec `docker-compose restart`. Pour arrêter les conteneurs, utilisez `docker-compose down`.
 
