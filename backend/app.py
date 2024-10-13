@@ -68,7 +68,7 @@ def add_tree():
 
     dhp = info.get('dhp')
 
-    if dhp == "":
+    if dhp == "" or not isinstance(dhp, int):
         dhp = None
 
     date_plantation = info.get('date_plantation')
