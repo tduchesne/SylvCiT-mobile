@@ -9,7 +9,7 @@ import Config from '../config';
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 import { Colors } from "@/constants/Colors";
-//npm install @react-native-community/geolocation --save
+//npm install @react-native-community/geolocation --savea
 import Geolocation from '@react-native-community/geolocation';
 import { ThemedText } from "@/components/ThemedText";
 
@@ -44,6 +44,14 @@ export default function FormAjoutArbre() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    "no_emp": empNo,
+                    "adresse": adresse,
+                    "essence_latin": essenceLatin,
+                    "essence_fr": essenceFr,
+                    "essence_ang": essenceAng,
+                    "dhp": dhp,
+                    "date_plantation": datePlantation,
+
                     "latitude": latitude,
                     "longitude": longitude,
                     "date_releve": formatDate(dateReleve)

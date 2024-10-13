@@ -1,8 +1,8 @@
 from datetime import datetime
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, or_
 
 import os
 
@@ -19,7 +19,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree, AddTree
+from models import Tree, AddTree, tree_search
 
 
 @app.before_request
@@ -54,6 +54,16 @@ def add_tree():
 
     info = request.get_json()
 
+    no_emp = info.get('no_emp')
+    no_civique = info.get('no_civique')
+    nom_rue = info.get('nom_rue')
+    cote = info.get('cote')
+    essence_latin = info.get('essence_latin')
+    essence_fr = info.get('essence_fr')
+    essence_ang = info.get('essence_ang')
+    dhp = info.get('dhp')
+    date_plantation = info.get('date_plantation')
+
     latitude = info.get('latitude')
     longitude = info.get('longitude')
     date_releve = info.get('date_releve')
@@ -74,18 +84,88 @@ def add_tree():
         abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
 
     try:
-        new_tree = AddTree(latitude=latitude, longitude=longitude, date_releve=date_releve)
+        new_tree = AddTree(
+            no_emp=no_emp,
+            no_civique=no_civique,
+            nom_rue=nom_rue,
+            cote=cote,
+            essence_latin=essence_latin,
+            essence_ang=essence_ang,
+            essence_fr=essence_fr,
+            dhp=dhp,
+            date_plantation=date_plantation,
+            date_releve=date_releve,
+            latitude=latitude,
+            longitude=longitude
+        )
         db.session.add(new_tree)
         db.session.commit()
     except Exception as e:
         db.session.rollback()
+        print(e)
         abort(500, description="Erreur lors de l'ajout de l'arbre.")
 
     return jsonify({
+        'no_emp': new_tree.no_emp,
+        'no_civique': new_tree.no_civique,
+        'nom_rue': new_tree.nom_rue,
+        'cote': new_tree.cote,
+        'essence_latin': new_tree.essence_latin,
+        'essence_fr': new_tree.essence_fr,
+        'essence_ang': new_tree.essence_ang,
+        'dhp': new_tree.dhp,
+        'date_plantation': new_tree.date_plantation,
+        'date_releve': new_tree.date_releve,
         'latitude': new_tree.latitude,
-        'longitude': new_tree.longitude,
-        'date_releve': new_tree.date_releve
+        'longitude': new_tree.longitude
         }), 201
+
+
+@app.route('/api/search_tree', methods=['GET'])
+def search_tree():
+    recherche = request.json.get('recherche')
+    conditions = []
+    for column in tree_search.__table__.columns :
+        if isinstance(column.type, db.String):
+            conditions.append(column.ilike(f'%{recherche}%'))
+    trees = tree_search.query.filter(or_(*conditions)).all()
+
+    list_tree = [tree.to_dict() for tree in trees]
+
+    return jsonify(list_tree), 200
+
+
+@app.route('/api/delete_tree/<no_emp>', methods=['POST'])
+def delete_tree(no_emp):
+    tree = tree_search.query.get(no_emp)
+
+    if tree is None:
+        return jsonify({"message": "Arbre non-trouvable"}), 404
+
+    db.session.delete(tree)
+    db.session.commit()
+
+    return jsonify({"message": "Arbre supprimé"}), 200
+
+@app.route('/api/modifier_arbre/<no_emp>', methods=['POST'])
+def modifier_arbre(no_emp):
+    info = request.get_json()
+    tree = tree_search.query.get(no_emp)
+
+    if tree is None:
+        return jsonify({"message": "Arbre non-trouvé"}), 404
+
+    tree.arrondissement = info.get('arrondissement')
+    tree.emplacement = info.get('emplacement')
+    tree.essence_latin = info.get('essence_latin')
+    tree.dhp = info.get('dhp')
+    tree.date_releve = info.get('date_releve')
+    tree.date_plantation = info.get('date_plantation')
+    tree.longitude = info.get('longitude')
+    tree.latitude = info.get('latitude')
+    tree.inv_type = info.get('inv_type')
+
+    return jsonify(tree.to_dict()), 202
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
