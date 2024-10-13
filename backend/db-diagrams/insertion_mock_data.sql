@@ -79,7 +79,7 @@ COMMIT;
 
 START TRANSACTION;
 USE `inm5151_db`;
-INSERT INTO `inm5151_db`.`add_tree` (`no_emp`, `no_civique`, `nom_rue`, `cote`,`essence_latin`,  `essence_fr`, `essence_ang`, `dhp`, `date_plantation`, `date_releve`,`longitude`, `latitude` ) VALUES ('258029', 2044, 'Rue Jeanne-Mance','O','Quercus rubra','Chêne rouge','Red Oak',5,'2016-10-12','2016-10-12','-73.569292', '45.50855');
+INSERT INTO `inm5151_db`.`add_tree` (`no_emp`,`adresse`,`essence_latin`,  `essence_fr`, `essence_ang`, `dhp`, `date_plantation`, `date_releve`,`longitude`, `latitude` ) VALUES (1,'','','','',1,'2016-10-12','2016-10-12','-73.569292', '45.50855');
 
 COMMIT;
 

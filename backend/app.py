@@ -55,12 +55,26 @@ def add_tree():
     info = request.get_json()
 
     no_emp = info.get('no_emp')
+    if no_emp == "":
+        no_emp = None
+
     adresse = info.get('adresse')
+
     essence_latin = info.get('essence_latin')
+
     essence_fr = info.get('essence_fr')
+
     essence_ang = info.get('essence_ang')
+
     dhp = info.get('dhp')
+
+    if dhp == "":
+        dhp = None
+
     date_plantation = info.get('date_plantation')
+
+    if date_plantation == "":
+        date_plantation = None
 
     latitude = info.get('latitude')
     longitude = info.get('longitude')
