@@ -11,7 +11,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "./ThemedText";
-import { useAuth } from "../context/AuthContext";
 
 export default function AuthScreen({
   onPressLogin,
@@ -24,7 +23,6 @@ export default function AuthScreen({
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const { setRole } = useAuth();
 
   const login = async () => {
     try {
@@ -44,7 +42,6 @@ export default function AuthScreen({
       if (response.ok) {
         const data = await response.json();
         setErrorMessage("");
-        setRole(data.role);
         onPressLogin(data.role);
       } else {
         setErrorMessage("Mauvais nom d'utilisateur ou mot de passe");

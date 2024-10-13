@@ -11,6 +11,7 @@ import "react-native-reanimated";
 import Splash from "@/components/Splash";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import AuthScreen from "@/components/AuthScreen";
+import { setUserRole } from "@/constants/Role";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,7 +23,7 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const [isSplashScreenShown, setIsSplashScreenShown] = useState(true);
-  const [userRole, setUserRole] = useState(-1);
+  const [role, setRole] = useState(-1);
 
   useEffect(() => {
     setTimeout(() => {
@@ -37,21 +38,24 @@ export default function RootLayout() {
   }, [loaded]);
 
   const handleLogin = (role: number) => {
+    setRole(role);
     setUserRole(role);
+  };
+
+  const handleVisitor = () => {
+    setRole(0);
+    setUserRole(0);
   };
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {userRole >= 0 ? (
+      {role >= 0 ? (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       ) : (
-        <AuthScreen
-          onPressLogin={handleLogin}
-          onPressVisitor={() => setUserRole(0)}
-        />
+        <AuthScreen onPressLogin={handleLogin} onPressVisitor={handleVisitor} />
       )}
       {isSplashScreenShown ? <Splash /> : null}
     </ThemeProvider>
