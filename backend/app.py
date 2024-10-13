@@ -19,7 +19,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree, AddTree, tree_search
+from models import AddTree, tree_search
 
 
 @app.before_request
@@ -32,20 +32,20 @@ def hello_world():
     print("Hello world")
     return  'Hi mom!'
 
-@app.route('/api/trees', methods=['GET'])
-def get_trees():
-    trees = Tree.query.all()
-    return jsonify(
-        [{
-            'id_tree': t.id_tree, 
-            'date_plantation': t.date_plantation, 
-            'id_family': t.id_family, 
-            'id_functional_group': t.id_functional_group, 
-            'id_genre': t.id_genre, 
-            'id_location': t.id_location, 
-            'id_type': t.id_type
-            } for t in trees
-        ])
+# @app.route('/api/trees', methods=['GET'])
+# def get_trees():
+#     trees = Tree.query.all()
+#     return jsonify(
+#         [{
+#             'id_tree': t.id_tree,
+#             'date_plantation': t.date_plantation,
+#             'id_family': t.id_family,
+#             'id_functional_group': t.id_functional_group,
+#             'id_genre': t.id_genre,
+#             'id_location': t.id_location,
+#             'id_type': t.id_type
+#             } for t in trees
+#         ])
 
 
 
@@ -73,7 +73,7 @@ def add_tree():
 
     date_plantation = info.get('date_plantation')
 
-    if date_plantation == "":
+    if date_plantation == "" or not isinstance(date_plantation, datetime):
         date_plantation = None
 
     latitude = info.get('latitude')
