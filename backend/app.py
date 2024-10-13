@@ -55,9 +55,7 @@ def add_tree():
     info = request.get_json()
 
     no_emp = info.get('no_emp')
-    no_civique = info.get('no_civique')
-    nom_rue = info.get('nom_rue')
-    cote = info.get('cote')
+    adresse = info.get('adresse')
     essence_latin = info.get('essence_latin')
     essence_fr = info.get('essence_fr')
     essence_ang = info.get('essence_ang')
@@ -86,9 +84,7 @@ def add_tree():
     try:
         new_tree = AddTree(
             no_emp=no_emp,
-            no_civique=no_civique,
-            nom_rue=nom_rue,
-            cote=cote,
+            adresse=adresse,
             essence_latin=essence_latin,
             essence_ang=essence_ang,
             essence_fr=essence_fr,
@@ -107,9 +103,7 @@ def add_tree():
 
     return jsonify({
         'no_emp': new_tree.no_emp,
-        'no_civique': new_tree.no_civique,
-        'nom_rue': new_tree.nom_rue,
-        'cote': new_tree.cote,
+        'adresse': new_tree.adresse,
         'essence_latin': new_tree.essence_latin,
         'essence_fr': new_tree.essence_fr,
         'essence_ang': new_tree.essence_ang,
