@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, } from 'react-native';
-//npm install react-native-date-picker
-import DatePicker from 'react-native-date-picker'
+import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, Modal, } from 'react-native';
+//npx expo install @react-native-community/datetimepicker
+import DateTimePicker from '@react-native-community/datetimepicker';
 //npx expo install expo-image-picker
 //import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -88,6 +88,16 @@ export default function FormAjoutArbre() {
         Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui", onPress: () => nettoyerChamps() }, { text: "Non" }])
     }
 
+    const choisirDateReleve = (event: any, dateReleveChoisie: any) => {
+        setModalDatePreleve(false)
+        setDateReleve(dateReleveChoisie)
+    }
+
+    const choisirDatePlantation = (event: any, dateRelevePlantation: any) => {
+        setModalDatePlantation(false)
+        setDatePlantation(formatDate(dateRelevePlantation))
+    }
+
     return (
         <SafeAreaView >
             <ScrollView >
@@ -103,27 +113,13 @@ export default function FormAjoutArbre() {
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
                     <View style={styles.labelCal}><ThemedText style={styles.label} >Date relevé</ThemedText>
                         <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePreleve(true)} />
-                        <DatePicker modal open={modalDatePreleve} date={dateReleve} onConfirm={(dateReleveChoisie) => {
-                            setModalDatePreleve(false)
-                            setDateReleve(dateReleveChoisie)
-                        }}
-                            onCancel={() => {
-                                setModalDatePreleve(false)
-                            }}
-                        />
+                        {modalDatePreleve && <DateTimePicker value={dateReleve} mode={"date"} onChange={choisirDateReleve}
+                        />}
                     </View>
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, styles.champObligatoire]}>{formatDate(dateReleve)}</TextInput>
                     <View style={styles.labelCal}><ThemedText style={styles.label} >Date de plantation</ThemedText>
                         <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePlantation(true)} />
-                        <DatePicker modal open={modalDatePlantation} date={new Date()} onConfirm={(datePlantationChoisie) => {
-                            setModalDatePlantation(false)
-                            setDatePlantation(formatDate(datePlantationChoisie))
-
-                        }}
-                            onCancel={() => {
-                                setModalDatePlantation(false)
-                            }}
-                        />
+                        {modalDatePlantation && <DateTimePicker value={new Date()} mode={"date"} onChange={choisirDatePlantation} />}
                     </View>
                     <TextInput editable={false} placeholder="Date de plantation" style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{datePlantation}</TextInput>
                     <View style={styles.labelCal}><ThemedText style={styles.label} >Trouvez ma position</ThemedText>
