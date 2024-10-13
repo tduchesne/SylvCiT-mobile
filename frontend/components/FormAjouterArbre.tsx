@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, Modal, } from 'react-native';
+import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, } from 'react-native';
 //npx expo install @react-native-community/datetimepicker
 import DateTimePicker from '@react-native-community/datetimepicker';
 //npx expo install expo-image-picker
@@ -33,7 +33,7 @@ export default function FormAjoutArbre() {
 
     const sauvegarder = () => {
 
-        if (!dateReleve || !longitude || !latitude) {
+        if (!empNo || !dateReleve || !longitude || !latitude) {
             Alert.alert("Merci de remplir tous les champs obligatoires");
 
         } else {
@@ -105,7 +105,7 @@ export default function FormAjoutArbre() {
                     <ThemedText>
                         * Les champs en rouge sont obligatoires</ThemedText>
 
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="Numéro employé" keyboardType="numeric" />
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, styles.champObligatoire]} onChangeText={setEmpNo} value={empNo} placeholder="Numéro employé" keyboardType="numeric" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
