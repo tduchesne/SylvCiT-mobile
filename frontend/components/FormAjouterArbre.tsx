@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, } from 'react-native';
+//npm install react-native-date-picker
 import DatePicker from 'react-native-date-picker'
 //npx expo install expo-image-picker
 //import * as ImagePicker from 'expo-image-picker';
@@ -11,8 +12,6 @@ import { Colors } from "@/constants/Colors";
 //npm install @react-native-community/geolocation --save
 import Geolocation from '@react-native-community/geolocation';
 import { ThemedText } from "@/components/ThemedText";
-import { useNavigation } from "expo-router";
-import { ThemedView } from "./ThemedView";
 
 export default function FormAjoutArbre() {
 
@@ -73,7 +72,7 @@ export default function FormAjoutArbre() {
     }
 
     const remettreChamps = () => {
-        remplirChamps(setEmpNo, empNo, setAdresse, adresse, setEssenceFr, essenceFr, setEssenceLatin, essenceLatin, setEssenceAng, setEssenceAng, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude)
+        remplirChamps(setEmpNo, empNo, setAdresse, adresse, setEssenceFr, essenceFr, setEssenceLatin, essenceLatin, setEssenceAng, essenceLatin, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude)
     }
 
     const annuler = () => {
@@ -181,7 +180,7 @@ function initialiserChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, se
 
 }
 
-function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any, setEssenceFr: any, essenceFr: any, essenceLatin: any, setEssenceLatin: any, setEssenceAng: any, essenceAng: any, setDhp: any, dhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, datePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any) {
+function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any, setEssenceFr: any, essenceFr: any, setEssenceLatin: any, essenceLatin: any, setEssenceAng: any, essenceAng: any, setDhp: any, dhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, datePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any) {
 
     setEmpNo(empNo);
     setAdresse(adresse);
