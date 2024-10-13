@@ -8,7 +8,7 @@ export default function TabTwoScreen() {
     <Screen
       title="Account"
       content={
-        userRole === 1 ? (
+        userRole >= 1 ? (
           // cette partie est a modifier pour controler l'interieur de la page.
           <ThemedText>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Non tenetur
