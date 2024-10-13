@@ -14,7 +14,6 @@ type TreeData = {
   imageUrl: string;
 };
 
-
 const mockDatabase: TreeData[] = [
   {
     id: 1,
@@ -42,7 +41,7 @@ const mockDatabase: TreeData[] = [
 
 export default function ValidationScreen() {
   const [treeData, setTreeData] = useState<TreeData | null>(null);
-  const colorScheme = useColorScheme(); 
+  const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
 
   useEffect(() => {
@@ -85,24 +84,30 @@ export default function ValidationScreen() {
               </View>
             )}
             <View style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>
-                Famille: <Text style={styles.infoValue}>{treeData?.family}</Text>
-              </Text>
-              <Text style={styles.infoLabel}>
-                Genre: <Text style={styles.infoValue}>{treeData?.genus}</Text>
-              </Text>
-              <Text style={styles.infoLabel}>
-                Date de plantation: <Text style={styles.infoValue}>{treeData?.plantingDate}</Text>
-              </Text>
-              <Text style={styles.infoLabel}>
-                Espèce (EN): <Text style={styles.infoValue}>{treeData?.speciesEN}</Text>
-              </Text>
-              <Text style={styles.infoLabel}>
-                Espèce (FR): <Text style={styles.infoValue}>{treeData?.speciesFR}</Text>
-              </Text>
-              <Text style={styles.infoLabel}>
-                Espèce (LA): <Text style={styles.infoValue}>{treeData?.speciesLA}</Text>
-              </Text>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Famille:</Text>
+                <Text style={styles.infoValue}>{treeData?.family}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Genre:</Text>
+                <Text style={styles.infoValue}>{treeData?.genus}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Date de plantation:</Text>
+                <Text style={styles.infoValue}>{treeData?.plantingDate}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (EN):</Text>
+                <Text style={styles.infoValue}>{treeData?.speciesEN}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (FR):</Text>
+                <Text style={styles.infoValue}>{treeData?.speciesFR}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (LA):</Text>
+                <Text style={styles.infoValue}>{treeData?.speciesLA}</Text>
+              </View>
             </View>
           </ScrollView>
         }
@@ -113,28 +118,27 @@ export default function ValidationScreen() {
           />
         }
       />
-      
       <View style={[styles.fixedButtonContainer, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}>
         <TouchableOpacity
-          style={[styles.modifyButton, { backgroundColor: isDarkMode ? '#8b0000' : '#c62828' }]}
+          style={[styles.modifyButton, styles.buttonOutline, { borderColor: isDarkMode ? '#8b0000' : '#c62828' }]}
           onPress={handleModify}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Modifier</Text>
+          <Text style={[styles.buttonText, { color: isDarkMode ? '#8b0000' : '#c62828' }]}>Modifier</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.skipButton, { backgroundColor: isDarkMode ? '#ffd700' : '#fdd835' }]}
+          style={[styles.skipButton, styles.buttonOutline, { borderColor: isDarkMode ? '#ffd700' : '#fdd835' }]}
           onPress={handleSkip}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Sauter</Text>
+          <Text style={[styles.buttonText, { color: isDarkMode ? '#ffd700' : '#fdd835' }]}>Sauter</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.validateButton, { backgroundColor: isDarkMode ? '#006400' : '#2e7d32' }]}
+          style={[styles.validateButton, styles.buttonOutline, { borderColor: isDarkMode ? '#006400' : '#2e7d32' }]}
           onPress={handleValidate}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Valider</Text>
+          <Text style={[styles.buttonText, { color: isDarkMode ? '#006400' : '#2e7d32' }]}>Valider</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -152,7 +156,7 @@ const styles = StyleSheet.create({
   treeImage: {
     height: 200,
     width: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
     borderRadius: 10,
     marginBottom: 16,
   },
@@ -170,15 +174,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   infoContainer: {
-    padding: 16,
+    width: '100%',
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+    alignSelf: 'stretch',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    width: '100%',
   },
   infoLabel: {
     fontSize: 14,
-    marginBottom: 4,
+    flex: 1,
+    textAlign: 'left',
   },
   infoValue: {
-    color: 'green',
     fontSize: 14,
+    color: 'green',
+    flex: 1,
+    textAlign: 'right',
   },
   fixedButtonContainer: {
     borderRadius: 10,
@@ -191,6 +207,10 @@ const styles = StyleSheet.create({
     bottom: 16,
     left: 0,
     right: 0,
+  },
+  buttonOutline: {
+    borderWidth: 2,
+    backgroundColor: 'transparent',
   },
   modifyButton: {
     paddingVertical: 10,
@@ -211,7 +231,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
