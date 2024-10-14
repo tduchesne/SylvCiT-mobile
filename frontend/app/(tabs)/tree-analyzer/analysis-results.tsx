@@ -79,7 +79,6 @@ export async function* streamGemini({
   let response = await fetch("http://localhost:5001/api/generate", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    mode: "no-cors",
     body: JSON.stringify({ model, contents })
   });
 
@@ -106,7 +105,7 @@ export default function AnalyseResults() {
               {
                 role: 'user',
                 parts: [
-                  { inline_data: { mime_type: 'image/jfif', data: imageBase64 } },
+                  { inline_data: { mime_type: 'image/png', data: imageBase64 } },
                   { text: 'Provide the name of the species in latin, the family, and the genre of the tree in the image in JSON format.' }
                 ]
               }

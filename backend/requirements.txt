@@ -10,3 +10,5 @@ cryptography==41.0.3
 
 google-generativeai 
 Pillow
+
+flask-cors==3.0.10

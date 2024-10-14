@@ -2,12 +2,14 @@ from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
+from flask_cors import CORS
 
 import json
 import google.generativeai as genai
 import os
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:8081"]) 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DATABASE')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
