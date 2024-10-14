@@ -5,8 +5,10 @@ import { ThemedView } from "@/components/ThemedView";
 import { Image, StyleSheet } from 'react-native';
 
 
+//////////////////////////////////
+//Page seulement pour tester la fonctionalité ajout arbre. Pas pour la prod!!!!!!!
+//////////////////////////////
 
-//Page pour test seulement pour le sprint. Pas pour la prod
 export default function ListeArbre() {
 
     return (

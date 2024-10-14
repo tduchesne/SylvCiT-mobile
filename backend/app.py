@@ -34,17 +34,22 @@ def hello_world():
 
 @app.route('/api/trees', methods=['GET'])
 def get_trees():
-    trees = Tree.query.all()
+    trees = AddTree.query.all()
+
     return jsonify(
         [{
-            'id_tree': t.id_tree, 
-            'date_plantation': t.date_plantation, 
-            'id_family': t.id_family, 
-            'id_functional_group': t.id_functional_group, 
-            'id_genre': t.id_genre, 
-            'id_location': t.id_location, 
-            'id_type': t.id_type
-            } for t in trees
+        'id': new_tree.id,
+        'no_emp': new_tree.no_emp,
+        'adresse': new_tree.adresse,
+        'essence_latin': new_tree.essence_latin,
+        'essence_fr': new_tree.essence_fr,
+        'essence_ang': new_tree.essence_ang,
+        'dhp': new_tree.dhp,
+        'date_plantation': new_tree.date_plantation,
+        'date_releve': new_tree.date_releve,
+        'latitude': new_tree.latitude,
+        'longitude': new_tree.longitude
+            } for new_tree in trees
         ])
 
 

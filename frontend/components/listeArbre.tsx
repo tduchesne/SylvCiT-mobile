@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 interface Tree {
+    id: number;
     no_emp: number;
     adresse: string;
     essence_latin: string;
@@ -89,20 +90,22 @@ const TreeList = () => {
 
     return (
         <SafeAreaView>
+            <View style={styles.contain}>
 
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Liste des arbres</Text>
-                <Text style={styles.headerText}>Nombre d'arbres : {trees.length}</Text>
+                <View style={styles.header}>
+                    <Text style={styles.headerText}>Liste des arbres</Text>
+                    <Text style={styles.headerText}>Nombre d'arbres : {trees.length}</Text>
+                </View>
+
+                <Button title="Refresh" onPress={rafrai} color={"green"} />
+
+
+                <FlatList
+                    data={trees}
+                    renderItem={renderRow}
+                    keyExtractor={(item) => item.id.toString()}
+                />
             </View>
-
-            <Button title="Refresh" onPress={rafrai} />
-
-
-            <FlatList
-                data={trees}
-                renderItem={renderRow}
-                keyExtractor={(item) => item.no_emp.toString()}
-            />
         </SafeAreaView>
     );
 };
@@ -113,6 +116,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: '#ddd',
         backgroundColor: '#f8f8f8',
+    },
+
+    contain: {
+        paddingBottom: 200
     },
     row: {
         paddingVertical: 10,
