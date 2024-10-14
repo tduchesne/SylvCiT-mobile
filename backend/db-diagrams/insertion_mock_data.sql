@@ -76,3 +76,27 @@ INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url
 INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`) VALUES ('2017-10-12', '2023-01-11', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4705', 2, 3, 3, 4, 3);
 
 COMMIT;
+
+START TRANSACTION;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`add_tree` (`no_emp`,`adresse`,`essence_latin`,  `essence_fr`, `essence_ang`, `dhp`, `date_plantation`, `date_releve`,`longitude`, `latitude` ) VALUES (1,'','','','',1,'2016-10-12','2016-10-12','-73.569292', '45.50855');
+
+COMMIT;
+
+START TRANSACTION;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`nom_tree` (`essence_latin`, `sigle`, `essence_fr`,`essence_en`) VALUES ('Ulmus wilsoniana Prospector', 'ULWIPR', 'Orme japonais du prospecteur','Prospector\'s Elm');
+
+COMMIT ;
+
+START TRANSACTION;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`tree_search` (`no_emp`, `arrondissement`,`emplacement`, `essence_latin`, `dhp`, `date_releve`, `date_plantation`, `longitude`, `latitude`, `inv_type`) VALUES (31708, 6, 'Parterre Gazonné', 'Ulmus wilsoniana Prospector', '22', '2024-04-15', '2010-10-12', '-73.568412', '45.508639', 'H');
+
+COMMIT;
+
+START TRANSACTION ;
+USE `inm5151_db`;
+INSERT INTO `inm5151_db`.`tree_hors_rue`(no_emp, nom_parc, nom_secteur) VALUES (31708, 'PROMENADE DES ARTISTES', 'OUEST');
+
+COMMIT;
