@@ -9,11 +9,17 @@ export default function RechercheArbre() {
   const [trees, setTrees] = useState<any[]>([]);
 
   const searchTrees = () => {
-    // Envoie une requête à l'API Flask (ajuste l'URL si besoin)
-    fetch(`http://localhost:5000/search-trees?term=${searchTerm}`)
+    // Envoie une requête à l'API Flask
+    fetch(`http://192.168.0.19:5001/search-trees?term=${searchTerm}`)
       .then((response) => response.json())
       .then((data) => setTrees(data))
       .catch((error) => console.error("Erreur lors de la recherche", error));
+  };
+
+  // Fonction pour formater la date en UTC sans l'heure et sans "GMT"
+  const formatDateToUTC = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];  // Retourne uniquement la partie "YYYY-MM-DD"
   };
 
   return (
@@ -30,22 +36,25 @@ export default function RechercheArbre() {
           {/* Champ de recherche */}
           <TextInput
             style={styles.input}
-            placeholder="Entrez un nom d'arbre..."
+            placeholder="Entrez un genre d'arbre..."
             value={searchTerm}
             onChangeText={setSearchTerm}
           />
           {/* Bouton de recherche */}
           <Button title="Rechercher" onPress={searchTrees} />
-          
+
           {/* Liste des résultats */}
           {trees.length > 0 && (
-            <View style={styles.listContainer}>
-              <FlatList
-                data={trees}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <Text style={styles.treeItem}>{item.name}</Text>}
-              />
-            </View>
+            <FlatList
+              data={trees}
+              keyExtractor={(item) => item.id_tree.toString()}
+              renderItem={({ item }) => (
+                <ThemedView style={styles.treeItem}>
+                  <Text>Genre: {item.name}</Text>
+                  <Text>Date de plantation: {formatDateToUTC(item.date_plantation)}</Text>
+                </ThemedView>
+              )}
+            />
           )}
         </ThemedView>
       }
@@ -77,9 +86,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 36,
     position: "absolute",
-  },
-  listContainer: {
-    marginTop: 20,
-    width: '100%',
   },
 });

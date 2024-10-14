@@ -20,6 +20,7 @@ migrate = Migrate(app, db)
 # Import models after db initialization
 from models import Tree
 
+from models import Tree, Genre
 
 @app.before_first_request
 def create_tables():
@@ -44,6 +45,31 @@ def get_trees():
             'id_type': t.id_type
             } for t in trees
         ])
+
+
+@app.route('/search-trees', methods=['GET'])
+def search_trees():
+    # Récupérer le terme de recherche depuis les paramètres de la requête
+    search_term = request.args.get('term', '')
+
+    # Rechercher les arbres qui correspondent au terme de recherche par genre
+    trees = (db.session.query(Tree, Genre)
+             .join(Genre, Tree.id_genre == Genre.id_genre)
+             .filter(Genre.name.like(f"%{search_term}%"))
+             .all())
+
+    # Retourner les résultats au format JSON avec des informations sur le genre
+    return jsonify(
+        [{
+            'id_tree': tree.id_tree,
+            'name': genre.name,  # Utilise le nom du genre dans la table genre
+            'date_plantation': tree.date_plantation,
+            'id_family': tree.id_family,
+            'id_functional_group': tree.id_functional_group,
+            'id_location': tree.id_location,
+            'id_type': tree.id_type
+        } for tree, genre in trees]
+    )
 
 
 if __name__== '__main__':
