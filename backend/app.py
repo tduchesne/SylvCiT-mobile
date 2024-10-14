@@ -46,16 +46,20 @@ def generate_api():
                 '''.replace('\n', '') })
         try:
             req_body = request.get_json()
+            print("Received request body:", req_body)
             content = req_body.get("contents")
             model = genai.GenerativeModel(model_name=req_body.get("model"))
             response = model.generate_content(content, stream=True)
+            print("Sending content to Gemini API:", content)
             def stream():
                 for chunk in response:
+                    print("Received chunk from Gemini API:", chunk.text)
                     yield 'data: %s\n\n' % json.dumps({ "text": chunk.text })
 
             return stream(), {'Content-Type': 'text/event-stream'}
 
         except Exception as e:
+            print("Error in API:", str(e)) 
             return jsonify({ "error": str(e) })
 
 @app.route('/api/trees', methods=['GET'])

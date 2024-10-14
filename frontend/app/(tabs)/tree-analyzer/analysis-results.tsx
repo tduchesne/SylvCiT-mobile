@@ -3,26 +3,13 @@ import { ThemedText } from "@/components/ThemedText";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 
-async function getImageAsBase64(imageUri: string) {
-  const response = await fetch(imageUri);
-  const blob = await response.blob();
-
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64data = reader.result?.toString().split(',')[1];
-      resolve(base64data);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
 
 async function* streamResponseChunks(response: Response) {
   let buffer = '';
+
   const CHUNK_SEPARATOR = '\n\n';
 
-  const processBuffer = async function* (streamDone = false) {
+  let processBuffer = async function* (streamDone = false) {
     while (true) {
       let flush = false;
       let chunkSeparatorIndex = buffer.indexOf(CHUNK_SEPARATOR);
@@ -41,35 +28,58 @@ async function* streamResponseChunks(response: Response) {
         if (flush) break;
         continue;
       }
-      let { error, text } = JSON.parse(chunk);
-      if (error) {
-        console.error(error);
-        throw new Error(error?.message || JSON.stringify(error));
+      try {
+        let parsedChunk = JSON.parse(chunk);
+        let { error, text } = parsedChunk;
+
+        if (error) {
+          console.error(error);
+          throw new Error(error?.message || JSON.stringify(error));
+        }
+
+        yield text;
+      } catch (e) {
+        console.error("Error parsing JSON:", e);
+        throw new Error(`Received non-JSON response: ${chunk}`);
       }
-      yield text;
-      if (flush) break;
     }
   };
 
   const reader = response.body?.getReader();
+  if (!reader) {
+    throw new Error('Response body is null');
+  }
+  
   try {
     while (true) {
-      const { done, value } = await reader?.read();
+      const { done, value } = await reader.read()
       if (done) break;
       buffer += new TextDecoder().decode(value);
       yield* processBuffer();
     }
   } finally {
-    reader?.releaseLock();
+    reader.releaseLock();
   }
 
   yield* processBuffer(true);
 }
 
-async function* streamGemini(model = 'gemini-1.5-flash', contents = []) {
-  let response = await fetch("api/generate", {  
+type Content = {
+  role: string;
+  parts: (
+    | { inline_data: { mime_type: string; data: string }; text?: undefined }
+    | { text: string; inline_data?: undefined }
+  )[];
+};
+
+export async function* streamGemini({
+  model = 'gemini-1.5-flash',
+  contents = [],
+}: { model?: string; contents?: Content[] } = {}) {
+  let response = await fetch("http://localhost:5001/api/generate", {
     method: "POST",
     headers: { "content-type": "application/json" },
+    mode: "no-cors",
     body: JSON.stringify({ model, contents })
   });
 
@@ -79,42 +89,46 @@ async function* streamGemini(model = 'gemini-1.5-flash', contents = []) {
 export default function AnalyseResults() {
   const { photo } = useLocalSearchParams(); // Access the passed params
   const parsedPhoto = JSON.parse(photo as string); // Parse the photo back into an object
-  console.log("analyzing results...");
   console.log(parsedPhoto);
   const [result, setResult] = useState<string>("Analyzing...");
   // Add AI analysis here! [3. Intégrer API AI pour l'analyse de photo]
   useEffect(() => {
-    const analyzePhoto = async () => {
+    const fetchResults = async () => {
+      let imageBase64;
       try {
-        
-        let imageBase64 = await getImageAsBase64(parsedPhoto.uri);
-        console.log("Image in base64: ", imageBase64); 
+        const response = await fetch(parsedPhoto.uri);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          imageBase64 = reader.result?.toString().split(',')[1];
+          if (imageBase64) {
+            let contents = [
+              {
+                role: 'user',
+                parts: [
+                  { inline_data: { mime_type: 'image/jfif', data: imageBase64 } },
+                  { text: 'Provide the name of the species in latin, the family, and the genre of the tree in the image in JSON format.' }
+                ]
+              }
+            ];
 
-        let contents = [
-          {
-            role: 'user',
-            parts: [
-              { inline_data: { mime_type: 'image/jpg', data: imageBase64 } },  
-              { text: 'Provide the name of the species in Latin, the family, and the genre of the tree in the image in JSON format.' }
-            ]
+            let buffer = [];
+            for await (let chunk of streamGemini({ model: 'gemini-1.5-flash', contents })) {
+              buffer.push(chunk);
+              setResult(buffer.join(''));
+            }
+          } else {
+            throw new Error('Failed to convert image to base64');
           }
-        ];
-
-        let buffer: string[] = [];
-        const stream = streamGemini("gemini-1.5-flash", contents);
-        
-        for await (let chunk of stream) {
-          buffer.push(chunk);
-          setResult(buffer.join(''));  
-        }
-      } catch (e) {
-        setResult(`Error: ${e.message}`);
+        };
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        console.error(`Error getting image as base64: ${error}`);
       }
     };
 
-    analyzePhoto();  
+    fetchResults();
   }, [parsedPhoto]);
-
 
   return (
     <View>
@@ -122,6 +136,7 @@ export default function AnalyseResults() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   treeLogo: {
     height: 230,
