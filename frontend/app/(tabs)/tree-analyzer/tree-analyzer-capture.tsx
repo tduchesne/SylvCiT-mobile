@@ -4,12 +4,10 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
 import Screen from "@/components/Screen";
 import { usePermissions } from "@/context/PermissionContext";
-import React, { useEffect } from "react";
 import { useRouter } from "expo-router";
 import CameraComponent from "@/components/CameraComponent";
 
@@ -23,6 +21,17 @@ export default function TreeAnalyzerCapture() {
   if (cameraPermission === null || galleryPermission === null) {
     content = <ThemedText>Asking for permissions...</ThemedText>;
   }
+
+  const onConfirm = (photo: any) => {
+    console.log("go to analysis");
+    console.log(photo);
+
+    //alternative: router.push with same arguments
+    router.navigate({
+      pathname: "/tree-analyzer/analysis-results",
+      params: { photo: JSON.stringify(photo) },
+    });
+  };
 
   if (!cameraPermission || !galleryPermission) {
     content = (
@@ -55,11 +64,8 @@ export default function TreeAnalyzerCapture() {
     />
   );
 
-  // Add logic when the photo was taken and confirmed, then navigate to the
-  // next screen: router.navigate("analysis-results");
-
   return cameraPermission && galleryPermission ? (
-    <CameraComponent onCapture={(photo) => console.log(photo)} />
+    <CameraComponent onCapture={onConfirm} />
   ) : (
     defaultScreen
   );
