@@ -10,6 +10,7 @@ import Screen from "@/components/Screen";
 import { usePermissions } from "@/context/PermissionContext";
 import { useRouter } from "expo-router";
 import CameraComponent from "@/components/CameraComponent";
+import { CameraCapturedPicture } from "expo-camera";
 
 export default function TreeAnalyzerCapture() {
   const colorScheme = useColorScheme();
@@ -22,9 +23,9 @@ export default function TreeAnalyzerCapture() {
     content = <ThemedText>Asking for permissions...</ThemedText>;
   }
 
-  const onConfirm = (photo: any) => {
-    console.log("go to analysis");
-    console.log(photo);
+  const onConfirm = (photo: CameraCapturedPicture | undefined) => {
+    //console.log("go to analysis");
+    //console.log(photo?.base64);
 
     //alternative: router.push with same arguments
     router.navigate({

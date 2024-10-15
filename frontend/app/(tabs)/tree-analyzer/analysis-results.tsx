@@ -2,6 +2,7 @@ import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { CameraCapturedPicture } from "expo-camera";
 
 
 async function* streamResponseChunks(response: Response) {
@@ -87,7 +88,7 @@ export async function* streamGemini({
 
 export default function AnalyseResults() {
   const { photo } = useLocalSearchParams(); // Access the passed params
-  const parsedPhoto = JSON.parse(photo as string); // Parse the photo back into an object
+  const parsedPhoto : CameraCapturedPicture = JSON.parse(photo as string); // Parse the photo back into an object
   console.log(parsedPhoto);
   const [result, setResult] = useState<string>("Analyzing...");
   // Add AI analysis here! [3. Intégrer API AI pour l'analyse de photo]
@@ -95,11 +96,7 @@ export default function AnalyseResults() {
     const fetchResults = async () => {
       let imageBase64;
       try {
-        const response = await fetch(parsedPhoto.uri);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        reader.onloadend = async () => {
-          imageBase64 = reader.result?.toString().split(',')[1];
+          imageBase64 = parsedPhoto.base64;
           if (imageBase64) {
             let contents = [
               {
@@ -119,9 +116,7 @@ export default function AnalyseResults() {
           } else {
             throw new Error('Failed to convert image to base64');
           }
-        };
-        reader.readAsDataURL(blob);
-      } catch (error) {
+        } catch (error) {
         console.error(`Error getting image as base64: ${error}`);
       }
     };

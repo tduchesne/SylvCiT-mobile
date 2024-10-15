@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { View, Button, StyleSheet } from "react-native";
-import { CameraView } from "expo-camera";
+import { CameraCapturedPicture, CameraView } from "expo-camera";
 import PhotoReviewComponent from "./PhotoReviewComponent";
 
 interface CameraComponentProps {
-  onCapture: (photo: any) => void;
+  onCapture: (photo: undefined | CameraCapturedPicture) => void;
 }
 
 const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [cameraRef, setCameraRef] = useState<CameraView | null>();
-  const [photo, setPhoto] = useState<any>(null);
+  const [photo, setPhoto] = useState<undefined | CameraCapturedPicture>(undefined);
 
   const handleCameraReady = () => {
     setIsCameraReady(true);
@@ -28,7 +28,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   };
 
   const onDeny = () => {
-    setPhoto(null);
+    setPhoto(undefined);
   };
 
   return (
