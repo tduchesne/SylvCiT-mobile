@@ -132,16 +132,19 @@ def add_tree():
 
 @app.route('/api/search_tree', methods=['GET'])
 def search_tree():
-    recherche = request.json.get('recherche')
-    conditions = []
-    for column in tree_search.__table__.columns :
-        if isinstance(column.type, db.String):
-            conditions.append(column.ilike(f'%{recherche}%'))
-    trees = tree_search.query.filter(or_(*conditions)).all()
+    recherche = request.args.get('recherche')  # Récupérer le terme de recherche dans les paramètres d'URL
+    
+    if not recherche:
+        return jsonify({"message": "Paramètre 'recherche' manquant."}), 400
 
+    # Rechercher les arbres uniquement dans la colonne essence_latin
+    trees = tree_search.query.filter(tree_search.essence_latin.ilike(f'%{recherche}%')).all()
+
+    # Convertir les résultats en dictionnaire
     list_tree = [tree.to_dict() for tree in trees]
 
     return jsonify(list_tree), 200
+
 
 
 @app.route('/api/delete_tree/<no_emp>', methods=['POST'])
