@@ -21,7 +21,7 @@ migrate = Migrate(app, db)
 # Import models after db initialization
 from models import AddTree, tree_search
 
-from models import Tree, Genre
+# from models import Tree, Genre
 
 @app.before_request
 def create_tables():
