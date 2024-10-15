@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextInput,
   SafeAreaView,
@@ -13,12 +13,16 @@ import {
   useColorScheme,
   Image,
 } from "react-native";
+import * as FileSystem from "expo-file-system";
+
+import { CameraCapturedPicture } from "expo-camera";
 
 export default function AnalyseResults() {
   //TODO:
   // - Add a way to upload an image of the tree
   // - Add JSON data to frontend to display the tree's information
   // - Add functionality to cancel the operation, need to go back to another page ('ajouter arbre' maybe ? TBD)
+  const { photo } = useLocalSearchParams();
 
   const colorScheme = useColorScheme(); // Detect the color scheme (light or dark)
 
@@ -60,11 +64,9 @@ export default function AnalyseResults() {
     const [datePlantation, setDatePlantation] = useState<string>("");
     const [dateMesure, setDateMesure] = useState<string>("");
 
-    // Image URL received from backend
-    const [imageUrl, setImageUrl] = useState<string>(""); // Empty by default
-
     // Placeholder image for when the image URL isn't available
     const placeholderImage = "https://via.placeholder.com/150";
+    console.log("pictureUri: ", photo);
 
     return (
       <SafeAreaView
@@ -78,9 +80,9 @@ export default function AnalyseResults() {
           {/* Display the image TODO*/}
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: imageUrl ? imageUrl : placeholderImage }} // Display the image or a placeholder
+              source={{ uri: `data:image/jpeg;base64,${photo}` }} // Display the image or a placeholder
               style={styles.treeImage}
-              resizeMode="contain"
+              resizeMode="stretch"
             />
           </View>
 

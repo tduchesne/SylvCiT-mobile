@@ -18,7 +18,12 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
 
   const takePicture = async () => {
     if (cameraRef && cameraRef && isCameraReady) {
-      const photo = await cameraRef.takePictureAsync();
+      const options = {
+        quality: 0.2,
+        base64: true,
+      };
+
+      const photo = await cameraRef.takePictureAsync(options);
       setPhoto(photo);
     }
   };

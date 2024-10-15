@@ -20,5 +20,5 @@ COPY . .
 EXPOSE 19000 19001 19002 19006
 
 # Commande pour démarrer l'application
-CMD ["npx", "expo", "start"]
+CMD ["npx", "expo", "start",  "--tunnel", "--go"]
 

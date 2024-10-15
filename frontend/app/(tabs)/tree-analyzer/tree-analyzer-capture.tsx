@@ -24,12 +24,13 @@ export default function TreeAnalyzerCapture() {
 
   const onConfirm = (photo: any) => {
     console.log("go to analysis");
-    console.log(photo);
+    //console.log(photo);
+    //console.log(photo.uri);
 
     //alternative: router.push with same arguments
     router.navigate({
       pathname: "/tree-analyzer/analysis-results",
-      params: { photo: JSON.stringify(photo) },
+      params: { photo: photo.base64 },
     });
   };
 
