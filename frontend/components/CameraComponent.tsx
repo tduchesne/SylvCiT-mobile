@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Button, StyleSheet } from "react-native";
-import { CameraCapturedPicture, CameraView } from "expo-camera";
+import { CameraCapturedPicture, CameraView, CameraPictureOptions} from "expo-camera";
 import PhotoReviewComponent from "./PhotoReviewComponent";
 
 interface CameraComponentProps {
@@ -18,6 +18,12 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
 
   const takePicture = async () => {
     if (cameraRef && cameraRef && isCameraReady) {
+      const options: CameraPictureOptions = {
+        quality: 0.2,
+        base64: true,
+        imageType: "jpg",
+      };
+
       const photo = await cameraRef.takePictureAsync();
       setPhoto(photo);
     }
