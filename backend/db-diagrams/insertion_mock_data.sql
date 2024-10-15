@@ -129,9 +129,12 @@ VALUES (
         '45.508639',
         'H'
     );
+INSERT INTO `inm5151_db`.`tree_search` (`no_emp`,`arrondissement`,`emplacement`,`essence_latin`,`dhp`,`date_releve`,`date_plantation`,`longitude`,`latitude`,`inv_type`) VALUES (30000,6,'Parterre GazonYLeaf','Ulmus wilsoniana Prospector','22','2024-04-15','2010-10-12','-73.568412','45.508639','H');
 COMMIT;
+
 START TRANSACTION;
 USE `inm5151_db`;
 INSERT INTO `inm5151_db`.`tree_hors_rue`(no_emp, nom_parc, nom_secteur)
 VALUES (31708, 'PROMENADE DES ARTISTES', 'OUEST');
+INSERT INTO `inm5151_db`.`tree_rue`(no_emp, no_civique, nom_rue, cote, localisation, rue_de, rue_a, distance_pave, distance_ligne_rue, stationnement_heure) VALUES (30000, 22, 'Parterre Gazonné', 'N', 'Parterre Gazonné', 'Parterre Gazonné', 'Parterre Gazonné', 0.0, 0.0, '00:00');
 COMMIT;

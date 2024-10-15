@@ -61,7 +61,6 @@ class tree_rue(tree_search):
         attributes = super().to_dict()
         attributes.update({
             'no_civique': self.no_civique,
-            'no_rue': self.no_rue,
             'nom_rue': self.nom_rue,
             'cote': self.cote,
             'localisation': self.localisation,
@@ -69,7 +68,7 @@ class tree_rue(tree_search):
             'rue_a': self.rue_a,
             'distance_pave': self.distance_pave,
             'distance_ligne_rue': self.distance_ligne_rue,
-            'stationnement_heure': self.stationnement_heure
+            'stationnement_heure': self.stationnement_heure.strftime('%H:%M:%S')
         })
         return attributes
 
