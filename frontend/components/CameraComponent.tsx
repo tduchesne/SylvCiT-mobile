@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Button, StyleSheet } from "react-native";
+import { View, Button, StyleSheet, Dimensions } from "react-native";
 import { CameraCapturedPicture, CameraView, CameraPictureOptions} from "expo-camera";
 import PhotoReviewComponent from "./PhotoReviewComponent";
 
@@ -11,7 +11,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [cameraRef, setCameraRef] = useState<CameraView | null>();
   const [photo, setPhoto] = useState<undefined | CameraCapturedPicture>(undefined);
-
+  const { height } = Dimensions.get("window"); 
   const handleCameraReady = () => {
     setIsCameraReady(true);
   };
@@ -48,10 +48,14 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
         >
           <View
             style={{
-              position: "absolute",
-              bottom: "5%",
-              left: "50%",
+              position: 'absolute', 
+              bottom: height * 0.05,
+              left: '50%', 
+              transform: [{ translateX: -100 }],
+              width: 200, 
+              maxWidth: '100%',
             }}
+
           >
             <Button
               title="PHOTO"
