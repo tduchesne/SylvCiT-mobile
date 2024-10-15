@@ -121,7 +121,7 @@ export default function TreeAnalyzerCapture() {
                 role: 'user',
                 parts: [
                   { inline_data: { mime_type: 'image/png', data: imageBase64 } },
-                  { text: 'Provide the name of the species in latin, the family, and the genre of the tree in the image in JSON format.' }
+                  { text: 'Provide the name of the family, latin name and genre of the tree in the image in JSON format.' }
                 ]
               }
             ];
@@ -130,6 +130,7 @@ export default function TreeAnalyzerCapture() {
             for await (let chunk of streamGemini({ model: 'gemini-1.5-flash', contents })) {
               buffer.push(chunk);
               result = buffer.join('');
+              console.log(`Result: ${result}`);
             }
           } else {
             throw new Error('Failed to convert image to base64');
