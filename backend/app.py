@@ -39,27 +39,28 @@ def hello_world():
 
 @app.route("/api/generate", methods=["POST"])
 def generate_api():
-    if request.method == "POST":
-        if API_KEY == '':
-            return jsonify({ "error": '''
-                To get started, get an API key at
-                https://g.co/ai/idxGetGeminiKey and enter it in
-                main.py
-                '''.replace('\n', '') })
-        try:
-            req_body = request.get_json()
-            print("Received request body:", req_body)
-            content = req_body.get("contents")
-            model = genai.GenerativeModel(model_name=req_body.get("model"))
-            response = model.generate_content(content)
-            print("Sending content to Gemini API:", content)
-            full_response = ''.join([chunk.text for chunk in response])
-            print("Full response:", full_response)
-            return jsonify({ "text": full_response })
-        
-        except Exception as e:
-            print("Error in API:", str(e)) 
-            return jsonify({ "error": str(e) })
+    #if request.method == "POST":
+    if API_KEY == '':
+        return jsonify({ "error": '''
+            To get started, get an API key at
+            https://g.co/ai/idxGetGeminiKey and enter it in
+            main.py
+            '''.replace('\n', '') })
+    try:
+        req_body = request.get_json()
+        #print("Received request body:", req_body)
+        content = req_body.get("contents")
+        model = genai.GenerativeModel(model_name=req_body.get("model"))
+        response = model.generate_content(content)
+        print("Sending content to Gemini API:")
+        #print("Sending content to Gemini API:", content)
+        full_response = ''.join([chunk.text for chunk in response])
+        print("Full response:", full_response)
+        return jsonify({ "text": full_response })
+    
+    except Exception as e:
+        print("Error in API:", str(e)) 
+        return jsonify({ "error": str(e) })
 
 @app.route('/api/trees', methods=['GET'])
 def get_trees():

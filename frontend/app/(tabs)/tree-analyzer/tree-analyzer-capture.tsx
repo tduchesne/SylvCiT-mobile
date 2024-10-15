@@ -116,6 +116,7 @@ export default function TreeAnalyzerCapture() {
       if (imageBase64) {
         imageBase64 = imageBase64.replace("data:image/png;base64,", "");
         //console.log(`Image base64 2 : ${imageBase64}`);
+
         let contents = [
           {
             role: "user",
@@ -135,6 +136,7 @@ export default function TreeAnalyzerCapture() {
         })) {
           buffer.push(chunk);
           result = buffer.join("");
+          console.log(`Result: ${result}`);
         }
       } else {
         throw new Error("Failed to convert image to base64");
