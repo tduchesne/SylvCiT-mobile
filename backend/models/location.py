@@ -1,4 +1,4 @@
-from app import db
+from models import db
 
 class Location(db.Model):
     __tablename__ = 'location'
@@ -7,4 +7,9 @@ class Location(db.Model):
     latitude = db.Column(db.String(45), nullable=False)
     longitude = db.Column(db.String(45), nullable=False)
 
-    tree = db.relationship('Tree', back_populates='location')
+    def to_dict(self):
+        return {
+            'id_location': self.id_location,
+            'latitude': self.latitude,
+            'longitude': self.longitude
+        }

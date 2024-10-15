@@ -1,4 +1,4 @@
-from app import db
+from models import db
 
 class FunctionalGroup(db.Model):
     __tablename__ = 'functional_group'
@@ -7,4 +7,9 @@ class FunctionalGroup(db.Model):
     group = db.Column(db.String(2))
     description = db.Column(db.String(250))
 
-    tree = db.relationship('Tree', back_populates='functional_group')
+    def to_dict(self):
+        return {
+            'id_functional_group': self.id_functional_group,
+            'group': self.group,
+            'description': self.description
+        }

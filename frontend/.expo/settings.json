@@ -4,7 +4,5 @@
   "dev": true,
   "minify": false,
   "urlRandomness": "mdXM6IM",
-  "https": false,
-  "scheme": "com.anonymous.SylvCiT",
-  "devClient": false
+  "https": false
 }
