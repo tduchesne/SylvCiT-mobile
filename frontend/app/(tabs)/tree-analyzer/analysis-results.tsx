@@ -66,7 +66,7 @@ export default function AnalyseResults() {
 
     // Placeholder image for when the image URL isn't available
     const placeholderImage = "https://via.placeholder.com/150";
-    console.log("pictureUri: ", photo);
+    //console.log("pictureUri: ", photo);
 
     return (
       <SafeAreaView

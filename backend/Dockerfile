@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Indique que le conteneur écoute sur le port 5000 au moment de l'exécution
-EXPOSE 5000
+EXPOSE 5000 5001
 
 # Définit des variables d'environnement utilisées par l'application Flask
 # FLASK_APP spécifie le point d'entrée de l'application

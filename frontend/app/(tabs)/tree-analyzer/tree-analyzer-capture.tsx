@@ -87,7 +87,8 @@ export async function* streamGemini({
   model = "gemini-1.5-flash",
   contents = [],
 }: { model?: string; contents?: Content[] } = {}) {
-  let response = await fetch(`${Config.API_URL}/api/generate`, {
+  //let response = await fetch("http://localhost:5001/api/generate", {
+  let response = await fetch(`http://localhost:5001/api/generate`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ model, contents }),
@@ -114,7 +115,7 @@ export default function TreeAnalyzerCapture() {
     try {
       imageBase64 = photo?.base64;
       if (imageBase64) {
-        imageBase64 = imageBase64.replace("data:image/png;base64,", "");
+        imageBase64 = imageBase64.replace("data:image/jpeg;base64,", "");
         //console.log(`Image base64 2 : ${imageBase64}`);
 
         let contents = [
