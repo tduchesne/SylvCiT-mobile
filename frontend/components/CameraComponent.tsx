@@ -1,26 +1,33 @@
 import React, { useState } from "react";
-import { View, Button, StyleSheet } from "react-native";
-import { CameraView } from "expo-camera";
+import { View, Button, StyleSheet, Dimensions } from "react-native";
+import {
+  CameraCapturedPicture,
+  CameraView,
+  CameraPictureOptions,
+} from "expo-camera";
 import PhotoReviewComponent from "./PhotoReviewComponent";
 
 interface CameraComponentProps {
-  onCapture: (photo: any) => void;
+  onCapture: (photo: undefined | CameraCapturedPicture) => void;
 }
 
 const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [cameraRef, setCameraRef] = useState<CameraView | null>();
-  const [photo, setPhoto] = useState<any>(null);
-
+  const [photo, setPhoto] = useState<undefined | CameraCapturedPicture>(
+    undefined
+  );
+  const { height } = Dimensions.get("window");
   const handleCameraReady = () => {
     setIsCameraReady(true);
   };
 
   const takePicture = async () => {
     if (cameraRef && cameraRef && isCameraReady) {
-      const options = {
-        quality: 0.1,
+      const options: CameraPictureOptions = {
+        quality: 0.2,
         base64: true,
+        imageType: "jpg",
       };
 
       const photo = await cameraRef.takePictureAsync(options);
@@ -33,7 +40,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   };
 
   const onDeny = () => {
-    setPhoto(null);
+    setPhoto(undefined);
   };
 
   return (
@@ -48,8 +55,11 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
           <View
             style={{
               position: "absolute",
-              bottom: "5%",
+              bottom: height * 0.05,
               left: "50%",
+              transform: [{ translateX: -100 }],
+              width: 200,
+              maxWidth: "100%",
             }}
           >
             <Button

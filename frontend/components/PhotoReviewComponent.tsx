@@ -1,10 +1,11 @@
+
 import React from "react";
 import { View, Image, Button, StyleSheet, Dimensions } from "react-native";
 
 interface PhotoReviewComponentProps {
-  photo: any; // The photo received from the parent
-  onConfirm: () => void; // Function to handle confirmation
-  onDeny: () => void; // Function to handle denial
+  photo: any; 
+  onConfirm: () => void;
+  onDeny: () => void; 
 }
 
 const PhotoReviewComponent: React.FC<PhotoReviewComponentProps> = ({ photo, onConfirm, onDeny }) => {
@@ -12,7 +13,7 @@ const PhotoReviewComponent: React.FC<PhotoReviewComponentProps> = ({ photo, onCo
     <View style={styles.container}>
       {photo && (
         <Image
-          source={{ uri: photo.uri }} // Display the received photo
+          source={{ uri: photo.uri }}
           style={styles.photo}
         />
       )}
@@ -27,6 +28,7 @@ const PhotoReviewComponent: React.FC<PhotoReviewComponentProps> = ({ photo, onCo
     </View>
   );
 };
+
 const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
@@ -34,24 +36,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: "10%",
   },
   photo: {
-    width: width*0.8,  // Full-screen width
-    height: height * 0.8,  // Height set to 80% of the screen
+    width: width * 0.8, // Full-screen width
+    height: height * 0.8, // Height set to 80% of the screen
     resizeMode: "cover", // Ensure the image covers the screen but maintains its aspect ratio
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "70%",  // Full width of screen
-    paddingHorizontal: 20,
-    marginTop: 20,
+    justifyContent: "space-around", 
+    width: "90%", 
+    marginTop: "5%",
   },
   button: {
-    flex: 1,  // Flex-grow to make the buttons expand evenly
-    marginHorizontal: 10,  // Add spacing between buttons
-    width: "100%",
+    width: "45%",
   },
 });
 
