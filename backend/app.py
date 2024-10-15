@@ -24,7 +24,7 @@ migrate = Migrate(app, db)
 # Import models after db initialization
 from models import Tree
 
-API_KEY = 'AIzaSyD8wWO6ut7kROGgi_XZ_q1Nz4GPihqb67Q' # Your API key here
+API_KEY = 'AIzaSyBQoX1OdyMx5xjzDLINuSVyISxTAmc2uWg' # Your API key here
 
 genai.configure(api_key=API_KEY)
 
