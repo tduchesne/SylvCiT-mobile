@@ -19,7 +19,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import AddTree, tree_search
+from models import AddTree, tree_search, Tree, Family, FunctionalGroup, Genre, Location, Type
 
 
 @app.before_request
@@ -143,9 +143,42 @@ def search_tree():
     return jsonify(list_tree), 200
 
 
-@app.route('/api/delete_tree/<no_emp>', methods=['POST'])
-def delete_tree(no_emp):
-    tree = tree_search.query.get(no_emp)
+# @app.route('/api/delete_tree/<no_emp>', methods=['POST'])
+# def delete_tree(no_emp):
+#     tree = tree_search.query.get(no_emp)
+#
+#     if tree is None:
+#         return jsonify({"message": "Arbre non-trouvable"}), 404
+#
+#     db.session.delete(tree)
+#     db.session.commit()
+#
+#     return jsonify({"message": "Arbre supprimé"}), 200
+
+# @app.route('/api/modifier_arbre/<no_emp>', methods=['POST'])
+# def modifier_arbre(no_emp):
+#     info = request.get_json()
+#     tree = tree_search.query.get(no_emp)
+#
+#     if tree is None:
+#         return jsonify({"message": "Arbre non-trouvé"}), 404
+#
+#     tree.arrondissement = info.get('arrondissement')
+#     tree.emplacement = info.get('emplacement')
+#     tree.essence_latin = info.get('essence_latin')
+#     tree.dhp = info.get('dhp')
+#     tree.date_releve = info.get('date_releve')
+#     tree.date_plantation = info.get('date_plantation')
+#     tree.longitude = info.get('longitude')
+#     tree.latitude = info.get('latitude')
+#     tree.inv_type = info.get('inv_type')
+#
+#     return jsonify(tree.to_dict()), 202
+
+
+@app.route('/api/delete_tree/<int:id_tree>', methods=['POST'])
+def delete_tree(id_tree):
+    tree = Tree.query.get(id_tree)
 
     if tree is None:
         return jsonify({"message": "Arbre non-trouvable"}), 404
@@ -155,25 +188,84 @@ def delete_tree(no_emp):
 
     return jsonify({"message": "Arbre supprimé"}), 200
 
-@app.route('/api/modifier_arbre/<no_emp>', methods=['POST'])
-def modifier_arbre(no_emp):
-    info = request.get_json()
-    tree = tree_search.query.get(no_emp)
 
-    if tree is None:
-        return jsonify({"message": "Arbre non-trouvé"}), 404
+@app.route('/api/modifier_arbre/<int:id_tree>', methods=['POST'])
+def modifier_arbre(id_tree):
+    try:
+        info = request.get_json()
+        print(f"Demande reçue pour modifier l'arbre avec l'ID : {id_tree}")
 
-    tree.arrondissement = info.get('arrondissement')
-    tree.emplacement = info.get('emplacement')
-    tree.essence_latin = info.get('essence_latin')
-    tree.dhp = info.get('dhp')
-    tree.date_releve = info.get('date_releve')
-    tree.date_plantation = info.get('date_plantation')
-    tree.longitude = info.get('longitude')
-    tree.latitude = info.get('latitude')
-    tree.inv_type = info.get('inv_type')
+        tree = Tree.query.get(id_tree)
+        if not tree:
+            print(f"Arbre avec l'ID {id_tree} introuvable.")
+            return jsonify({"message": "Arbre introuvable"}), 404
 
-    return jsonify(tree.to_dict()), 202
+        tree.date_plantation = info.get('date_plantation', tree.date_plantation)
+        tree.date_measure = info.get('date_measure', tree.date_measure)
+
+        family_name = info.get('family')
+        if family_name:
+            family = Family.query.get(tree.id_family)
+            if family:
+                family.name = family_name
+                print(f"Nom de famille mis à jour en {family_name} pour l'arbre avec l'ID : {id_tree}")
+            else:
+                print(f"Famille avec l'ID {tree.id_family} introuvable.")
+
+        genre_name = info.get('genre')
+        if genre_name:
+            genre = Genre.query.get(tree.id_genre)
+            if genre:
+                genre.name = genre_name
+                print(f"Nom de genre mis à jour en {genre_name} pour l'arbre avec l'ID : {id_tree}")
+            else:
+                print(f"Genre avec l'ID {tree.id_genre} introuvable.")
+
+        functional_group_name = info.get('functional_group')
+        if functional_group_name:
+            functional_group = FunctionalGroup.query.get(tree.id_functional_group)
+            if functional_group:
+                functional_group.group = functional_group_name
+                print(f"Groupe fonctionnel mis à jour en {functional_group_name} pour l'arbre avec l'ID : {id_tree}")
+            else:
+                print(f"Groupe fonctionnel avec l'ID {tree.id_functional_group} introuvable.")
+
+        type_name = info.get('type')
+        if type_name:
+            type_ = Type.query.get(tree.id_type)
+            if type_:
+                type_.name_fr = type_name
+                print(f"Type mis à jour en {type_name} pour l'arbre avec l'ID : {id_tree}")
+            else:
+                print(f"Type avec l'ID {tree.id_type} introuvable.")
+
+        latitude = info.get('latitude')
+        longitude = info.get('longitude')
+
+        if latitude and longitude:
+            location = Location.query.get(tree.id_location)
+            if location:
+                if not (-90 <= float(latitude) <= 90):
+                    abort(400, description="Latitude invalide.")
+                if not (-180 <= float(longitude) <= 180):
+                    abort(400, description="Longitude invalide.")
+
+                location.latitude = latitude
+                location.longitude = longitude
+                print(
+                    f"Emplacement mis à jour avec latitude : {latitude} et longitude : {longitude} pour l'arbre avec l'ID : {id_tree}")
+            else:
+                print(f"Emplacement avec l'ID {tree.id_location} introuvable.")
+
+        db.session.commit()
+        print(f"Arbre avec l'ID {id_tree} et les informations associées mises à jour avec succès.")
+
+        return jsonify(tree.to_dict()), 200
+
+    except Exception as e:
+        print(f"Erreur lors de la modification de l'arbre : {str(e)}")
+        db.session.rollback()
+        return jsonify({"message": "Une erreur s'est produite lors de la modification de l'arbre"}), 500
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
