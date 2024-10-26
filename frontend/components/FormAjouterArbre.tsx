@@ -7,10 +7,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Config from '../config';
 import { useColorScheme } from "@/hooks/useColorScheme";
-
+import * as Location from 'expo-location';
 import { Colors } from "@/constants/Colors";
-//npm install @react-native-community/geolocation --savea
-import Geolocation from '@react-native-community/geolocation';
+
 import { ThemedText } from "@/components/ThemedText";
 
 export default function FormAjoutArbre() {
@@ -21,13 +20,16 @@ export default function FormAjoutArbre() {
     const [essenceFr, setEssenceFr] = useState('');
     const [essenceAng, setEssenceAng] = useState('');
     const [dhp, setDhp] = useState('');
-    const [longitude, setLongitude] = useState('');
-    const [latitude, setLatitude] = useState('');
-    const [location, setLocation] = useState(false);
+    const [longitude, setLongitude] = useState(Number);
+    const [latitude, setLatitude] = useState(Number);
+    const [location, setLocation] = useState('');
+    const [msgErreur, setMsgErreur] = useState('');
     const [dateReleve, setDateReleve] = useState(new Date())
     const [datePlantation, setDatePlantation] = useState('')
     const [modalDatePreleve, setModalDatePreleve] = useState(false)
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
+
+
 
     const colorScheme = useColorScheme();
 
@@ -71,8 +73,18 @@ export default function FormAjoutArbre() {
         }
     }
 
-    const trouverPosition = () => {
-        getLocation(setLatitude, setLongitude, setLocation, location)
+
+    const trouverPosition = async () => {
+
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setMsgErreur('Permission pour accéder à votre position refusée');
+            return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        setLatitude(location.coords.latitude);
+        setLongitude(location.coords.longitude);
+
     }
 
     const nettoyerChamps = () => {
@@ -128,8 +140,8 @@ export default function FormAjoutArbre() {
                             <Ionicons.Button name="earth" backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} onPress={trouverPosition} />
                         </View>
                     </View>
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLongitude} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLatitude} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLongitude.toString} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLatitude.toString} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
 
                 </View>
                 <View style={[styles.bouton]}>
@@ -145,28 +157,6 @@ export default function FormAjoutArbre() {
     );
 
 }
-
-
-
-// Fonction pour la localisation
-function getLocation(setLatitude: any, setLongitude: any, setLocation: any, location: any) {
-
-    Geolocation.getCurrentPosition(
-        position => {
-            setLatitude(position.coords.latitude);
-            setLongitude(position.coords.longitude);
-            setLocation(true);
-
-        },
-        error => {
-            console.log(error.code, error.message);
-            setLocation(false);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-    );
-
-    console.log(location);
-};
 
 
 function initialiserChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, setEssenceLatin: any, setEssenceAng: any, setDhp: any, setDateReleve: any, setDatePlantation: any, setLongitude: any, setLatitude: any) {
