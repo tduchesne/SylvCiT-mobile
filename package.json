@@ -15,5 +15,8 @@
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios"
+  },
+  "devDependencies": {
+    "@types/react-native": "^0.73.0"
   }
 }
