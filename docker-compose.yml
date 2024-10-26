@@ -35,9 +35,9 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "19006:19006"  # Port pour l'interface Expo
-      - "8081:8081"    # Port pour Metro Bundler
-    command: npx expo start --tunnel
+      - "19006:19006" # Port pour l'interface Expo
+      - "8081:8081" # Port pour Metro Bundler
+    command: npx expo start --tunnel --go
     networks:
       - backend-network
     environment:
@@ -46,6 +46,7 @@ services:
       - EXPO_TOKEN=${EXPO_TOKEN}
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
 

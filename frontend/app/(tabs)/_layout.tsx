@@ -1,13 +1,13 @@
 import { Tabs } from "expo-router";
 import React from "react";
-
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+
+  const no_emp = '1';
 
   return (
     <Tabs
@@ -57,6 +57,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="modifier_metadonnees"
+        initialParams={{ no_emp }}
+        options={{
+          title: "Modifier Métadonnées",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "create" : "create-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="account"
         options={{
           title: "Account",
@@ -69,7 +82,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-
-
   );
 }

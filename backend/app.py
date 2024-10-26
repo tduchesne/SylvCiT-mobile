@@ -5,6 +5,8 @@ from flask_migrate import Migrate
 from sqlalchemy import MetaData, or_
 
 import os
+from sqlalchemy.orm import joinedload
+
 
 app = Flask(__name__)
 # Database configuration
@@ -29,7 +31,6 @@ def create_tables():
 # Routes
 @app.route('/')
 def hello_world():
-    print("Hello world")
     return  'Hi mom!'
 
 # @app.route('/api/trees', methods=['GET'])
@@ -188,6 +189,32 @@ def delete_tree(id_tree):
 
     return jsonify({"message": "Arbre supprimé"}), 200
 
+@app.route('/api/search_tree', methods=['GET'])
+def search_tree():
+    recherche = request.args.get('recherche')
+    if not recherche:
+        return jsonify({"error": "Missing search parameter"}), 400
+
+    conditions = []
+
+    if recherche.isdigit():
+        conditions.append(Tree.id_tree == int(recherche))
+
+    for column in Tree.__table__.columns:
+        if isinstance(column.type, db.String):
+            conditions.append(column.ilike(f'%{recherche}%'))
+
+    trees = Tree.query.options(
+        joinedload(Tree.family),
+        joinedload(Tree.genre),
+        joinedload(Tree.location),
+        joinedload(Tree.type),
+        joinedload(Tree.functional_group)
+    ).filter(or_(*conditions)).all()
+
+    list_tree = [tree.to_dict() for tree in trees]
+
+    return jsonify(list_tree), 200
 
 @app.route('/api/modifier_arbre/<int:id_tree>', methods=['POST'])
 def modifier_arbre(id_tree):
@@ -252,8 +279,7 @@ def modifier_arbre(id_tree):
 
                 location.latitude = latitude
                 location.longitude = longitude
-                print(
-                    f"Emplacement mis à jour avec latitude : {latitude} et longitude : {longitude} pour l'arbre avec l'ID : {id_tree}")
+                print(f"Emplacement mis à jour avec latitude : {latitude} et longitude : {longitude} pour l'arbre avec l'ID : {id_tree}")
             else:
                 print(f"Emplacement avec l'ID {tree.id_location} introuvable.")
 
