@@ -1,4 +1,4 @@
-from models import db
+from app import db
 
 class FunctionalGroup(db.Model):
     __tablename__ = 'functional_group'

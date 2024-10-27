@@ -1,4 +1,4 @@
-from models import db
+from app import db
 
 class Family(db.Model):
     __tablename__ = 'family'

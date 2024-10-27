@@ -1,4 +1,4 @@
-from models import db
+from app import db
 from models.family import Family
 from models.genre import Genre
 from models.location import Location

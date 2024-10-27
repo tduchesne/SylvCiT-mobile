@@ -130,8 +130,8 @@ def add_tree():
         }), 201
 
 
-@app.route('/api/search_tree', methods=['GET'])
-def search_tree():
+@app.route('/api/search_tree2', methods=['GET'])
+def search_tree2():
     recherche = request.json.get('recherche')
     conditions = []
     for column in tree_search.__table__.columns :
@@ -143,39 +143,32 @@ def search_tree():
 
     return jsonify(list_tree), 200
 
+@app.route('/api/search_tree_by_id', methods=['GET'])
+def search_tree_by_id():
+    recherche = request.args.get('recherche')
+    if not recherche:
+        return jsonify({"error": "Missing search parameter"}), 400
 
-# @app.route('/api/delete_tree/<no_emp>', methods=['POST'])
-# def delete_tree(no_emp):
-#     tree = tree_search.query.get(no_emp)
-#
-#     if tree is None:
-#         return jsonify({"message": "Arbre non-trouvable"}), 404
-#
-#     db.session.delete(tree)
-#     db.session.commit()
-#
-#     return jsonify({"message": "Arbre supprimé"}), 200
+    conditions = []
 
-# @app.route('/api/modifier_arbre/<no_emp>', methods=['POST'])
-# def modifier_arbre(no_emp):
-#     info = request.get_json()
-#     tree = tree_search.query.get(no_emp)
-#
-#     if tree is None:
-#         return jsonify({"message": "Arbre non-trouvé"}), 404
-#
-#     tree.arrondissement = info.get('arrondissement')
-#     tree.emplacement = info.get('emplacement')
-#     tree.essence_latin = info.get('essence_latin')
-#     tree.dhp = info.get('dhp')
-#     tree.date_releve = info.get('date_releve')
-#     tree.date_plantation = info.get('date_plantation')
-#     tree.longitude = info.get('longitude')
-#     tree.latitude = info.get('latitude')
-#     tree.inv_type = info.get('inv_type')
-#
-#     return jsonify(tree.to_dict()), 202
+    if recherche.isdigit():
+        conditions.append(Tree.id_tree == int(recherche))
 
+    for column in Tree.__table__.columns:
+        if isinstance(column.type, db.String):
+            conditions.append(column.ilike(f'%{recherche}%'))
+
+    trees = Tree.query.options(
+        joinedload(Tree.family),
+        joinedload(Tree.genre),
+        joinedload(Tree.location),
+        joinedload(Tree.type),
+        joinedload(Tree.functional_group)
+    ).filter(or_(*conditions)).all()
+
+    list_tree = [tree.to_dict() for tree in trees]
+
+    return jsonify(list_tree), 200
 
 @app.route('/api/delete_tree/<int:id_tree>', methods=['POST'])
 def delete_tree(id_tree):

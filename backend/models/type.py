@@ -1,4 +1,4 @@
-from models import db
+from app import db
 
 class Type(db.Model):
     __tablename__ = 'type'
