@@ -67,8 +67,6 @@ export default function FormAjoutArbre() {
                 .then(() => Alert.alert("Informations sauvegardées"))
                 .then(nettoyerChamps)
                 .catch((response) => {
-                    const re = response.json()
-                    console.log(re)
                     setIndicateur(false)
                     Alert.alert("Erreur lors du sauvegarde des données. Merci de réessayer")
                     remettreChamps;
