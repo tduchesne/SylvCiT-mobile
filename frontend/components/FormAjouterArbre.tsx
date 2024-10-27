@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, } from 'react-native';
+import { useState, useRef } from "react";
+import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, ActivityIndicator } from 'react-native';
 //npx expo install @react-native-community/datetimepicker
 import DateTimePicker from '@react-native-community/datetimepicker';
 //npx expo install expo-image-picker
@@ -9,10 +9,12 @@ import Config from '../config';
 import { useColorScheme } from "@/hooks/useColorScheme";
 import * as Location from 'expo-location';
 import { Colors } from "@/constants/Colors";
-
 import { ThemedText } from "@/components/ThemedText";
+import MapView from 'react-native-maps';
+import { map } from "leaflet";
 
 export default function FormAjoutArbre() {
+
 
     const [empNo, setEmpNo] = useState('');
     const [adresse, setAdresse] = useState('');
@@ -20,15 +22,15 @@ export default function FormAjoutArbre() {
     const [essenceFr, setEssenceFr] = useState('');
     const [essenceAng, setEssenceAng] = useState('');
     const [dhp, setDhp] = useState('');
-    const [longitude, setLongitude] = useState(Number);
-    const [latitude, setLatitude] = useState(Number);
+    const [longitude, setLongitude] = useState('');
+    const [latitude, setLatitude] = useState('');
     const [location, setLocation] = useState('');
     const [msgErreur, setMsgErreur] = useState('');
     const [dateReleve, setDateReleve] = useState(new Date())
     const [datePlantation, setDatePlantation] = useState('')
     const [modalDatePreleve, setModalDatePreleve] = useState(false)
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
-
+    const [indicateur, setIndicateur] = useState(false);
 
 
     const colorScheme = useColorScheme();
@@ -39,7 +41,7 @@ export default function FormAjoutArbre() {
             Alert.alert("Merci de remplir tous les champs obligatoires");
 
         } else {
-
+            setIndicateur(true)
             fetch(`${Config.API_URL}/api/add_tree`, {
                 method: 'POST', headers: {
                     Accept: 'application/json',
@@ -61,9 +63,13 @@ export default function FormAjoutArbre() {
             })
                 .then(response => response.json())
                 .then(data => console.log(data))
+                .then(() => setIndicateur(false))
                 .then(() => Alert.alert("Informations sauvegardées"))
                 .then(nettoyerChamps)
-                .catch(() => {
+                .catch((response) => {
+                    const re = response.json()
+                    console.log(re)
+                    setIndicateur(false)
                     Alert.alert("Erreur lors du sauvegarde des données. Merci de réessayer")
                     remettreChamps;
 
@@ -75,15 +81,22 @@ export default function FormAjoutArbre() {
 
 
     const trouverPosition = async () => {
-
+        setIndicateur(true);
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
             setMsgErreur('Permission pour accéder à votre position refusée');
             return;
         }
         let location = await Location.getCurrentPositionAsync({});
-        setLatitude(location.coords.latitude);
-        setLongitude(location.coords.longitude);
+        setLatitude(location.coords.latitude.toString());
+        setLongitude(location.coords.longitude.toString());
+        const coord = {
+            latitude: latitude,
+            longitude: longitude,
+
+        };
+
+        setIndicateur(false);
 
     }
 
@@ -110,14 +123,17 @@ export default function FormAjoutArbre() {
         setDatePlantation(formatDate(dateRelevePlantation))
     }
 
+
     return (
         <SafeAreaView >
+            <ActivityIndicator size="large" color="#00ff00" animating={indicateur} style={[styles.indicateur]} />
             <ScrollView >
                 <View>
+
                     <ThemedText>
                         * Les champs en rouge sont obligatoires</ThemedText>
 
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="Emplacement" keyboardType="numeric" />
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="No emplacement" keyboardType="numeric" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
@@ -134,14 +150,14 @@ export default function FormAjoutArbre() {
                         {modalDatePlantation && <DateTimePicker value={new Date()} mode={"date"} onChange={choisirDatePlantation} />}
                     </View>
                     <TextInput editable={false} placeholder="Date de plantation" style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{datePlantation}</TextInput>
-                    <View style={styles.labelCal}><ThemedText style={styles.label} >Trouvez ma position</ThemedText>
+                    <View style={styles.container}>
+                        <MapView style={styles.map} showsUserLocation={true} onRegionChangeComplete={(region) => { setLatitude(region.latitude.toString()), setLongitude(region.longitude.toString()) }} />
 
-                        <View style={styles.boutonPosition}>
-                            <Ionicons.Button name="earth" backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} onPress={trouverPosition} />
-                        </View>
                     </View>
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLongitude.toString} value={longitude.toString()} placeholder="Longitude" keyboardType="numeric" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLatitude.toString} value={latitude.toString()} placeholder="Latitude" keyboardType="numeric" />
+
+
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, styles.champObligatoire]} onChangeText={setLongitude} value={longitude} placeholder="Longitude" keyboardType="numeric" />
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLatitude} value={latitude} placeholder="Latitude" keyboardType="numeric" />
 
                 </View>
                 <View style={[styles.bouton]}>
@@ -283,8 +299,22 @@ const styles = StyleSheet.create({
     image: {
         width: 200,
         height: 200,
-    }
+    },
 
+    indicateur: {
+        alignSelf: "center",
+        paddingVertical: 200,
+        position: "absolute",
+        zIndex: 10,
+
+    },
+    container: {
+
+    },
+    map: {
+        height: 200,
+
+    },
 
 });
 
