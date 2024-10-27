@@ -1,7 +1,10 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, abort, redirect, url_for
+from datetime import datetime
+from flask import Flask, jsonify, request, abort, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from sqlalchemy import MetaData, or_
 from sqlalchemy import MetaData, or_
 
 import os
@@ -14,6 +17,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize db
 metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'))
+metadata = MetaData(schema=os.getenv('MYSQL_DATABASE'))
 db = SQLAlchemy(app, metadata=metadata)
 
 # Initialize flask-migrate
@@ -24,12 +28,14 @@ from models import AddTree, tree_search, Tree, Family, FunctionalGroup, Genre, L
 
 
 @app.before_request
+@app.before_request
 def create_tables():
     db.create_all()
 
 # Routes
 @app.route('/')
 def hello_world():
+    print("Hello world")
     return  'Hi mom!'
 
 # @app.route('/api/trees', methods=['GET'])
