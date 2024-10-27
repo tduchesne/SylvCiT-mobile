@@ -1,5 +1,4 @@
 from app import db
-from sqlalchemy import Enum
 
 
 class AddTree(db.Model):

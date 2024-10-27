@@ -7,7 +7,6 @@ from sqlalchemy import MetaData, or_
 import os
 from sqlalchemy.orm import joinedload
 
-
 app = Flask(__name__)
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DATABASE')}"
