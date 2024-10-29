@@ -10,8 +10,8 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import * as Location from 'expo-location';
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
-import MapView from 'react-native-maps';
-import { map } from "leaflet";
+//https://github.com/react-native-maps/react-native-maps
+import MapView, { Region } from 'react-native-maps';
 
 export default function FormAjoutArbre() {
 
@@ -78,21 +78,22 @@ export default function FormAjoutArbre() {
     }
 
 
-    const trouverPosition = async () => {
+    const trouverPosition = async (region: Region) => {
         setIndicateur(true);
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
             setMsgErreur('Permission pour accéder à votre position refusée');
             return;
         }
-        let location = await Location.getCurrentPositionAsync({});
-        setLatitude(location.coords.latitude.toString());
-        setLongitude(location.coords.longitude.toString());
-        const coord = {
-            latitude: latitude,
-            longitude: longitude,
+        const location = await Location.reverseGeocodeAsync({
+            latitude: region.latitude,
+            longitude: region.longitude,
+        });
 
-        };
+        setAdresse(location[0].formattedAddress?.toString())
+        /* setLatitude(location.coords.latitude.toString());
+         setLongitude(location.coords.longitude.toString());*/
+
 
         setIndicateur(false);
 
@@ -149,7 +150,7 @@ export default function FormAjoutArbre() {
                     </View>
                     <TextInput editable={false} placeholder="Date de plantation" style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{datePlantation}</TextInput>
                     <View style={styles.container}>
-                        <MapView style={styles.map} showsUserLocation={true} onRegionChangeComplete={(region) => { setLatitude(region.latitude.toString()), setLongitude(region.longitude.toString()) }} />
+                        <MapView style={styles.map} showsUserLocation={true} onRegionChangeComplete={(region) => { setLatitude(region.latitude.toString()), setLongitude(region.longitude.toString()), trouverPosition(region) }} />
 
                     </View>
 
