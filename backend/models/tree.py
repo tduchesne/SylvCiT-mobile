@@ -9,14 +9,17 @@ class Tree(db.Model):
     __tablename__ = 'tree'
 
     id_tree = db.Column(db.Integer, primary_key=True)
-    date_plantation = db.Column(db.Date, nullable=False)
+    no_emp = db.Column(db.Integer, nullable=True, unique=True)
+    adresse = db.Column(db.String(45), nullable=True)
+    dhp = db.Column(db.Integer, nullable=True)
+    date_plantation = db.Column(db.Date, nullable=True)
     date_measure = db.Column(db.Date, nullable=False)
 
-    id_family = db.Column(db.Integer, db.ForeignKey('family.id_family'), nullable=False)
-    id_genre = db.Column(db.Integer, db.ForeignKey('genre.id_genre'), nullable=False)
-    id_location = db.Column(db.Integer, db.ForeignKey('location.id_location'), nullable=False)
-    id_type = db.Column(db.Integer, db.ForeignKey('type.id_type'), nullable=False)
-    id_functional_group = db.Column(db.Integer, db.ForeignKey('functional_group.id_functional_group'), nullable=False)
+    id_family = db.Column(db.Integer, db.ForeignKey('family.id_family'), nullable=True)
+    id_genre = db.Column(db.Integer, db.ForeignKey('genre.id_genre'), nullable=True)
+    id_location = db.Column(db.Integer, db.ForeignKey('location.id_location'), nullable=True)
+    id_type = db.Column(db.Integer, db.ForeignKey('type.id_type'), nullable=True)
+    id_functional_group = db.Column(db.Integer, db.ForeignKey('functional_group.id_functional_group'), nullable=True)
 
     family = db.relationship('Family', back_populates='trees')
     genre = db.relationship('Genre', back_populates='trees')
@@ -27,6 +30,9 @@ class Tree(db.Model):
     def to_dict(self):
         return {
             'id_tree': self.id_tree,
+            'no_emp': self.no_emp,
+            'adresse': self.adresse,
+            'dhp': self.dhp,
             'date_plantation': self.date_plantation.isoformat(),
             'date_measure': self.date_measure.isoformat(),
             'family': self.family.to_dict() if self.family else None,
