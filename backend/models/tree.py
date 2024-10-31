@@ -14,6 +14,7 @@ class Tree(db.Model):
     dhp = db.Column(db.Integer, nullable=True)
     date_plantation = db.Column(db.Date, nullable=True)
     date_measure = db.Column(db.Date, nullable=False)
+    is_valid = db.Column(db.Boolean, nullable=False)
 
     id_family = db.Column(db.Integer, db.ForeignKey('family.id_family'), nullable=True)
     id_genre = db.Column(db.Integer, db.ForeignKey('genre.id_genre'), nullable=True)

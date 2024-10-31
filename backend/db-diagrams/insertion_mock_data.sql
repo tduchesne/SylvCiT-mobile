@@ -57,7 +57,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `inm5151_db`;
-INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`) VALUES ('2019-07-12', '2021-06-05', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4857', 6, 1, 1, 2, 12, 1, 'Adresse 1', 1);
-INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`) VALUES ('2018-06-24', '2022-09-16', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4552', 7, 2, 2, 5, 10, 2, 'Adresse 2', 2);
-INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`) VALUES ('2017-10-12', '2023-01-11', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4705', 8, 3, 3, 4, 11, 3, 'Adresse 3', 3);
+INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`) VALUES ('2019-07-12', '2021-06-05', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4857', 6, 1, 1, 2, 12, 1, 'Adresse 1', 1, true);
+INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`) VALUES ('2018-06-24', '2022-09-16', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4552', 7, 2, 2, 5, 10, 2, 'Adresse 2', 2, true);
+INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`) VALUES ('2017-10-12', '2023-01-11', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4705', 8, 3, 3, 4, 11, 3, 'Adresse 3', 3, true);
 COMMIT;

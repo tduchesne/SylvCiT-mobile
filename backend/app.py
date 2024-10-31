@@ -30,8 +30,6 @@ def create_app(config_name=None):
     # Initialize Flask-Migrate
     migrate.init_app(app, db)
 
-    
-
     # Error handler to send json response
     @app.errorhandler(400)
     def bad_request(error):
@@ -140,7 +138,8 @@ def create_app(config_name=None):
                 dhp=dhp,
                 date_plantation=date_plantation,
                 date_measure=date_releve,
-                id_location=new_location.id_location
+                id_location=new_location.id_location,
+                is_valid=False
             )
             db.session.add(new_tree)
             db.session.commit()
@@ -159,7 +158,8 @@ def create_app(config_name=None):
             'date_plantation': new_tree.date_plantation,
             'date_releve': new_tree.date_measure,
             'latitude': new_location.latitude,
-            'longitude': new_location.longitude
+            'longitude': new_location.longitude,
+            'valide': new_tree.is_valid
             }), 201
 
 
