@@ -87,6 +87,7 @@ def create_app(config_name=None):
 
         if dhp == "" or not isinstance(dhp, int):
             dhp = None
+            abort(400, description="Le champ 'dhp' doit être un entier.")
 
         date_plantation = info.get('date_plantation')
 
