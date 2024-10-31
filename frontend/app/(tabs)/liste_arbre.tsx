@@ -177,9 +177,9 @@ export default function TabTwoScreen() {
           <ThemedView style={styles.container}>
             <ThemedView style={styles.searchBar}>
               <Pressable onPress={openFilterModal}
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-                style={{ opacity: isPressed ? 0.5 : 1 }}>
+                style={({ pressed }) => [
+                    { opacity: pressed ? 0.5 : 1 }
+                ]}>
 
                 <Ionicons name="options-outline" size={24} color="gray" style={styles.filterIcon} />
               </Pressable>
@@ -215,30 +215,25 @@ export default function TabTwoScreen() {
                       
                     </ThemedView>
                   ))}
-                  <Pressable onPress={applyFilters}
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
+                  <Pressable onPress={applyFilters} 
                     style={({ pressed }) => [
-                      styles.applyButton,
-                      { opacity: pressed ? 0.5 : 1 }
+                        styles.applyButton,
+                        { opacity: pressed ? 0.5 : 1 }
                     ]}>
                     <ThemedText style={styles.buttonText}>Apply Filters</ThemedText>
                   </Pressable>
-                  <Pressable onPress={clearFilters} 
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
+                  <Pressable
+                    onPress={clearFilters} 
                     style={({ pressed }) => [
-                      styles.clearButton,
-                      { opacity: pressed ? 0.5 : 1 }
+                        styles.clearButton,
+                        { opacity: pressed ? 0.5 : 1 }
                     ]}>
                     <ThemedText style={styles.buttonText}>Clear Filters</ThemedText>
                   </Pressable>
                   <Pressable onPress={closeFilterModal} 
-                    onPressIn={handlePressIn}
-                    onPressOut={handlePressOut}
                     style={({ pressed }) => [
-                      styles.closeButton,
-                      { opacity: pressed ? 0.5 : 1 }
+                    styles.closeButton,
+                    { opacity: pressed ? 0.5 : 1 }
                     ]}>
                     <ThemedText style={styles.buttonText}>Close</ThemedText>
                   </Pressable>
@@ -410,7 +405,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: "#fff",
-    paddingVertical: 25,
+    paddingVertical: 10,
     paddingHorizontal: 30,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -424,9 +419,9 @@ const styles = StyleSheet.create({
   },
 
   overlayText: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
-    marginTop: -10,
+    marginTop: 1,
     color: "#333",
     marginBottom: 10,
     textAlign: "center",
@@ -442,7 +437,6 @@ const styles = StyleSheet.create({
 
   modalButton: {
     backgroundColor: "#388E3C",
-    paddingVertical: 14,
     paddingHorizontal: 10,
     borderRadius: 8,
     alignItems: "center",
