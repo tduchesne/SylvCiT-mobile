@@ -179,14 +179,32 @@ def create_app(config_name=None):
             if isinstance(column.type, db.String):
                 conditions.append(column.ilike(f'%{recherche}%'))
 
-
-        trees = Tree.query.options(
-            joinedload(Tree.family),
-            joinedload(Tree.genre),
-            joinedload(Tree.location),
-            joinedload(Tree.type),
-            joinedload(Tree.functional_group)
-        ).filter(or_(*conditions)).all()
+        trees = Tree.query.join(
+            Family,
+            Tree.id_family == Family.id_family
+        ).join(
+            Genre,
+            Tree.id_genre == Genre.id_genre
+        ).join(
+            Type,
+            Tree.id_type == Type.id_type
+        ).join(
+            Location,
+            Tree.id_location == Location.id_location
+        ).join(
+            FunctionalGroup,
+            Tree.id_functional_group == FunctionalGroup.id_functional_group
+        ).filter(or_(*conditions,
+                     Type.name_fr.ilike(f'%{recherche}%'),
+                     Type.name_la.ilike(f'%{recherche}%'),
+                     Type.name_en.ilike(f'%{recherche}%'),
+                     Family.name.ilike(f'%{recherche}%'),
+                     Genre.name.ilike(f'%{recherche}%'),
+                     FunctionalGroup.group.ilike(f'%{recherche}%'),
+                     FunctionalGroup.description.ilike(f'%{recherche}%'),
+                     Location.latitude.ilike(f'%{recherche}%'),
+                     Location.longitude.ilike(f'%{recherche}%')
+                     )).all()
 
         list_tree = [tree.to_dict() for tree in trees]
 
