@@ -18,6 +18,11 @@ class Tree(db.Model):
     id_tree = db.Column(db.Integer, primary_key=True)
     date_plantation = db.Column(db.Date, nullable=False)
     date_measure = db.Column(db.Date, nullable=False)
+    approbation_status = db.Column(
+        db.Enum("pending", "approved", "rejected", name="approbation_status_enum"),
+        default="pending",
+        nullable=False
+    )
     details_url = db.Column(db.String(150))
     id_type = db.Column(db.Integer)
     id_genre = db.Column(db.Integer)
