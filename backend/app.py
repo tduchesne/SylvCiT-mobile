@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, or_
 
 import os
 
@@ -45,6 +45,36 @@ def get_trees():
             } for t in trees
         ])
 
+@app.route('api/trees/filter', methods=['GET'])
+def filter():
+
+    keyword = request.args.get('keyword', '')
+
+    if keyword:
+        trees = db.session.query(Tree).join(Tree.location).join(Tree.type).filter(
+            or_(
+                Tree.date_plantation.ilike(f"%{keyword}%"),
+                Tree.date_measure.ilike(f"%{keyword}%"),
+                Tree.location.latitude.ilike(f"%{keyword}%"),
+                Tree.location.longitude.ilike(f"%{keyword}%"),
+                Tree.type.name_fr.ilike(f"%{keyword}%"),
+                Tree.type.name_en.ilike(f"%{keyword}%"),
+                Tree.type.name_la.ilike(f"%{keyword}%"),
+            ))
+    else:
+        trees = Tree.query.all()
+    
+    return jsonify(
+        [{
+            'date_plantation': tree.date_plantation,
+            'date_releve': tree.date_measure,
+            'essence_latin': tree.type.name_la,
+            'essence_ang': tree.type.name_en,
+            'essence_fr': tree.type.name_fr,
+            'latitude': tree.location.latitude,
+            'longitude': tree.location.longitude,
+        } for tree in trees]
+    )
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
