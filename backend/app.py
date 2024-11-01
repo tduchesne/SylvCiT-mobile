@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData, Enum
@@ -44,6 +44,25 @@ def get_trees():
             'id_type': t.id_type
             } for t in trees
         ])
+    
+@app.route('/api/trees/<int:id_tree>', methods=['PUT'])
+def update_tree_status(id_tree):
+    data = request.get_json()
+
+    if 'approbation_status' not in data:
+        abort(400, description="Appropriation status is required.")
+    if data['approbation_status'] not in ["pending", "approved", "rejected"]:
+        abort(400, description="Invalid approbation status.")
+
+    # Get, modify and save tree
+    tree = Tree.query.get(id_tree)
+    if not tree:
+        abort(404, description="Tree not found.")
+
+    tree.approbation_status = data['approbation_status']
+    db.session.commit()
+
+    return jsonify({"message": "Tree status updated successfully."}), 200
 
 
 if __name__== '__main__':
