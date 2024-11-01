@@ -35,13 +35,16 @@ def get_trees():
     trees = Tree.query.all()
     return jsonify(
         [{
-            'id_tree': t.id_tree, 
-            'date_plantation': t.date_plantation, 
-            'id_family': t.id_family, 
-            'id_functional_group': t.id_functional_group, 
-            'id_genre': t.id_genre, 
-            'id_location': t.id_location, 
-            'id_type': t.id_type
+            'id_tree': t.id_tree,
+            'date_plantation': t.date_plantation.isoformat(),
+            'date_measure': t.date_measure.isoformat(),
+            'approbation_status': t.approbation_status,
+            'details_url': t.details_url,
+            'id_type': t.id_type,
+            'id_genre': t.id_genre,
+            'id_family': t.id_family,
+            'id_functional_group': t.id_functional_group,
+            'id_location': t.id_location
             } for t in trees
         ])
     
