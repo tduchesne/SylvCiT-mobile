@@ -1,11 +1,12 @@
 from datetime import datetime
-from flask import Flask, jsonify, request, abort, redirect, url_for
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData, or_
 
 import os
-from sqlalchemy.orm import joinedload
+
+from sqlalchemy.orm import with_polymorphic
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -40,7 +41,7 @@ def create_app(config_name=None):
         return jsonify({'description': error.description}), 500
     
     # Import models after db initialization
-    from models import AddTree, Tree, Family, FunctionalGroup, Genre, Location, Type
+    from models import ListDelete, Tree, Family, FunctionalGroup, Genre, Location, Type, tree_rue, tree_hors_rue
 
 
     @app.before_request
@@ -175,11 +176,14 @@ def create_app(config_name=None):
         if recherche.isdigit():
             conditions.append(Tree.id_tree == int(recherche))
 
-        for column in Tree.__table__.columns:
-            if isinstance(column.type, db.String):
-                conditions.append(column.ilike(f'%{recherche}%'))
+        for mapper in Tree.__mapper__.self_and_descendants:
+            for column in mapper.columns:
+                if isinstance(column.type, db.String):
+                    conditions.append(column.ilike(f'%{recherche}%'))
 
-        trees = Tree.query.join(
+        tree_poly = with_polymorphic(Tree, [tree_rue, tree_hors_rue])
+
+        trees = db.session.query(tree_poly).join(
             Family,
             Tree.id_family == Family.id_family
         ).join(
@@ -210,6 +214,22 @@ def create_app(config_name=None):
 
         return jsonify(list_tree), 200
 
+    @app.route('/api/demande_suppression/<int:no_emp>', methods=['POST'])
+    def demande_suppression_arbre(no_emp):
+        if Tree.query.filter_by(no_emp=no_emp).first() is None:
+            return jsonify({"message": "Arbre non-trouvable"}), 404
+        elif ListDelete.query.filter_by(no_emp=no_emp).first() is not None:
+            return jsonify({"message": "Demande déja envoyée"}), 409
+
+        request_delete = ListDelete(
+            no_emp=no_emp
+        )
+
+        db.session.add(request_delete)
+        db.session.commit()
+
+        return jsonify({"message": "Demande envoyée"}), 200
+
     @app.route('/api/delete_tree/<int:no_emp>', methods=['POST'])
     def delete_tree(no_emp):
         tree = Tree.query.filter_by(no_emp=no_emp).first()
@@ -219,6 +239,10 @@ def create_app(config_name=None):
 
         db.session.delete(tree)
         db.session.commit()
+        list_delete = ListDelete.query.filter_by(no_emp=no_emp).first()
+        if list_delete:
+            db.session.delete(list_delete)
+            db.session.commit()
 
         return jsonify({"message": "Arbre supprimé"}), 200
 
@@ -299,6 +323,8 @@ def create_app(config_name=None):
             db.session.rollback()
             return jsonify({"message": "Une erreur s'est produite lors de la modification de l'arbre"}), 500
     return app
+
+
 
 if __name__== '__main__':
     app = create_app()

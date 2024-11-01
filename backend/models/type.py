@@ -8,6 +8,8 @@ class Type(db.Model):
     name_en = db.Column(db.String(100))
     name_la = db.Column(db.String(100))
 
+    trees = db.relationship('Tree', back_populates='type')
+
     def to_dict(self):
         return {
             'id_type': self.id_type,

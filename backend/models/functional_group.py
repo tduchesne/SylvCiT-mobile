@@ -6,6 +6,7 @@ class FunctionalGroup(db.Model):
     id_functional_group = db.Column(db.Integer, primary_key=True)
     group = db.Column(db.String(2))
     description = db.Column(db.String(250))
+    trees = db.relationship('Tree', back_populates='functional_group')
 
     def to_dict(self):
         return {
