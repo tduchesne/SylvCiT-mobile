@@ -1,106 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Screen from "@/components/Screen";
 import { StyleSheet, TextInput, Modal, FlatList, Image, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Config } from "../../config";
+import Config from "../../config";
 
-// mock tree list to test filters. remove when implementing back-end call
-const treeList = [
-    {
-        essence_latin: "Quercus robur",
-        essence_ang: "English Oak",
-        essence_fr: "Chêne pédonculé",
-        date_plantation: "2015-04-10",
-        arrondissement: "Montréal",
-        dhp: 35,
-        date_releve: "2023-05-12",
-      },
-      {
-        essence_latin: "Acer saccharum",
-        essence_ang: "Sugar Maple",
-        essence_fr: "Érable à sucre",
-        date_plantation: "2010-06-15",
-        arrondissement: "Laval",
-        dhp: 42,
-        date_releve: "2023-06-01",
-      },
-      {
-        essence_latin: "Picea abies",
-        essence_ang: "Norway Spruce",
-        essence_fr: "Épinette de Norvège",
-        date_plantation: "2018-09-30",
-        arrondissement: "Québec City",
-        dhp: 30,
-        date_releve: "2023-07-15",
-      },
-      {
-        essence_latin: "Quercus robur",
-        essence_ang: "English Oak",
-        essence_fr: "Chêne pédonculé",
-        date_plantation: "2015-04-10",
-        arrondissement: "Montréal",
-        dhp: 35,
-        date_releve: "2023-05-10",
-      },
-      {
-        essence_latin: "Pinus strobus",
-        essence_ang: "Eastern White Pine",
-        essence_fr: "Pin blanc",
-        date_plantation: "2012-03-21",
-        arrondissement: "Gatineau",
-        dhp: 38,
-        date_releve: "2023-04-22",
-      },
-      {
-        essence_latin: "Acer saccharum",
-        essence_ang: "Sugar Maple",
-        essence_fr: "Érable à sucre",
-        date_plantation: "2010-06-15",
-        arrondissement: "Laval",
-        dhp: 42,
-        date_releve: "2023-06-05",
-      },
-      {
-        essence_latin: "Betula papyrifera",
-        essence_ang: "Paper Birch",
-        essence_fr: "Bouleau à papier",
-        date_plantation: "2014-10-05",
-        arrondissement: "Montréal",
-        dhp: 29,
-        date_releve: "2023-08-14",
-      },
-      {
-        essence_latin: "Fagus sylvatica",
-        essence_ang: "European Beech",
-        essence_fr: "Hêtre commun",
-        date_plantation: "2013-08-19",
-        arrondissement: "Gatineau",
-        dhp: 37,
-        date_releve: "2023-09-17",
-      },
-      {
-        essence_latin: "Pinus strobus",
-        essence_ang: "Eastern White Pine",
-        essence_fr: "Pin blanc",
-        date_plantation: "2012-03-21",
-        arrondissement: "Gatineau",
-        dhp: 38,
-        date_releve: "2023-04-20",
-      },
-      {
-        essence_latin: "Thuja occidentalis",
-        essence_ang: "Northern White Cedar",
-        essence_fr: "Thuya occidental",
-        date_plantation: "2016-12-05",
-        arrondissement: "Québec City",
-        dhp: 27,
-        date_releve: "2023-07-21",
-      },
-];
-
+// These are the fields used for each tree in the list
 interface Tree {
   essence_latin: string;
   essence_ang: string;
@@ -118,7 +25,8 @@ export default function TabTwoScreen() {
   const [selectedSpecies, setSelectedSpecies] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedDHP, setSelectedDHP] = useState("");
-  const [sortedTrees, setSortedTrees] = useState(treeList);
+
+  const [sortedTrees, setSortedTrees] = useState([]);
   const [showBox] = useState(true);
 
   const openFilterModal = () => setFilterModalVisible(true);
@@ -134,12 +42,54 @@ export default function TabTwoScreen() {
     setIsPressed(false);
   };
 
-  const uniqueYears = [...new Set(treeList.map(tree => parseInt(tree.date_plantation.split("-")[0])))].sort((a, b) => a - b).map(year => year.toString());
-  const uniqueSpecies = [...new Set(treeList.map(tree => tree.essence_latin))].sort();
-  const uniqueRegions = [...new Set(treeList.map(tree => tree.arrondissement))].sort();
+  // ================================================================ //
+
+  // Load all trees on page load
+  useEffect(() => {
+    fetchFilteredTrees(""); // Fetch all trees on initial load
+  }, []);
+
+  // Only apply filter when user presses Enter. We fetch only when the word is typed out fully
+  const handleKeyPress = (event) => {
+    if (event.nativeEvent.key === "Enter") {
+      fetchFilteredTrees(searchText);
+    }
+  }
+
+  /**
+   *  Fetch trees from backend using the API
+   */
+  const fetchFilteredTrees = async (keyword) => {
+    try {
+      const response = await fetch(`${Config.API_URL}/api/trees/filter?keyword=${encodeURIComponent(keyword)}`, {
+        method: 'GET',
+        headers : {
+          'Content-Type' : 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        console.error("Error: network response not ok");
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+      setSortedTrees(data);
+
+    } catch (error) {
+      console.error("Error: fetching trees unsuccesful: ", error);
+    } 
+  } 
+
+  // ================================================================ //
+
+  const uniqueYears = [...new Set(sortedTrees.map(tree => parseInt(tree.date_plantation.split("-")[0])))].sort((a, b) => a - b).map(year => year.toString());
+  const uniqueSpecies = [...new Set(sortedTrees.map(tree => tree.essence_latin))].sort();
+  const uniqueRegions = [...new Set(sortedTrees.map(tree => tree.arrondissement))].sort();
   const uniqueDHPRanges = () => {
     const dhpIntervals = 5;
-    const dhpValues = treeList.map(tree => tree.dhp);
+    const dhpValues = sortedTrees.map(tree => tree.dhp);
     const minDHP = Math.min(...dhpValues);
     const maxDHP = Math.max(...dhpValues);
     const ranges = [];
@@ -149,8 +99,12 @@ export default function TabTwoScreen() {
     return ranges.sort((a, b) => parseInt(a.split("-")[0]) - parseInt(b.split("-")[0]));
   };
 
-  const applyFilters = () => {
-    let filteredData = [...treeList];
+  const applyFilters = async () => {
+    // use API call without keyword to fetch and populate the list
+    await fetchFilteredTrees("");
+    let filteredData = [...sortedTrees];
+
+    // Modify each call here to fetch tree in backend using a keyword linked to the field 
     if (selectedYear) filteredData = filteredData.filter(tree => tree.date_plantation.startsWith(selectedYear));
     if (selectedSpecies) filteredData = filteredData.filter(tree => tree.essence_latin === selectedSpecies);
     if (selectedRegion) filteredData = filteredData.filter(tree => tree.arrondissement === selectedRegion);
@@ -158,16 +112,17 @@ export default function TabTwoScreen() {
       const [minDHP, maxDHP] = selectedDHP.split("-").map(Number);
       filteredData = filteredData.filter(tree => tree.dhp >= minDHP && tree.dhp < maxDHP);
     }
+
     setSortedTrees(filteredData);
     closeFilterModal();
   };
 
-  const clearFilters = () => {
+  const clearFilters = async () => {
     setSelectedYear("");
     setSelectedSpecies("");
     setSelectedRegion("");
     setSelectedDHP("");
-    setSortedTrees(treeList);
+    await fetchFilteredTrees("");
   };
 
   return (
@@ -190,6 +145,8 @@ export default function TabTwoScreen() {
                 placeholderTextColor="gray"
                 value={searchText}
                 onChangeText={setSearchText}
+                // onKeyPress={handleKeyPress} // Apply the filter only when the word is fully typed out
+                onSubmitEditing={() => fetchFilteredTrees(searchText)}
               />
               <Ionicons name="search-outline" size={24} color="gray" style={styles.searchIcon} />
             </ThemedView>
@@ -216,6 +173,7 @@ export default function TabTwoScreen() {
                       
                     </ThemedView>
                   ))}
+                  
                   <Pressable onPress={applyFilters} 
                     style={({ pressed }) => [
                         styles.applyButton,
