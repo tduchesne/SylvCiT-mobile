@@ -48,7 +48,7 @@ def get_trees():
             } for t in trees
         ])
     
-@app.route('/api/trees/<int:id_tree>', methods=['PUT'])
+@app.route('/api/tree/status/<int:id_tree>', methods=['PUT'])
 def update_tree_status(id_tree):
     data = request.get_json()
 

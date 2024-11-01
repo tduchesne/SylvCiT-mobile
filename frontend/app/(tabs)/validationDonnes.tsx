@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, View, Text, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
 import Screen from '@/components/Screen';
+import Config from "@/config";
 
 type TreeData = {
   id: number;
@@ -17,7 +18,7 @@ type TreeData = {
 const mockDatabase: TreeData[] = [
   {
     id: 1,
-    name: 'Acer platanoides',
+    name: '1Acer platanoides',
     family: 'Fabaceae',
     genus: 'Gymnocladus',
     plantingDate: '14/01/2016',
@@ -28,7 +29,18 @@ const mockDatabase: TreeData[] = [
   },
   {
     id: 2,
-    name: 'Pinus sylvestris',
+    name: '2Pinus sylvestris',
+    family: 'Pinaceae',
+    genus: 'Pinus',
+    plantingDate: '22/08/2010',
+    speciesEN: 'Scots Pine',
+    speciesFR: 'Pin sylvestre',
+    speciesLA: 'Pinus sylvestris',
+    imageUrl: 'https://example.com/scots-pine.jpg',
+  },
+  {
+    id: 3,
+    name: '3Pinus sylvestris',
     family: 'Pinaceae',
     genus: 'Pinus',
     plantingDate: '22/08/2010',
@@ -41,26 +53,86 @@ const mockDatabase: TreeData[] = [
 
 export default function ValidationScreen() {
   const [treeData, setTreeData] = useState<TreeData | null>(null);
+  const [treeList, setTreeList] = useState<TreeData[]>(mockDatabase);
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
 
   useEffect(() => {
     const fetchTreeData = () => {
       setTimeout(() => {
-        const data = mockDatabase.find((tree) => tree.id === 1);
+        const data = treeList.find((tree) => tree.id === 1);
         setTreeData(data || null);
       }, 1000);
     };
+    if (treeData == null) fetchTreeData();
+  }, [treeList]);
 
-    fetchTreeData();
-  }, []);
+  const modifyTreeStatus = async (id: number, status: string) => {
+    try {
+      const requestBody = {
+        approbation_status: status,
+      };
+      const response = await fetch(`${Config.API_URL}/api/tree/status/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-  const handleValidate = () => {
+      return response.ok;
+    } catch (error) {
+      console.log(`Status change error: ${error}`);
+      return false;
+    }
+  };
+
+  const exitToMenu =  () => {} // TODO
+
+
+
+  // Open next tree in tree list. If 'removeFromList', remove tree from list and exit if list.length == 0.
+  // Otherwise, exit if list.length == 1.
+  const seekNextTree = (removeFromList: boolean): boolean => {
+    let index = treeData ? treeList.indexOf(treeData) : -1;
+
+    if (index != -1) {
+      if (removeFromList) {
+        if (treeList.length > 1) {
+          setTreeData(treeList[(index + 1) % treeList.length]);
+
+          const updatedList = [...treeList];
+          updatedList.splice(index, 1);
+          setTreeList(updatedList);
+
+          return true;
+        } else {
+          setTreeList([]);
+          setTreeData(null);
+        }
+      }
+      else {
+        if (treeList.length > 1) {
+          setTreeData(treeList[(index + 1) % treeList.length]);
+          return true;
+        }
+      }
+    }
+    exitToMenu();
+    return false;
+  }
+  
+  const handleValidate = async () => {
     console.log('Arbre validé:', treeData?.name);
+    if (treeData) {
+      modifyTreeStatus(treeData!.id, 'approved');
+      seekNextTree(true);
+    }
   };
 
   const handleSkip = () => {
     console.log('Arbre ignoré:', treeData?.name);
+    seekNextTree(false);
   };
 
   const handleModify = () => {
