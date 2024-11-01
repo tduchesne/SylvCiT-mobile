@@ -19,7 +19,7 @@ class Tree(db.Model):
     date_plantation = db.Column(db.Date, nullable=False)
     date_measure = db.Column(db.Date, nullable=False)
     approbation_status = db.Column(
-        db.Enum("pending", "approved", "rejected", name="approbation_status_enum"),
+        db.Enum("pending", "approved", name="approbation_status_enum"),
         default="pending",
         nullable=False
     )

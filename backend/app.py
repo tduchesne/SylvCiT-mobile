@@ -54,7 +54,7 @@ def update_tree_status(id_tree):
 
     if 'approbation_status' not in data:
         abort(400, description="Appropriation status is required.")
-    if data['approbation_status'] not in ["pending", "approved", "rejected"]:
+    if data['approbation_status'] not in ["pending", "approved"]:
         abort(400, description="Invalid approbation status.")
 
     # Get, modify and save tree
