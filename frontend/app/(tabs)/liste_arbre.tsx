@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Config } from "../../config";
 
 // mock tree list to test filters. remove when implementing back-end call
 const treeList = [
