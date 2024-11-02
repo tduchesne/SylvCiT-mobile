@@ -75,32 +75,10 @@ def create_app(config_name=None):
     def add_tree():
         info = request.get_json()
 
-        no_emp = info.get('no_emp')
-        if no_emp == "":
-            no_emp = None
-
-        adresse = info.get('adresse')
-        arrondissement = info.get('arrondissement')
-        emplacement = info.get('emplacement')
-        details_url = info.get('details_url')
-        essence_latin = info.get('essence_latin')
-        essence_fr = info.get('essence_fr')
-        essence_ang = info.get('essence_ang')
-        dhp = info.get('dhp')
-
-        if dhp == "" or not isinstance(dhp, int):
-            dhp = None
-            abort(400, description="Le champ 'dhp' doit être un entier.")
-
-        date_plantation = info.get('date_plantation')
-
-        if date_plantation == "" or not isinstance(date_plantation, str):
-            date_plantation = None
-        else:
-            try:
-                date_plantation = datetime.strptime(date_plantation, '%Y-%m-%d').date()
-            except ValueError:
-                abort(400, description="Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD.")
+        try:
+            no_emp = int(info.get('no_emp'))
+        except (ValueError, TypeError):
+            abort(400, description="Le champ 'no_emp' doit être un entier.")
 
         latitude = info.get('latitude')
         longitude = info.get('longitude')
@@ -121,6 +99,25 @@ def create_app(config_name=None):
         except ValueError:
             abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
 
+        no_arrondissement = info.get('no_arrondissement')
+        emplacement = info.get('emplacement')
+        sigle = info.get('sigle')
+        dhp = info.get('dhp')
+        if dhp == "":
+            dhp = None
+        else:
+            try:
+                dhp = int(dhp)
+            except ValueError:
+                abort(400, description="Le champ 'dhp' doit être un entier.")
+
+        date_plantation = info.get('date_plantation')
+        if date_plantation:
+            try:
+                date_plantation = datetime.strptime(date_plantation, '%Y-%m-%d').date()
+            except ValueError:
+                abort(400, description="Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD.")
+
         inv_type = info.get('inv_type')
         if inv_type == "":
             inv_type = None
@@ -128,72 +125,49 @@ def create_app(config_name=None):
         elif inv_type not in ['R', 'H']:
             abort(400, description="Le champ 'inv_type' doit être 'R' ou 'H'.")
 
-        is_valid = False
-
         if inv_type == 'R':
-            no_civique = info.get('no_civique')
-            nom_rue = info.get('nom_rue')
-            cote = info.get('cote')
-            localisation = info.get('localisation')
-            rue_de = info.get('rue_de')
-            rue_a = info.get('rue_a')
-            distance_pave = info.get('distance_pave')
-            distance_ligne_rue = info.get('distance_ligne_rue')
-            stationnement_heure = info.get('stationnement_heure')
-
             new_tree = TreeRue(
                 no_emp=no_emp,
-                adresse=adresse,
-                arrondissement=arrondissement,
+                no_arrondissement=no_arrondissement,
                 emplacement=emplacement,
-                details_url=details_url,
+                sigle=sigle,
                 dhp=dhp,
                 date_plantation=date_plantation,
                 date_measure=date_releve,
+                longitude=longitude,
+                latitude=latitude,
                 inv_type=inv_type,
-                no_civique=no_civique,
-                nom_rue=nom_rue,
-                cote=cote,
-                localisation=localisation,
-                rue_de=rue_de,
-                rue_a=rue_a,
-                distance_pave=distance_pave,
-                distance_ligne_rue=distance_ligne_rue,
-                stationnement_heure=stationnement_heure,
-                is_valid=is_valid
+                adresse=info.get('adresse'),
+                localisation=info.get('localisation'),
+                localisation_code=info.get('localisation_code'),
+                rue_de=info.get('rue_de'),
+                rue_a=info.get('rue_a'),
+                distance_pave=info.get('distance_pave'),
+                distance_ligne_rue=info.get('distance_ligne_rue'),
+                stationnement_jour=info.get('stationnement_jour'),
+                stationnement_heure=info.get('stationnement_heure'),
+                district=info.get('district'),
+                arbre_remarquable=info.get('arbre_remaquable'),
+                is_valid=False
             )
         else:
-            nom_parc = info.get('nom_parc')
-            nom_secteur = info.get('nom_secteur')
             new_tree = TreeHorsRue(
                 no_emp=no_emp,
-                adresse=adresse,
-                arrondissement=arrondissement,
+                no_arrondissement=no_arrondissement,
                 emplacement=emplacement,
-                details_url=details_url,
+                sigle=sigle,
                 dhp=dhp,
                 date_plantation=date_plantation,
                 date_measure=date_releve,
+                longitude=longitude,
+                latitude=latitude,
                 inv_type=inv_type,
-                nom_parc=nom_parc,
-                nom_secteur=nom_secteur,
-                is_valid=is_valid
+                code_parc=info.get('code_parc'),
+                code_secteur=info.get('code_secteur'),
+                is_valid=False
             )
 
         try:
-            new_location = Location(
-                latitude=latitude,
-                longitude=longitude
-            )
-            db.session.add(new_location)
-            db.session.flush()
-            new_type = Type(
-                name_fr = essence_fr,
-                name_la = essence_latin,
-                name_en = essence_ang
-            )
-            db.session.add(new_type)
-            db.session.flush()
             db.session.add(new_tree)
             db.session.commit()
         except Exception as e:
@@ -201,19 +175,7 @@ def create_app(config_name=None):
             print(e)
             abort(500, description="Erreur lors de l'ajout de l'arbre.")
 
-        return jsonify({
-            'no_emp': new_tree.no_emp,
-            'adresse': new_tree.adresse,
-            'essence_latin': new_type.name_la,
-            'essence_fr': new_type.name_fr,
-            'essence_ang': new_type.name_en,
-            'dhp': new_tree.dhp,
-            'date_plantation': new_tree.date_plantation,
-            'date_releve': new_tree.date_measure,
-            'latitude': new_location.latitude,
-            'longitude': new_location.longitude,
-            'valide': new_tree.is_valid
-            }), 201
+        return jsonify(new_tree.to_dict()), 201
 
 
 

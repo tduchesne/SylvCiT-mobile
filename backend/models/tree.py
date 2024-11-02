@@ -32,11 +32,6 @@ class Tree(db.Model):
 
     arrondissement = db.relationship('Arrondissement', back_populates='trees')
     essence = db.relationship('Essence', back_populates='trees')
-    # family = db.relationship('Family', back_populates='trees')
-    # genre = db.relationship('Genre', back_populates='trees')
-    # location = db.relationship('Location', back_populates='trees')
-    # type = db.relationship('Type', back_populates='trees')
-    # functional_group = db.relationship('FunctionalGroup', back_populates='trees')
 
     def to_dict(self):
         return {
@@ -104,7 +99,7 @@ class TreeHorsRue(Tree):
     )
     no_emp = db.Column(db.Integer, db.ForeignKey('tree.no_emp'), primary_key=True, nullable=False)
     code_parc = db.Column(db.String(10), db.ForeignKey('parc.code_parc'), nullable=True)
-    code_secteur = db.Column(db.String(10), db.ForeignKey('secteur.code_secteur'), nullable=False)
+    code_secteur = db.Column(db.String(10), db.ForeignKey('secteur.code_secteur'), nullable=True)
 
     parc = db.relationship('Parc', back_populates='trees')
     secteur = db.relationship('Secteur', back_populates='trees')
