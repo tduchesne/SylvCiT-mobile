@@ -11,14 +11,10 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "./ThemedText";
+import { useUserRole } from "@/context/UserRoleContext";
 
-export default function AuthScreen({
-  onPressLogin,
-  onPressVisitor,
-}: {
-  onPressLogin: (role: number) => void;
-  onPressVisitor: () => void;
-}) {
+export default function AuthScreen() {
+  const { setUserRole } = useUserRole();
   const colorScheme = useColorScheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -42,18 +38,22 @@ export default function AuthScreen({
       if (response.ok) {
         const data = await response.json();
         setErrorMessage("");
-        onPressLogin(data.role);
+        setUserRole(data.role); // This will update the context
       } else {
-        setErrorMessage("Mauvais nom d'utilisateur ou mot de passe");
+        setErrorMessage("Mauvais nom d'utilisateur/mot de passe.");
       }
     } catch (error) {
-      setErrorMessage("Une erreur est survenue. Veuillez réessayer.");
+      setErrorMessage("Une erreur est survenue. Réessayez.");
     }
   };
 
   const handleLogin = () => {
     setErrorMessage("");
     login();
+  };
+
+  const handleVisitor = () => {
+    setUserRole(0); 
   };
 
   return (
@@ -69,7 +69,7 @@ export default function AuthScreen({
         color={colorScheme === "dark" ? "#7bb586" : "#046122"}
         style={styles.icon}
       />
-      {errorMessage ? ( // Message d'erreur s'il y en a un
+      {errorMessage ? (
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       ) : null}
 
@@ -98,9 +98,9 @@ export default function AuthScreen({
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onPressVisitor} style={styles.link}>
+      <TouchableOpacity onPress={handleVisitor} style={styles.link}>
         <ThemedText style={{ textDecorationLine: "underline" }}>
-          Continue en tant que visiteur
+          Continue en tant que visiteur.
         </ThemedText>
       </TouchableOpacity>
     </View>
@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    width:350,
+    width: 350,
     justifyContent: "center",
-    alignSelf : "center",
+    alignSelf: "center",
     borderColor: "#ccc",
     borderWidth: 1,
     marginBottom: 20,
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    width:350,
+    width: 350,
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",

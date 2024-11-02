@@ -1,15 +1,17 @@
 import Screen from "@/components/Screen";
-import { StyleSheet, Image, Platform } from "react-native";
+import { StyleSheet, Image } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { userRole } from "@/constants/Role";
+import { useUserRole } from "@/context/UserRoleContext"; // Import the hook
 
 export default function TabTwoScreen() {
+  const { userRole } = useUserRole(); // Get the userRole from context
+
   return (
     <Screen
       title="Account"
       content={
         userRole >= 1 ? (
-          // cette partie est a modifier pour controler l'interieur de la page.
+          // Modify this part to control the content of the page based on userRole
           <ThemedText>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Non tenetur
             ipsum natus aspernatur error eveniet vel quos, libero architecto
