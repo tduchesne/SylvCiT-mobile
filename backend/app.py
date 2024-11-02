@@ -18,7 +18,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree
+from models import Tree, location, type
 
 @app.before_first_request
 def create_tables():
@@ -48,24 +48,23 @@ def get_trees():
 def filter():
 
     keyword = request.args.get('keyword', '')
-    print(keyword)
+    query = db.session.query(Tree).join(Tree.location).join(Tree.type)
 
+    # TODO: update filtered fields when db fields are added
     if keyword:
-        print("")
-        trees = db.session.query(Tree).join(Tree.location).join(Tree.type).filter(
-            or_(
-                Tree.date_plantation.ilike(f"%{keyword}%"),
-                Tree.date_measure.ilike(f"%{keyword}%"),
-                Tree.location.latitude.ilike(f"%{keyword}%"),
-                Tree.location.longitude.ilike(f"%{keyword}%"),
-                Tree.type.name_fr.ilike(f"%{keyword}%"),
-                Tree.type.name_en.ilike(f"%{keyword}%"),
-                Tree.type.name_la.ilike(f"%{keyword}%"),
-            )).all()
-    else:
-        trees = Tree.query.all()
-    
-    print(len(trees))
+        query = query.filter(
+            Tree.date_plantation.ilike(f"%{keyword}%") |
+                Tree.date_measure.ilike(f"%{keyword}%") |
+                location.Location.latitude.ilike(f"%{keyword}%") |
+                location.Location.longitude.ilike(f"%{keyword}%") |
+                type.Type.name_fr.ilike(f"%{keyword}%") |
+                type.Type.name_en.ilike(f"%{keyword}%") |
+                type.Type.name_la.ilike(f"%{keyword}%")
+        )
+
+    trees = query.all()
+
+    # TODO: update filtered fields when db fields are added
     return jsonify(
         [{
             'date_plantation': tree.date_plantation,
