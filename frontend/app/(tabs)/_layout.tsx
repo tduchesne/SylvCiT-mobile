@@ -5,7 +5,6 @@ import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
-
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -49,10 +48,7 @@ export default function TabLayout() {
         options={{
           title: "Ajouter Arbre",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "add" : "add-sharp"}
-              color={color}
-            />
+            <TabBarIcon name={focused ? "add" : "add-sharp"} color={color} />
           ),
         }}
       />
@@ -81,7 +77,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-
-
   );
 }

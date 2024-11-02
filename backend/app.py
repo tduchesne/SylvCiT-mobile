@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import MetaData, or_
-
+from sqlalchemy import MetaData
+import bcrypt
 import os
 
 app = Flask(__name__)
@@ -18,7 +18,8 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree, location, type
+from models import Tree, User, location, type
+
 
 @app.before_first_request
 def create_tables():
@@ -76,6 +77,24 @@ def filter():
             'longitude': tree.location.longitude,
         } for tree in trees]
     )
+
+# pas sécuritaire vraiment
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required."}), 400
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        return jsonify({"role": user.role}), 200
+
+    return jsonify({"role": -1}), 401
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
