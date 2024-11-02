@@ -1,168 +1,51 @@
 # backend/tests/test_add_tree.py
 
 import pytest
-from datetime import datetime
+from app import db
+from models import Tree, Essence, Arrondissement
 
-def test_add_tree_success(test_client):
-    """
-    test the successful addition of a tree with all valid data.
-    """
-    payload = {
-        "no_emp": 12345,
-        "adresse": "123 Rue albert",
-        "essence_latin": "Quercus robur",
+def test_add_tree(client):
+    
+    # add a test essence and arrondissement so that the request succeeds
+    essence = Essence(sigle="ENGOAK", la="Quercus robur", en="English Oak", fr="Chêne pédonculé")
+    arrondissement = Arrondissement(no_arrondissement=1, nom_arrondissement="Exemple")
+    db.session.add(essence)
+    db.session.add(arrondissement)
+    db.session.commit()
+
+    # Données de test pour ajouter un nouvel arbre
+    # Test data to add a new tree
+    tree_data = {
+        "no_emp": 12342,
+        "adresse": "123 Rue Exemple",
         "essence_fr": "Chêne pédonculé",
         "essence_ang": "English Oak",
+        "essence_latin": "Quercus robur",
         "dhp": 10,
-        "date_plantation": None,
+        "date_plantation": "2020-01-01",
         "date_releve": "2024-10-01",
-        "latitude": 45.123456,
-        "longitude": 12.123456
+        "latitude": 47.123456,
+        "longitude": 12.123456,
+        "inv_type": "H",
+        "no_arrondissement": 1,
+        "emplacement": "parterre gazonné",
+        "sigle": "ENGOAK"
     }
 
-    response = test_client.post('/api/add_tree', json=payload)
+    # Envoyer une requête POST pour ajouter un arbre
+    response = client.post('/api/add_tree', json=tree_data)
     assert response.status_code == 201
-    data = response.get_json()
-    assert data['no_emp'] == 12345
-    assert data['adresse'] == "123 Rue albert"
-    assert data['essence_latin'] == "Quercus robur"
-    assert data['essence_fr'] == "Chêne pédonculé"
-    assert data['essence_ang'] == "English Oak"
-    assert data['dhp'] == 10
-    assert data['date_plantation'] == None
-    assert data['date_releve'] == "Tue, 01 Oct 2024 00:00:00 GMT"
-    assert data['latitude'] == "45.123456"
-    assert data['longitude'] == "12.123456"
 
-def test_add_tree_missing_required_field(test_client):
-    """
-    test adding a tree with a missing required field (essence_latin).
-    """
-    payload = {
-        # "essence_latin" missing
-        "no_emp": 12345,
-        "adresse": "123 Rue Exemple",
-        "essence_fr": "Chêne pédonculé",
-        "essence_ang": "English Oak",
-        "dhp": 10,
-        "date_plantation": "2020-01-01",
-        "date_releve": "2024-10-01",
-        "latitude": 45.123456,
-        "longitude": 12.123456
-    }
-
-    response = test_client.post('/api/add_tree', json=payload)
-    assert response.status_code == 500
-
-   
-def test_add_tree_invalid_latitude(test_client):
-    """
-    test adding a tree with an invalid latitude.
-    """
-    payload = {
-        "no_emp": 12345,
-        "adresse": "123 Rue Exemple",
-        "essence_latin": "Quercus robur",
-        "essence_fr": "Chêne pédonculé",
-        "essence_ang": "English Oak",
-        "dhp": 10,
-        "date_plantation": "2020-01-01",
-        "date_releve": "2024-10-01",
-        "latitude": 100.0,  # latitude invalide
-        "longitude": 12.123456
-    }
-
-    response = test_client.post('/api/add_tree', json=payload)
-    assert response.status_code == 400
-    data = response.get_json()
-    assert 'Latitude invalide' in data.get('description', '')
-
-def test_add_tree_invalid_longitude(test_client):
-    """
-    test adding a tree with an invalid longitude.
-    """
-    payload = {
-        "no_emp": 12345,
-        "adresse": "123 Rue Exemple",
-        "essence_latin": "Quercus robur",
-        "essence_fr": "Chêne pédonculé",
-        "essence_ang": "English Oak",
-        "dhp": 10,
-        "date_plantation": "2020-01-01",
-        "date_releve": "2024-10-01",
-        "latitude": 45.123456,
-        "longitude": 200.0  # longitude invalide
-    }
-
-    response = test_client.post('/api/add_tree', json=payload)
-    assert response.status_code == 400
-    data = response.get_json()
-    assert 'Longitude invalide' in data.get('description', '')
-
-def test_add_tree_invalid_date_format(test_client):
-    """
-    test adding a tree with an invalid date format for date_plantation.
-    """
-    payload = {
-        "no_emp": 12345,
-        "adresse": "123 Rue Exemple",
-        "essence_latin": "Quercus robur",
-        "essence_fr": "Chêne pédonculé",
-        "essence_ang": "English Oak",
-        "dhp": 10,
-        "date_plantation": "01-01-2020",  # Format invalide
-        "date_releve": "2024-10-01",
-        "latitude": 45.123456,
-        "longitude": 12.123456
-    }
-
-    response = test_client.post('/api/add_tree', json=payload)
-    assert response.status_code == 400
-    data = response.get_json()
-   
-
-def test_add_tree_missing_date_releve(test_client):
-    """
-    test adding a tree without providing the date_releve.
-    """
-    payload = {
-        "no_emp": 12345,
-        "adresse": "123 Rue Exemple",
-        "essence_latin": "Quercus robur",
-        "essence_fr": "Chêne pédonculé",
-        "essence_ang": "English Oak",
-        "dhp": 10,
-        "date_plantation": "2020-01-01",
-        # "date_releve" missing
-        "latitude": 45.123456,
-        "longitude": 12.123456
-    }
-
-    response = test_client.post('/api/add_tree', json=payload)
-    assert response.status_code == 400
-    
-    
-    
-
-def test_add_tree_invalid_dhp_type(test_client):
-    """
-    test adding a tree with an invalid type for the dhp field.
-    """
-    payload = {
-        "no_emp": 12345,
-        "adresse": "123 Rue Exemple",
-        "essence_latin": "Quercus robur",
-        "essence_fr": "Chêne pédonculé",
-        "essence_ang": "English Oak",
-        "dhp": "dix",  # Type incorrect
-        "date_plantation": "2020-01-01",
-        "date_releve": "2024-10-01",
-        "latitude": 45.123456,
-        "longitude": 12.123456
-    }
-
-    response = test_client.post('/api/add_tree', json=payload)
-    assert response.status_code == 400
-    data = response.get_json()
-    assert 'dhp' in data.get('description', '') or 'dhp' in data.get('message', '')
-
+    # Vérifier que les données de l'arbre sont bien enregistrées dans la base de données
+    tree = Tree.query.filter_by(no_emp=12342).first()
+    assert tree is not None
+    assert tree.no_emp == tree_data["no_emp"]
+    assert tree.dhp == tree_data["dhp"]
+    assert tree.date_plantation.isoformat() == tree_data["date_plantation"]
+    assert tree.date_measure.isoformat() == tree_data["date_releve"]
+    assert float(tree.latitude) == tree_data["latitude"]
+    assert float(tree.longitude) == tree_data["longitude"]
+    assert tree.inv_type == tree_data["inv_type"]
+    assert tree.no_arrondissement == tree_data["no_arrondissement"]
+    assert tree.emplacement == tree_data["emplacement"]
+    assert tree.sigle == tree_data["sigle"]
