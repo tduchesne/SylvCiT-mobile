@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData
-
+import bcrypt
 import os
 
 app = Flask(__name__)
@@ -58,7 +58,7 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-    if user and user.password == password:
+    if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
         return jsonify({"role": user.role}), 200
 
     return jsonify({"role": -1}), 401
