@@ -41,7 +41,7 @@ def create_app(config_name=None):
         return jsonify({'description': error.description}), 500
     
     # Import models after db initialization
-    from models import ListDelete, Tree, Family, FunctionalGroup, Genre, Location, Type, tree_rue, tree_hors_rue
+    from models import ListDelete, Tree, TreeRue, TreeHorsRue, Parc, Secteur, Arrondissement, Essence
 
 
     @app.before_request
@@ -73,7 +73,6 @@ def create_app(config_name=None):
 
     @app.route('/api/add_tree', methods=['POST'])
     def add_tree():
-
         info = request.get_json()
 
         no_emp = info.get('no_emp')
@@ -81,6 +80,9 @@ def create_app(config_name=None):
             no_emp = None
 
         adresse = info.get('adresse')
+        arrondissement = info.get('arrondissement')
+        emplacement = info.get('emplacement')
+        details_url = info.get('details_url')
         essence_latin = info.get('essence_latin')
         essence_fr = info.get('essence_fr')
         essence_ang = info.get('essence_ang')
@@ -119,6 +121,65 @@ def create_app(config_name=None):
         except ValueError:
             abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
 
+        inv_type = info.get('inv_type')
+        if inv_type == "":
+            inv_type = None
+            abort(400, description="Le champ 'inv_type' est obligatoire.")
+        elif inv_type not in ['R', 'H']:
+            abort(400, description="Le champ 'inv_type' doit être 'R' ou 'H'.")
+
+        is_valid = False
+
+        if inv_type == 'R':
+            no_civique = info.get('no_civique')
+            nom_rue = info.get('nom_rue')
+            cote = info.get('cote')
+            localisation = info.get('localisation')
+            rue_de = info.get('rue_de')
+            rue_a = info.get('rue_a')
+            distance_pave = info.get('distance_pave')
+            distance_ligne_rue = info.get('distance_ligne_rue')
+            stationnement_heure = info.get('stationnement_heure')
+
+            new_tree = TreeRue(
+                no_emp=no_emp,
+                adresse=adresse,
+                arrondissement=arrondissement,
+                emplacement=emplacement,
+                details_url=details_url,
+                dhp=dhp,
+                date_plantation=date_plantation,
+                date_measure=date_releve,
+                inv_type=inv_type,
+                no_civique=no_civique,
+                nom_rue=nom_rue,
+                cote=cote,
+                localisation=localisation,
+                rue_de=rue_de,
+                rue_a=rue_a,
+                distance_pave=distance_pave,
+                distance_ligne_rue=distance_ligne_rue,
+                stationnement_heure=stationnement_heure,
+                is_valid=is_valid
+            )
+        else:
+            nom_parc = info.get('nom_parc')
+            nom_secteur = info.get('nom_secteur')
+            new_tree = TreeHorsRue(
+                no_emp=no_emp,
+                adresse=adresse,
+                arrondissement=arrondissement,
+                emplacement=emplacement,
+                details_url=details_url,
+                dhp=dhp,
+                date_plantation=date_plantation,
+                date_measure=date_releve,
+                inv_type=inv_type,
+                nom_parc=nom_parc,
+                nom_secteur=nom_secteur,
+                is_valid=is_valid
+            )
+
         try:
             new_location = Location(
                 latitude=latitude,
@@ -133,16 +194,6 @@ def create_app(config_name=None):
             )
             db.session.add(new_type)
             db.session.flush()
-            new_tree = Tree(
-                no_emp=no_emp,
-                adresse=adresse,
-                id_type=new_type.id_type,
-                dhp=dhp,
-                date_plantation=date_plantation,
-                date_measure=date_releve,
-                id_location=new_location.id_location,
-                is_valid=False
-            )
             db.session.add(new_tree)
             db.session.commit()
         except Exception as e:
@@ -165,6 +216,7 @@ def create_app(config_name=None):
             }), 201
 
 
+
     @app.route('/api/search_tree', methods=['GET'])
     def search_tree():
         recherche = request.args.get('recherche')
@@ -173,42 +225,39 @@ def create_app(config_name=None):
 
         conditions = []
 
-        if recherche.isdigit():
-            conditions.append(Tree.id_tree == int(recherche))
+        if recherche.isdigit() or isfloat(recherche) :
+            for mapper in Tree.__mapper__.self_and_descendants:
+                for column in mapper.columns:
+                    if isinstance(column.type, (db.Integer, db.Float, db.Numeric)):
+                        conditions.append(column == float(recherche))
+        else:
+            for mapper in Tree.__mapper__.self_and_descendants:
+                for column in mapper.columns:
+                    if isinstance(column.type, db.String):
+                        conditions.append(column.ilike(f'%{recherche}%'))
 
-        for mapper in Tree.__mapper__.self_and_descendants:
-            for column in mapper.columns:
-                if isinstance(column.type, db.String):
-                    conditions.append(column.ilike(f'%{recherche}%'))
-
-        tree_poly = with_polymorphic(Tree, [tree_rue, tree_hors_rue])
+        tree_poly = with_polymorphic(Tree, [TreeRue, TreeHorsRue])
 
         trees = db.session.query(tree_poly).join(
-            Family,
-            Tree.id_family == Family.id_family
-        ).join(
-            Genre,
-            Tree.id_genre == Genre.id_genre
-        ).join(
-            Type,
-            Tree.id_type == Type.id_type
-        ).join(
-            Location,
-            Tree.id_location == Location.id_location
-        ).join(
-            FunctionalGroup,
-            Tree.id_functional_group == FunctionalGroup.id_functional_group
-        ).filter(or_(*conditions,
-                     Type.name_fr.ilike(f'%{recherche}%'),
-                     Type.name_la.ilike(f'%{recherche}%'),
-                     Type.name_en.ilike(f'%{recherche}%'),
-                     Family.name.ilike(f'%{recherche}%'),
-                     Genre.name.ilike(f'%{recherche}%'),
-                     FunctionalGroup.group.ilike(f'%{recherche}%'),
-                     FunctionalGroup.description.ilike(f'%{recherche}%'),
-                     Location.latitude.ilike(f'%{recherche}%'),
-                     Location.longitude.ilike(f'%{recherche}%')
-                     )).all()
+                    Essence,
+                    Tree.sigle == Essence.sigle
+                ).join(
+                    Arrondissement,
+                    Tree.no_arrondissement == Arrondissement.no_arrondissement
+                ).outerjoin(
+                    Parc,
+                    TreeHorsRue.code_parc == Parc.code_parc
+                ).outerjoin(
+                    Secteur,
+                    TreeHorsRue.code_secteur == Secteur.code_secteur
+                ).filter(or_(*conditions,
+                             Essence.la.ilike(f'%{recherche}%'),
+                             Essence.fr.ilike(f'%{recherche}%'),
+                             Essence.en.ilike(f'%{recherche}%'),
+                             Arrondissement.nom_arrondissement.ilike(f'%{recherche}%'),
+                             Parc.nom_parc.ilike(f'%{recherche}%'),
+                             Secteur.nom_secteur.ilike(f'%{recherche}%')
+                             )).all()
 
         list_tree = [tree.to_dict() for tree in trees]
 
@@ -324,6 +373,13 @@ def create_app(config_name=None):
             return jsonify({"message": "Une erreur s'est produite lors de la modification de l'arbre"}), 500
     return app
 
+
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
 
 if __name__== '__main__':
