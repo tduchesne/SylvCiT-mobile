@@ -57,16 +57,16 @@
 # -- -----------------------------------------------------
 # START TRANSACTION;
 # USE `inm5151_db`;
-# INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`,`emplacement`,`inv_type`,`arrondissement`) VALUES ('2019-07-12', '2021-06-05', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4857', 1, 1, 1, 1, 1, 1, 'Adresse 1', 1, true,'Parterre Gazonné','H','Ville-Marie');
-# INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`,`emplacement`,`inv_type`,`arrondissement`) VALUES ('2018-06-24', '2022-09-16', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4552', 2, 2, 2, 2, 2, 2, 'Adresse 2', 2, true,'Fond de trottoir','R','Ville-Marie');
-# INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`,`emplacement`,`inv_type`,`arrondissement`) VALUES ('2017-10-12', '2023-01-11', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4705', 3, 3, 3, 3, 3, 3, 'Adresse 3', 3, true,'Parterre bÉtonné','H','Ville-Marie');
+# INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`,`emplacement`,`inv_type`,`arrondissement`) VALUES ('2019-07-12', '2021-06-05', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4857', 1, 1, 1, 1, 1, 1, 'Adresse 1', 1, true,'parterre gazonné','H','Ville-Marie');
+# INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`,`emplacement`,`inv_type`,`arrondissement`) VALUES ('2018-06-24', '2022-09-16', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4552', 2, 2, 2, 2, 2, 2, 'Adresse 2', 2, true,'fond de trottoir','R','Ville-Marie');
+# INSERT INTO `inm5151_db`.`tree` (`date_plantation`, `date_measure`, `details_url`, `id_type`, `id_genre`, `id_family`, `id_functional_group`, `id_location`, `no_emp`, `adresse`,`dhp`,`is_valid`,`emplacement`,`inv_type`,`arrondissement`) VALUES ('2017-10-12', '2023-01-11', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4705', 3, 3, 3, 3, 3, 3, 'Adresse 3', 3, true,'parterre bétonné','H','Ville-Marie');
 #
 # COMMIT;
 #
 # START TRANSACTION;
 # USE `inm5151_db`;
 # INSERT INTO `inm5151_db`.`tree_hors_rue`(id_tree, nom_parc, nom_secteur) VALUES (8, 'PROMENADE DES ARTISTES', 'OUEST');
-# INSERT INTO `inm5151_db`.`tree_rue`(id_tree, no_civique, nom_rue, cote, localisation, rue_de, rue_a, distance_pave, distance_ligne_rue, stationnement_heure) VALUES (6, 22, 'Parterre Gazonné', 'N', 'Parterre Gazonné', 'Parterre Gazonné', 'Parterre Gazonné', 0.0, 0.0, '00:00');
+# INSERT INTO `inm5151_db`.`tree_rue`(id_tree, no_civique, nom_rue, cote, localisation, rue_de, rue_a, distance_pave, distance_ligne_rue, stationnement_heure) VALUES (6, 22, 'parterre gazonné', 'N', 'Parterre Gazonné', 'Parterre Gazonné', 'Parterre Gazonné', 0.0, 0.0, '00:00');
 # COMMIT;
 
 START TRANSACTION;
@@ -75,20 +75,20 @@ INSERT INTO `inm5151_db`.`parc`(code_parc, nom_parc) VALUES ('1265-000','PROMENA
 INSERT INTO `inm5151_db`.`secteur`(code_secteur, nom_secteur) VALUES ('2','OUEST');
 INSERT INTO `inm5151_db`.`arrondissement`(no_arrondissement, nom_arrondissement) VALUES (6,'Ville-Marie');
 INSERT INTO `inm5151_db`.`essence`(sigle, la, en, fr) VALUES ('ULWIPR', 'Ulmus wilsoniana ''Prospector''', 'Prospector''s Elm','Orme japonais du prospecteur');
-INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (31709,6,'Parterre Gazonné','ULWIPR',22,'2024-04-15','2010-10-12',45.508639,-73.568412,'H',true);
+INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (31709,6,'parterre gazonné','ULWIPR',22,'2024-04-15','2010-10-12',45.508639,-73.568412,'H',true);
 INSERT INTO `inm5151_db`.`tree_hors_rue`(no_emp, code_parc, code_secteur) VALUES (31709,'1265-000','2');
 COMMIT;
 
 START TRANSACTION;
 USE `inm5151_db`;
 INSERT INTO `inm5151_db`.`essence`(sigle, la, en, fr) VALUES ('GYDI', 'Gymnocladus dioicus', 'Kentucky Coffee Tree','Chicot du Canada');
-INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (469185,6,'Fond de Trottoir','GYDI',5,'2024-10-20','2024-10-20',45.508692,-73.568993,'R',true);
+INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (469185,6,'fond de trottoir','GYDI',5,'2024-10-20','2024-10-20',45.508692,-73.568993,'R',true);
 INSERT INTO `inm5151_db`.`tree_rue`(no_emp, adresse, localisation, localisation_code, rue_de, rue_a, distance_pave, distance_ligne_rue, stationnement_jour, stationnement_heure, district, arbre_remarquable) VALUES (469185,'1 Rue Jeanne-Mance E','25 m. au Nord de PRÉSIDENT-KENNEDY','N-25','PRÉSIDENT-KENNEDY AVENU DU','SHERBROOKE O RUE',2.6,3.7,'L-V','06:30:00',184,'N');
 COMMIT;
 
 
 START TRANSACTION;
 USE `inm5151_db`;
-INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (31708,6,'Parterre Gazonné','ULWIPR',26,'2024-04-15','2024-10-12',45.508592,-73.568455,'H',false);
+INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (31708,6,'parterre gazonné','ULWIPR',26,'2024-04-15','2024-10-12',45.508592,-73.568455,'H',false);
 INSERT INTO `inm5151_db`.`tree_hors_rue`(no_emp, code_parc, code_secteur) VALUES (31708,'1265-000','2');
 COMMIT;
