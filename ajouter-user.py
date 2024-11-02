@@ -9,11 +9,9 @@ def hash_password(password):
 # Fonction pour ajouter un utilisateur via une commande shell
 def add_user_via_shell(username, password, role):
     hashed_password = hash_password(password).decode('utf-8').replace('$', '\\$')
-    print(hashed_password)
     insert_command = f"INSERT INTO user (username, password, role) VALUES ('{username}', '{hashed_password}', '{role}');"
 
     command = f"docker exec -i inm5151-a2024-sylvcit-db-1 mysql -u root -proot  inm5151_db -e \"{insert_command}\""
-    print(command)
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
 
