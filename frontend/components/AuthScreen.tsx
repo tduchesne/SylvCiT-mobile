@@ -119,6 +119,9 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
+    width:350,
+    justifyContent: "center",
+    alignSelf : "center",
     borderColor: "#ccc",
     borderWidth: 1,
     marginBottom: 20,
@@ -126,13 +129,17 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
+    width:350,
+    alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
   },
   link: {
     alignItems: "center",
     justifyContent: "center",
+    alignSelf: "center",
     marginTop: 20,
+    width: 220,
   },
   errorMessage: {
     color: "red",
