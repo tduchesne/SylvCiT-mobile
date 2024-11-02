@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData, Enum
-
+import bcrypt
 import os
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree
+from models import Tree, User, location, type
 
 
 @app.before_first_request
@@ -47,7 +47,7 @@ def get_trees():
             'id_location': t.id_location
             } for t in trees
         ])
-    
+
 @app.route('/api/tree/status/<int:id_tree>', methods=['PUT'])
 def update_tree_status(id_tree):
     data = request.get_json()
@@ -67,6 +67,56 @@ def update_tree_status(id_tree):
 
     return jsonify({"message": "Tree status updated successfully."}), 200
 
+@app.route('/api/trees/filter', methods=['GET'])
+def filter():
+
+    keyword = request.args.get('keyword', '')
+    query = db.session.query(Tree).join(Tree.location).join(Tree.type)
+
+    # TODO: update filtered fields when db fields are added
+    if keyword:
+        query = query.filter(
+            Tree.date_plantation.ilike(f"%{keyword}%") |
+                Tree.date_measure.ilike(f"%{keyword}%") |
+                location.Location.latitude.ilike(f"%{keyword}%") |
+                location.Location.longitude.ilike(f"%{keyword}%") |
+                type.Type.name_fr.ilike(f"%{keyword}%") |
+                type.Type.name_en.ilike(f"%{keyword}%") |
+                type.Type.name_la.ilike(f"%{keyword}%")
+        )
+
+    trees = query.all()
+
+    # TODO: update filtered fields when db fields are added
+    return jsonify(
+        [{
+            'date_plantation': tree.date_plantation,
+            'date_releve': tree.date_measure,
+            'essence_latin': tree.type.name_la,
+            'essence_ang': tree.type.name_en,
+            'essence_fr': tree.type.name_fr,
+            'latitude': tree.location.latitude,
+            'longitude': tree.location.longitude,
+        } for tree in trees]
+    )
+
+# pas sécuritaire vraiment
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required."}), 400
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        return jsonify({"role": user.role}), 200
+
+    return jsonify({"role": -1}), 401
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')

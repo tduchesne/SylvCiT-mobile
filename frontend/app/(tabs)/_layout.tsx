@@ -60,8 +60,17 @@ export default function TabLayout() {
         options={{
           title: "Ajouter Arbre",
           tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? "add" : "add-sharp"} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="liste_arbre"
+        options={{
+          title: "Liste d'arbres",
+          tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "add" : "add-sharp"}
+              name={focused ? "leaf" : "leaf"}
               color={color}
             />
           ),

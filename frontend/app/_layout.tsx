@@ -1,8 +1,4 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -12,7 +8,7 @@ import Splash from "@/components/Splash";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import AuthScreen from "@/components/AuthScreen";
 import React from 'react';
-
+import { UserRoleProvider, useUserRole } from "@/context/UserRoleContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,7 +20,6 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const [isSplashScreenShown, setIsSplashScreenShown] = useState(true);
-  const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -39,16 +34,25 @@ export default function RootLayout() {
   }, [loaded]);
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {isAuth ? (
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      ) : (
-        <AuthScreen onPressLogin={() => setIsAuth(true)} />
-      )}
-      {isSplashScreenShown ? <Splash /> : null}
-    </ThemeProvider>
+    <UserRoleProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <MainContent />
+        {isSplashScreenShown ? <Splash /> : null}
+      </ThemeProvider>
+    </UserRoleProvider>
   );
 }
+
+function MainContent() {
+  const { userRole } = useUserRole();
+
+  return userRole !== null && userRole >= 0 ? (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  ) : (
+    <AuthScreen />
+  );
+}
+
