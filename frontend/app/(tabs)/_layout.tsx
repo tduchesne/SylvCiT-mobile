@@ -53,6 +53,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="liste_arbre"
+        options={{
+          title: "Liste d'arbres",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "leaf" : "leaf"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="account"
         options={{
           title: "Account",

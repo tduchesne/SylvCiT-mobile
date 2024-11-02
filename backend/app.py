@@ -18,7 +18,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree, User
+from models import Tree, User, location, type
 
 
 @app.before_first_request
@@ -45,6 +45,39 @@ def get_trees():
             } for t in trees
         ])
 
+@app.route('/api/trees/filter', methods=['GET'])
+def filter():
+
+    keyword = request.args.get('keyword', '')
+    query = db.session.query(Tree).join(Tree.location).join(Tree.type)
+
+    # TODO: update filtered fields when db fields are added
+    if keyword:
+        query = query.filter(
+            Tree.date_plantation.ilike(f"%{keyword}%") |
+                Tree.date_measure.ilike(f"%{keyword}%") |
+                location.Location.latitude.ilike(f"%{keyword}%") |
+                location.Location.longitude.ilike(f"%{keyword}%") |
+                type.Type.name_fr.ilike(f"%{keyword}%") |
+                type.Type.name_en.ilike(f"%{keyword}%") |
+                type.Type.name_la.ilike(f"%{keyword}%")
+        )
+
+    trees = query.all()
+
+    # TODO: update filtered fields when db fields are added
+    return jsonify(
+        [{
+            'date_plantation': tree.date_plantation,
+            'date_releve': tree.date_measure,
+            'essence_latin': tree.type.name_la,
+            'essence_ang': tree.type.name_en,
+            'essence_fr': tree.type.name_fr,
+            'latitude': tree.location.latitude,
+            'longitude': tree.location.longitude,
+        } for tree in trees]
+    )
+
 # pas sécuritaire vraiment
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -62,7 +95,6 @@ def login():
         return jsonify({"role": user.role}), 200
 
     return jsonify({"role": -1}), 401
-
 
 if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
