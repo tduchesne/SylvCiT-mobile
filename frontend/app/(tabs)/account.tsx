@@ -1,28 +1,57 @@
 import Screen from "@/components/Screen";
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { useUserRole } from "@/context/UserRoleContext"; // Import the hook
+import { UserRoleProvider, useUserRole } from "@/context/UserRoleContext"; 
+import { useEffect, useState } from "react";
+import AuthScreen from "@/components/AuthScreen";
+import { ThemedView } from "@/components/ThemedView";
 
 export default function TabTwoScreen() {
-  const { userRole } = useUserRole(); // Get the userRole from context
+  const { userRole } = useUserRole(); 
+  const [showAuthScreen, setShowAuthScreen] = useState(false);
+
+  const handleShowAuthScreen = () => {
+    setShowAuthScreen(true);
+  };
+
+  useEffect(() => {
+    if (userRole >= 1) {
+      setShowAuthScreen(false); 
+    }
+  }, [userRole]);
 
   return (
     <Screen
       title="Account"
       content={
-        userRole >= 1 ? (
-          // Modify this part to control the content of the page based on userRole
+        showAuthScreen ? (
+          <AuthScreen />
+        ) :
+        userRole >= 1 ?  (
+
+          // Ici va le contenu de la page
           <ThemedText>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Non tenetur
             ipsum natus aspernatur error eveniet vel quos, libero architecto
             quae, veniam repellat fugit eos! Culpa minus debitis numquam
             repellat alias. Page explore. n'importe quoi for now.
           </ThemedText>
+          // fin du contenu
+
         ) : (
+          <ThemedView>
           <ThemedText>
             Vous devez vous authentifier avec les bonnes permissions pour voir
-            le contenu de cette page
-          </ThemedText>
+            le contenu de cette page.
+            </ThemedText>
+            <TouchableOpacity 
+                style={styles.button} 
+                onPress={handleShowAuthScreen}>
+              <ThemedText style={{ textDecorationLine: "underline" }}>
+                se connecter.
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
         )
       }
       headerImage={
@@ -42,5 +71,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 36,
     position: "absolute",
+  },
+  button: {
+    textDecorationLine: "underline",
+    marginTop:25,
+    justifyContent:"center",
+    alignSelf: "center",
   },
 });

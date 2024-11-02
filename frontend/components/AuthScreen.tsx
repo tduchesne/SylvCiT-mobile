@@ -38,7 +38,7 @@ export default function AuthScreen() {
       if (response.ok) {
         const data = await response.json();
         setErrorMessage("");
-        setUserRole(data.role); // This will update the context
+        setUserRole(data.role);
       } else {
         setErrorMessage("Mauvais nom d'utilisateur/mot de passe.");
       }
