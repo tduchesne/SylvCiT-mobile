@@ -134,12 +134,13 @@ def add_trees():
             id_location = add_position(tree['Latitude'], tree['Longitude'])
             id_functional_group = get_f_group_id('A')
             dhp = tree['DHP']
+            image_url = "https://arbres.hydroquebec.com/image/9034"
             
             insert_command = (
                 f"INSERT INTO tree (date_plantation, date_measure, details_url, id_type, id_genre, "
-                f"id_family, id_functional_group, id_location, dhp) "
+                f"id_family, id_functional_group, id_location, dhp, image_url) "
                 f"VALUES ('{date_plantation}', '{date_measure}', 'tree image url', '{id_type}', "
-                f"'{id_genre}', '{id_family}', '{id_functional_group}', '{id_location}', '{dhp}');"
+                f"'{id_genre}', '{id_family}', '{id_functional_group}', '{id_location}', '{dhp}', '{image_url}');"
             )
             _, stderr = execute_query(insert_command)
 
