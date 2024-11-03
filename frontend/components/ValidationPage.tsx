@@ -83,6 +83,12 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
     console.log('Modifier l\'arbre:', treeData?.essence_fr);
   };
 
+  const formatDate = (dateString: string | undefined): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#fff' }]}>
       <TouchableOpacity onPress={exitToMenu} style={styles.backButton}>
@@ -105,15 +111,19 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
             <View style={styles.infoContainer}>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Famille:</Text>
-                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
+                <Text style={styles.infoValue}>{treeData?.family_name}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Genre:</Text>
-                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
+                <Text style={styles.infoValue}>{treeData?.genre_name}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Date de plantation:</Text>
-                <Text style={styles.infoValue}>{treeData?.date_plantation}</Text>
+                <Text style={styles.infoValue}>{formatDate(treeData?.date_plantation)}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Date de mesure:</Text>
+                <Text style={styles.infoValue}>{formatDate(treeData?.date_releve)}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (EN):</Text>

@@ -22,6 +22,8 @@ export interface Tree {
   arrondissement: string;
   dhp: number;
   date_releve: string;
+  genre_name: string;
+  family_name: string;
 }
 
 export default function TabTwoScreen() {

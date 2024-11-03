@@ -72,7 +72,7 @@ def update_tree_status(id_tree):
 def filter():
 
     keyword = request.args.get('keyword', '')
-    query = db.session.query(Tree).join(Tree.location).join(Tree.type)
+    query = db.session.query(Tree).join(Tree.location).join(Tree.type).join(Tree.genre).join(Tree.family)
     query = query.filter(Tree.approbation_status.ilike("pending"))
 
     # TODO: update filtered fields when db fields are added
@@ -101,6 +101,8 @@ def filter():
             'essence_fr': tree.type.name_fr,
             'latitude': tree.location.latitude,
             'longitude': tree.location.longitude,
+            'genre_name': tree.genre.name,
+            'family_name': tree.family.name,
         } for tree in trees]
     )
 
