@@ -61,11 +61,7 @@ export default function FormAjoutArbre() {
                     "date_releve": formatDate(dateReleve)
                 })
             })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .then(() => setIndicateur(false))
-                .then(() => Alert.alert("Informations sauvegardées"))
-                .then(nettoyerChamps)
+                .then((reponse) => validerReponse(reponse))
                 .catch((response) => {
                     setIndicateur(false)
                     Alert.alert("Erreur lors du sauvegarde des données. Merci de réessayer")
@@ -77,6 +73,22 @@ export default function FormAjoutArbre() {
         }
     }
 
+
+    const validerReponse = (response: Response) => {
+        setIndicateur(false)
+        if (response.status == 201) {
+            Alert.alert("Informations sauvegardées")
+            nettoyerChamps()
+        }
+        else {
+            const description = response.json()
+                .then(info => Alert.alert(info['description']))
+
+
+        }
+
+
+    }
 
     const trouverPosition = async (region: Region) => {
         setIndicateur(true);
