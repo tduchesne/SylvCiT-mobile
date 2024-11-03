@@ -268,14 +268,49 @@ def create_app(config_name=None):
                 print(f"Arbre avec l'ID {no_emp} introuvable.")
                 return jsonify({"message": "Arbre introuvable"}), 404
 
-            tree.emplacement = info.get('emplacement', tree.emplacement)
-            tree.dhp = info.get('dhp', tree.dhp)
-            tree.date_measure = info.get('date_measure', tree.date_measure)
-            tree.date_plantation = info.get('date_plantation', tree.date_plantation)
-            tree.latitude = info.get('latitude', tree.latitude)
-            tree.longitude = info.get('longitude', tree.longitude)
-            tree.inv_type = info.get('inv_type', tree.inv_type)
-            tree.is_valid = True
+            # Validation des attributs et conversion des dates
+            if 'emplacement' in info:
+                tree.emplacement = info['emplacement']
+
+            if 'dhp' in info:
+                try:
+                    tree.dhp = int(info['dhp'])
+                except ValueError:
+                    abort(400, description="Le champ 'dhp' doit être un entier.")
+
+            if 'date_measure' in info:
+                try:
+                    tree.date_measure = datetime.strptime(info['date_measure'], '%Y-%m-%d').date()
+                except ValueError:
+                    abort(400, description="Le format de 'date_measure' est invalide. Utilisez YYYY-MM-DD.")
+
+            if 'date_plantation' in info:
+                try:
+                    tree.date_plantation = datetime.strptime(info['date_plantation'], '%Y-%m-%d').date()
+                except ValueError:
+                    abort(400, description="Le format de 'date_plantation' est invalide. Utilisez YYYY-MM-DD.")
+
+            if 'latitude' in info:
+                try:
+                    tree.latitude = float(info['latitude'])
+                except (ValueError, TypeError):
+                    abort(400, description="Le champ 'latitude' doit être un nombre.")
+
+            if 'longitude' in info:
+                try:
+                    tree.longitude = float(info['longitude'])
+                except (ValueError, TypeError):
+                    abort(400, description="Le champ 'longitude' doit être un nombre.")
+
+            if 'inv_type' in info:
+                if info['inv_type'] not in ['R', 'H']:
+                    abort(400, description="Le champ 'inv_type' doit être 'R' ou 'H'.")
+                tree.inv_type = info['inv_type']
+
+            if 'is_valid' in info:
+                tree.is_valid = bool(info['is_valid'])
+
+            # Mise à jour des attributs spécifiques si l'arbre est de type TreeRue
             if isinstance(tree, TreeRue):
                 tree.adresse = info.get('adresse', tree.adresse)
                 tree.localisation = info.get('localisation', tree.localisation)
@@ -298,6 +333,7 @@ def create_app(config_name=None):
             print(f"Erreur lors de la modification de l'arbre : {str(e)}")
             db.session.rollback()
             return jsonify({"message": "Une erreur s'est produite lors de la modification de l'arbre"}), 500
+
     return app
 
 
