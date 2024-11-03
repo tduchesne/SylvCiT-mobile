@@ -47,6 +47,7 @@ export default function TabTwoScreen() {
    *  Fetch trees from backend using the API
    */
   const fetchFilteredTrees = async (keyword: string) => {
+    console.log('fetch trees');
     try {
       const response = await fetch(`${Config.API_URL}/api/trees/filter?keyword=${encodeURIComponent(keyword)}`, {
         method: 'GET',
@@ -64,7 +65,6 @@ export default function TabTwoScreen() {
       console.log(data);
       setSortedTrees(data);
     } catch (error) {
-      console.error("Error: fetching trees unsuccesful: ", error);
     }
   }
 
@@ -74,6 +74,12 @@ export default function TabTwoScreen() {
 
   const handleBeginValidation = () => {
     setInValidation(true);
+  }
+
+  const handleEndValidation = () => {
+    setInValidation(false);
+    setSelectedTree(null);
+    fetchFilteredTrees(searchText)
   }
 
   // ================================================================ //
@@ -120,7 +126,7 @@ export default function TabTwoScreen() {
   };
 
   if (inValidation == true && selectedTree != null) {
-    return <ValidationScreen propsTreeList={sortedTrees} startIdx={selectedTree.idx} />;
+    return <ValidationScreen propsTreeList={sortedTrees} startIdx={selectedTree.idx} handleEndValidation={handleEndValidation} />;
   }
   else {
     return (

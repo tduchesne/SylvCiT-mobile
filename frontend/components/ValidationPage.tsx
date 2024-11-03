@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, View, Text, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
 import Screen from '@/components/Screen';
 import Config from "@/config";
 import { Tree } from '@/app/(tabs)/liste_arbre';
+import Icon from '@expo/vector-icons/Ionicons';
 
-export default function ValidationScreen({ propsTreeList, startIdx }: { propsTreeList: Tree[], startIdx: number }) {
+export default function ValidationScreen({ propsTreeList, startIdx, handleEndValidation }: { propsTreeList: Tree[], startIdx: number, handleEndValidation: () => void }) {
   const [treeData, setTreeData] = useState<Tree | null>(propsTreeList[startIdx]);
   const [treeList, setTreeList] = useState<Tree[]>(propsTreeList);
   const colorScheme = useColorScheme();
@@ -25,14 +26,13 @@ export default function ValidationScreen({ propsTreeList, startIdx }: { propsTre
 
       return response.ok;
     } catch (error) {
-      console.log(`Status change error: ${error}`);
       return false;
     }
   };
 
-  const exitToMenu = () => { } // TODO
-
-
+  const exitToMenu = () => {
+    handleEndValidation();
+  }
 
   // Open next tree in tree list. If 'removeFromList', remove tree from list and exit if list.length == 0.
   // Otherwise, exit if list.length == 1.
@@ -85,6 +85,9 @@ export default function ValidationScreen({ propsTreeList, startIdx }: { propsTre
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#fff' }]}>
+      <TouchableOpacity onPress={exitToMenu} style={styles.backButton}>
+        <Icon name="arrow-back" size={24} color={isDarkMode ? '#fff' : '#000'} />
+      </TouchableOpacity>
       <Screen
         title={treeData ? treeData.essence_fr : 'Chargement...'}
         content={
@@ -114,7 +117,7 @@ export default function ValidationScreen({ propsTreeList, startIdx }: { propsTre
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (EN):</Text>
-                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
+                <Text style={styles.infoValue}>{treeData?.essence_ang}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (FR):</Text>
@@ -122,7 +125,7 @@ export default function ValidationScreen({ propsTreeList, startIdx }: { propsTre
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (LA):</Text>
-                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
+                <Text style={styles.infoValue}>{treeData?.essence_latin}</Text>
               </View>
             </View>
           </ScrollView>
@@ -257,5 +260,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 36,
     position: 'absolute',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
   },
 });
