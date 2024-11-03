@@ -75,12 +75,12 @@ def create_app(config_name=None):
     def add_tree():
         info = request.get_json()
 
-        try:
-            no_emp = int(info.get('no_emp'))
-            if Tree.query.filter_by(no_emp=no_emp).first() :
-                abort(409, description="Arbre deja existant.")
-        except ValueError:
-            abort(400, description="Le numéro d'emplacement doit etre un entier.")
+
+        no_emp = info.get('no_emp')
+        if Tree.query.filter_by(no_emp=no_emp).first() :
+            abort(409, description="Arbre deja existant.")
+        elif isinstance(no_emp, str):
+            abort(400, description="Numéro d'emplacement doit etre un nombre entier")
 
         latitude = info.get('latitude')
         longitude = info.get('longitude')
@@ -105,7 +105,7 @@ def create_app(config_name=None):
         emplacement = info.get('emplacement')
         sigle = info.get('sigle')
         dhp = info.get('dhp')
-        if dhp == "":
+        if dhp == "" or dhp is None:
             dhp = None
         else:
             try:

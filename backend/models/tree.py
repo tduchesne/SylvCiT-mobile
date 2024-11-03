@@ -38,12 +38,12 @@ class Tree(db.Model):
     def to_dict(self):
         return {
             'no_emp': self.no_emp,
-            'arrondissement': self.arrondissement.to_dict(),
+            'arrondissement': self.arrondissement.to_dict() if self.arrondissement else None,
             'emplacement': self.emplacement,
-            'essence': self.essence.to_dict(),
+            'essence': self.essence.to_dict() if self.essence else None,
             'dhp': self.dhp,
             'date_measure': self.date_measure.isoformat(),
-            'date_plantation': self.date_plantation.isoformat(),
+            'date_plantation': self.date_plantation.isoformat() if self.date_plantation else None,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'inv_type': self.inv_type,
@@ -109,8 +109,8 @@ class TreeHorsRue(Tree):
     def to_dict(self):
         attributes = super().to_dict()
         attributes.update({
-            'code_parc': self.parc.to_dict(),
-            'code_secteur': self.secteur.to_dict()
+            'code_parc': self.parc.to_dict() if self.parc else None,
+            'code_secteur': self.secteur.to_dict() if self.secteur else None
         })
         return attributes
 
