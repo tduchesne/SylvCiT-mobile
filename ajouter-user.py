@@ -1,6 +1,7 @@
 import subprocess
 import os
 import bcrypt
+import getpass
 
 # Fonction pour hacher le mot de passe
 def hash_password(password):
@@ -42,7 +43,7 @@ def get_role():
 # Fonction principale
 def main():
     username = get_username()
-    password = input("Entrez le mot de passe : ")
+    password = getpass.getpass("Entrez le mot de passe : ")
     role = get_role()
     add_user_via_shell(username, password, role)
 
