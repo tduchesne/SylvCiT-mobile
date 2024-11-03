@@ -25,6 +25,13 @@ class Tree(db.Model):
     id_functional_group = db.Column(db.Integer)
     id_location = db.Column(db.Integer)
 
+    approbation_status = db.Column(
+        db.Enum("pending", "approved", name="approbation_status_enum"),
+        default="pending",
+        nullable=False
+    )
+    dhp = db.Column(db.Integer)
+
     family = db.relationship('Family', back_populates='tree')
     functional_group = db.relationship('FunctionalGroup', back_populates='tree')
     genre = db.relationship('Genre', back_populates='tree')
