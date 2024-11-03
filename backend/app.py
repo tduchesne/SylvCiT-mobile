@@ -75,10 +75,10 @@ def create_app(config_name=None):
     def add_tree():
         info = request.get_json()
 
-        try:
-            no_emp = int(info.get('no_emp'))
-        except (ValueError, TypeError):
-            abort(400, description="Le champ 'no_emp' doit être un entier.")
+        no_emp = int(info.get('no_emp'))
+
+        if Tree.query.filter_by(no_emp=no_emp).first():
+            abort(409, description="Arbre deja existant.")
 
         latitude = info.get('latitude')
         longitude = info.get('longitude')

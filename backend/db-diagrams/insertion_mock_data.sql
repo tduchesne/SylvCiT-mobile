@@ -76,19 +76,19 @@ INSERT INTO `inm5151_db`.`secteur`(code_secteur, nom_secteur) VALUES ('2','OUEST
 INSERT INTO `inm5151_db`.`arrondissement`(no_arrondissement, nom_arrondissement) VALUES (6,'Ville-Marie');
 INSERT INTO `inm5151_db`.`essence`(sigle, la, en, fr) VALUES ('ULWIPR', 'Ulmus wilsoniana ''Prospector''', 'Prospector''s Elm','Orme japonais du prospecteur');
 INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (31709,6,'parterre gazonné','ULWIPR',22,'2024-04-15','2010-10-12',45.508639,-73.568412,'H',true);
-INSERT INTO `inm5151_db`.`tree_hors_rue`(no_emp, code_parc, code_secteur) VALUES (31709,'1265-000','2');
+INSERT INTO `inm5151_db`.`tree_hors_rue`(id, code_parc, code_secteur) VALUES (1,'1265-000','2');
 COMMIT;
 
 START TRANSACTION;
 USE `inm5151_db`;
 INSERT INTO `inm5151_db`.`essence`(sigle, la, en, fr) VALUES ('GYDI', 'Gymnocladus dioicus', 'Kentucky Coffee Tree','Chicot du Canada');
 INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (469185,6,'fond de trottoir','GYDI',5,'2024-10-20','2024-10-20',45.508692,-73.568993,'R',true);
-INSERT INTO `inm5151_db`.`tree_rue`(no_emp, adresse, localisation, localisation_code, rue_de, rue_a, distance_pave, distance_ligne_rue, stationnement_jour, stationnement_heure, district, arbre_remarquable) VALUES (469185,'1 Rue Jeanne-Mance E','25 m. au Nord de PRÉSIDENT-KENNEDY','N-25','PRÉSIDENT-KENNEDY AVENU DU','SHERBROOKE O RUE',2.6,3.7,'L-V','06:30:00',184,'N');
+INSERT INTO `inm5151_db`.`tree_rue`(id, adresse, localisation, localisation_code, rue_de, rue_a, distance_pave, distance_ligne_rue, stationnement_jour, stationnement_heure, district, arbre_remarquable) VALUES (2,'1 Rue Jeanne-Mance E','25 m. au Nord de PRÉSIDENT-KENNEDY','N-25','PRÉSIDENT-KENNEDY AVENU DU','SHERBROOKE O RUE',2.6,3.7,'L-V','06:30:00',184,'N');
 COMMIT;
 
 
 START TRANSACTION;
 USE `inm5151_db`;
 INSERT INTO `inm5151_db`.`tree`(no_emp,no_arrondissement, emplacement, sigle, dhp, date_measure, date_plantation, latitude, longitude, inv_type, is_valid) VALUES (31708,6,'parterre gazonné','ULWIPR',26,'2024-04-15','2024-10-12',45.508592,-73.568455,'H',false);
-INSERT INTO `inm5151_db`.`tree_hors_rue`(no_emp, code_parc, code_secteur) VALUES (31708,'1265-000','2');
+INSERT INTO `inm5151_db`.`tree_hors_rue`(id, code_parc, code_secteur) VALUES (3,'1265-000','2');
 COMMIT;

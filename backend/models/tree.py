@@ -9,8 +9,8 @@ class Tree(db.Model):
         db.Index('fk_tree_sigle_idx', 'sigle'),
         db.UniqueConstraint('latitude', 'longitude', name='unique_location')
     )
-
-    no_emp = db.Column(db.Integer,primary_key=True,nullable=False, unique=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    no_emp = db.Column(db.Integer,nullable=False, unique=True)
     no_arrondissement = db.Column(db.Integer, db.ForeignKey('arrondissement.no_arrondissement'),nullable=True)
     emplacement = db.Column(db.Enum("banquette gazonnée",
                                  "banquette asphaltée",
@@ -55,7 +55,7 @@ class Tree(db.Model):
 
 class TreeRue(Tree):
     __tablename__ = 'tree_rue'
-    no_emp = db.Column(db.Integer, db.ForeignKey('tree.no_emp'), primary_key=True, nullable=False)
+    id = db.Column(db.Integer, db.ForeignKey('tree.id'), primary_key=True, nullable=False)
     adresse = db.Column(db.String(45), nullable=True)
     localisation = db.Column(db.String(45), nullable=True)
     localisation_code = db.Column(db.String(10), nullable=True)
@@ -97,7 +97,7 @@ class TreeHorsRue(Tree):
         db.Index('fk_tree_parc_idx', 'code_parc'),
         db.Index('fk_tree_secteur_idx', 'code_secteur')
     )
-    no_emp = db.Column(db.Integer, db.ForeignKey('tree.no_emp'), primary_key=True, nullable=False)
+    id = db.Column(db.Integer, db.ForeignKey('tree.id'), primary_key=True, nullable=False)
     code_parc = db.Column(db.String(10), db.ForeignKey('parc.code_parc'), nullable=True)
     code_secteur = db.Column(db.String(10), db.ForeignKey('secteur.code_secteur'), nullable=True)
 
