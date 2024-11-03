@@ -39,8 +39,6 @@ export default function TabTwoScreen() {
   const openFilterModal = () => setFilterModalVisible(true);
   const closeFilterModal = () => setFilterModalVisible(false);
 
-  const [isPressed, setIsPressed] = useState(false);
-
   const { userRole } = useUserRole(); 
   const [showAuthScreen, setShowAuthScreen] = useState(false);
 
