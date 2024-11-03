@@ -77,8 +77,10 @@ def create_app(config_name=None):
 
         try:
             no_emp = int(info.get('no_emp'))
-        except (ValueError, TypeError):
-            abort(400, description="Le champ 'no_emp' doit être un entier.")
+            if Tree.query.filter_by(no_emp=no_emp).first() :
+                abort(409, description="Arbre deja existant.")
+        except ValueError:
+            abort(400, description="Le numéro d'emplacement doit etre un entier.")
 
         latitude = info.get('latitude')
         longitude = info.get('longitude')
