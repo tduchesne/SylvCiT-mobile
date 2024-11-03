@@ -32,18 +32,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="validationDonnes"
-        options={{
-          title: "Validation",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "checkmark-done" : "checkmark-done-outline"}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="explore"
         options={{
           title: "Explore",

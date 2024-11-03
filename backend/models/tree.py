@@ -24,6 +24,7 @@ class Tree(db.Model):
         nullable=False
     )
     details_url = db.Column(db.String(150))
+    image_url = db.Column(db.String(254))
     id_type = db.Column(db.Integer)
     id_genre = db.Column(db.Integer)
     id_family = db.Column(db.Integer)

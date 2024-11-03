@@ -6,10 +6,12 @@ import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Config from "../../config";
+import ValidationScreen from "@/components/ValidationPage";
 
 // These are the fields used for each tree in the list
-interface Tree {
-  tree_id: string,
+export interface Tree {
+  id_tree: number,
+  image_url: string,
   essence_latin: string;
   essence_ang: string;
   essence_fr: string;
@@ -28,7 +30,8 @@ export default function TabTwoScreen() {
   const [selectedDHP, setSelectedDHP] = useState("");
 
   const [sortedTrees, setSortedTrees] = useState<Tree[]>([]);
-  const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
+  const [selectedTree, setSelectedTree] = useState<{ tree: Tree, idx: number } | null>(null);
+  const [inValidation, setInValidation] = useState<boolean>(false);
 
   const openFilterModal = () => setFilterModalVisible(true);
   const closeFilterModal = () => setFilterModalVisible(false);
@@ -58,18 +61,19 @@ export default function TabTwoScreen() {
       }
 
       const data = await response.json();
+      console.log(data);
       setSortedTrees(data);
     } catch (error) {
       console.error("Error: fetching trees unsuccesful: ", error);
     }
   }
 
-  const handlePressItem = (item:Tree) => {
-    setSelectedTree(item);
+  const handlePressItem = (item: Tree, idx: number) => {
+    setSelectedTree({ tree: item, idx: idx });
   }
 
   const handleBeginValidation = () => {
-
+    setInValidation(true);
   }
 
   // ================================================================ //
@@ -115,126 +119,131 @@ export default function TabTwoScreen() {
     await fetchFilteredTrees("");
   };
 
-  return (
-    <ThemedView style={{ flex: 1 }}>
-      <Screen
-        title="Données à valider"
-        content={
-          <ThemedView style={styles.container}>
-            <ThemedView style={styles.searchBar}>
-              <Pressable onPress={openFilterModal}
-                style={({ pressed }) => [
-                  { opacity: pressed ? 0.5 : 1 }
-                ]}>
+  if (inValidation == true && selectedTree != null) {
+    return <ValidationScreen propsTreeList={sortedTrees} startIdx={selectedTree.idx} />;
+  }
+  else {
+    return (
+      <ThemedView style={{ flex: 1 }}>
+        <Screen
+          title="Données à valider"
+          content={
+            <ThemedView style={styles.container}>
+              <ThemedView style={styles.searchBar}>
+                <Pressable onPress={openFilterModal}
+                  style={({ pressed }) => [
+                    { opacity: pressed ? 0.5 : 1 }
+                  ]}>
 
-                <Ionicons name="options-outline" size={24} color="gray" style={styles.filterIcon} />
-              </Pressable>
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Entrer un mot-clé"
-                placeholderTextColor="gray"
-                value={searchText}
-                onChangeText={setSearchText}
-                // onKeyPress={handleKeyPress} // Apply the filter only when the word is fully typed out
-                onSubmitEditing={() => fetchFilteredTrees(searchText)}
-              />
-              <Ionicons name="search-outline" size={24} color="gray" style={styles.searchIcon} />
-            </ThemedView>
-
-            <Modal visible={filterModalVisible} transparent={true} animationType="slide">
-              <ThemedView style={styles.modalBackground}>
-                <ThemedView style={styles.modalContent}>
-                  <ThemedText style={styles.modalTitle}>Filtrer les Arbres</ThemedText>
-                  {[
-                    { label: "Date de plantation (Année)", value: selectedYear, options: uniqueYears, setter: setSelectedYear },
-                    { label: "Espèce", value: selectedSpecies, options: uniqueSpecies, setter: setSelectedSpecies },
-                    { label: "Région", value: selectedRegion, options: uniqueRegions, setter: setSelectedRegion },
-                    { label: "DHP (Diamètre à la Hauteur Poitrine)", value: selectedDHP, options: uniqueDHPRanges(), setter: setSelectedDHP }
-                  ].map(({ label, value, options, setter }, index) => (
-                    <ThemedView style={styles.row} key={index}>
-                      <ThemedText style={styles.filterLabel}>{label}</ThemedText>
-                      <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={styles.picker}>
-                        <Picker.Item label={`Sélectionner une option`} value="" />
-                        {options.map((option, idx) => (
-                          <Picker.Item key={idx} label={option} value={option} />
-
-                        ))}
-                      </Picker>
-
-                    </ThemedView>
-                  ))}
-
-                  <Pressable onPress={applyFilters}
-                    style={({ pressed }) => [
-                      styles.applyButton,
-                      { opacity: pressed ? 0.5 : 1 }
-                    ]}>
-                    <ThemedText style={styles.buttonText}>Apply Filters</ThemedText>
-                  </Pressable>
-                  <Pressable
-                    onPress={clearFilters}
-                    style={({ pressed }) => [
-                      styles.clearButton,
-                      { opacity: pressed ? 0.5 : 1 }
-                    ]}>
-                    <ThemedText style={styles.buttonText}>Clear Filters</ThemedText>
-                  </Pressable>
-                  <Pressable onPress={closeFilterModal}
-                    style={({ pressed }) => [
-                      styles.closeButton,
-                      { opacity: pressed ? 0.5 : 1 }
-                    ]}>
-                    <ThemedText style={styles.buttonText}>Close</ThemedText>
-                  </Pressable>
-                </ThemedView>
+                  <Ionicons name="options-outline" size={24} color="gray" style={styles.filterIcon} />
+                </Pressable>
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Entrer un mot-clé"
+                  placeholderTextColor="gray"
+                  value={searchText}
+                  onChangeText={setSearchText}
+                  // onKeyPress={handleKeyPress} // Apply the filter only when the word is fully typed out
+                  onSubmitEditing={() => fetchFilteredTrees(searchText)}
+                />
+                <Ionicons name="search-outline" size={24} color="gray" style={styles.searchIcon} />
               </ThemedView>
-            </Modal>
 
-            <FlatList
-              data={sortedTrees}
-              keyExtractor={(item, index) => `${index}-${item.tree_id}`}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handlePressItem(item)}>
-                  <ThemedView style={styles.treeItem}>
-                    <ThemedView>
-                      <ThemedText style={styles.region}>{item.arrondissement}</ThemedText>
-                      <ThemedText style={styles.treeSpecies}>{item.essence_fr}</ThemedText>
-                    </ThemedView>
-                    <ThemedText style={styles.date}>{item.date_plantation}</ThemedText>
+              <Modal visible={filterModalVisible} transparent={true} animationType="slide">
+                <ThemedView style={styles.modalBackground}>
+                  <ThemedView style={styles.modalContent}>
+                    <ThemedText style={styles.modalTitle}>Filtrer les Arbres</ThemedText>
+                    {[
+                      { label: "Date de plantation (Année)", value: selectedYear, options: uniqueYears, setter: setSelectedYear },
+                      { label: "Espèce", value: selectedSpecies, options: uniqueSpecies, setter: setSelectedSpecies },
+                      { label: "Région", value: selectedRegion, options: uniqueRegions, setter: setSelectedRegion },
+                      { label: "DHP (Diamètre à la Hauteur Poitrine)", value: selectedDHP, options: uniqueDHPRanges(), setter: setSelectedDHP }
+                    ].map(({ label, value, options, setter }, index) => (
+                      <ThemedView style={styles.row} key={index}>
+                        <ThemedText style={styles.filterLabel}>{label}</ThemedText>
+                        <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={styles.picker}>
+                          <Picker.Item label={`Sélectionner une option`} value="" />
+                          {options.map((option, idx) => (
+                            <Picker.Item key={idx} label={option} value={option} />
+
+                          ))}
+                        </Picker>
+
+                      </ThemedView>
+                    ))}
+
+                    <Pressable onPress={applyFilters}
+                      style={({ pressed }) => [
+                        styles.applyButton,
+                        { opacity: pressed ? 0.5 : 1 }
+                      ]}>
+                      <ThemedText style={styles.buttonText}>Apply Filters</ThemedText>
+                    </Pressable>
+                    <Pressable
+                      onPress={clearFilters}
+                      style={({ pressed }) => [
+                        styles.clearButton,
+                        { opacity: pressed ? 0.5 : 1 }
+                      ]}>
+                      <ThemedText style={styles.buttonText}>Clear Filters</ThemedText>
+                    </Pressable>
+                    <Pressable onPress={closeFilterModal}
+                      style={({ pressed }) => [
+                        styles.closeButton,
+                        { opacity: pressed ? 0.5 : 1 }
+                      ]}>
+                      <ThemedText style={styles.buttonText}>Close</ThemedText>
+                    </Pressable>
                   </ThemedView>
-                </TouchableOpacity>
-              )}
-            />
-          </ThemedView>
-        }
-        headerImage={
-          <Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />
-        }
-      />
-      {selectedTree && (
-        <ThemedView style={styles.fixedBox}>
-          <ThemedText style={styles.overlayText}>Actions Possibles</ThemedText>
-          <ThemedView style={styles.buttonContainer}>
-            <Pressable style={({ pressed }) => [
-              styles.modifierButton,
-              { opacity: pressed ? 0.5 : 1 },
-            ]}>
-              <ThemedText style={styles.modifierButtonText}>Modifier</ThemedText>
-            </Pressable>
+                </ThemedView>
+              </Modal>
 
-            <Pressable style={({ pressed }) => [
-              styles.modalButton,
-              { opacity: pressed ? 0.5 : 1 },
-            ]}
-              onPress={handleBeginValidation}
-            >
-              <ThemedText style={styles.modalButtonText}>Démarrer la validation</ThemedText>
-            </Pressable>
+              <FlatList
+                data={sortedTrees}
+                keyExtractor={(item, index) => `${index}-${item.id_tree}`}
+                renderItem={({ item, index }) => (
+                  <TouchableOpacity onPress={() => handlePressItem(item, index)}>
+                    <ThemedView style={styles.treeItem}>
+                      <ThemedView>
+                        <ThemedText style={styles.region}>{item.arrondissement}</ThemedText>
+                        <ThemedText style={styles.treeSpecies}>{item.essence_fr}</ThemedText>
+                      </ThemedView>
+                      <ThemedText style={styles.date}>{item.date_plantation}</ThemedText>
+                    </ThemedView>
+                  </TouchableOpacity>
+                )}
+              />
+            </ThemedView>
+          }
+          headerImage={
+            <Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />
+          }
+        />
+        {selectedTree && (
+          <ThemedView style={styles.fixedBox}>
+            <ThemedText style={styles.overlayText}>Actions Possibles</ThemedText>
+            <ThemedView style={styles.buttonContainer}>
+              <Pressable style={({ pressed }) => [
+                styles.modifierButton,
+                { opacity: pressed ? 0.5 : 1 },
+              ]}>
+                <ThemedText style={styles.modifierButtonText}>Modifier</ThemedText>
+              </Pressable>
+
+              <Pressable style={({ pressed }) => [
+                styles.modalButton,
+                { opacity: pressed ? 0.5 : 1 },
+              ]}
+                onPress={handleBeginValidation}
+              >
+                <ThemedText style={styles.modalButtonText}>Démarrer la validation</ThemedText>
+              </Pressable>
+            </ThemedView>
           </ThemedView>
-        </ThemedView>
-      )}
-    </ThemedView>
-  );
+        )}
+      </ThemedView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({

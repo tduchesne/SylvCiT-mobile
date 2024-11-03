@@ -40,6 +40,7 @@ def get_trees():
             'date_measure': t.date_measure.isoformat(),
             'approbation_status': t.approbation_status,
             'details_url': t.details_url,
+            'image_url': t.image_url,
             'id_type': t.id_type,
             'id_genre': t.id_genre,
             'id_family': t.id_family,
@@ -91,6 +92,7 @@ def filter():
     return jsonify(
         [{
             'id_tree': tree.id_tree,
+            'image_url': tree.image_url,
             'date_plantation': tree.date_plantation,
             'date_releve': tree.date_measure,
             'essence_latin': tree.type.name_la,

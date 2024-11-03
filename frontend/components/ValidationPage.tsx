@@ -2,70 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, View, Text, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
 import Screen from '@/components/Screen';
 import Config from "@/config";
+import { Tree } from '@/app/(tabs)/liste_arbre';
 
-type TreeData = {
-  id: number;
-  name: string;
-  family: string;
-  genus: string;
-  plantingDate: string;
-  speciesEN: string;
-  speciesFR: string;
-  speciesLA: string;
-  imageUrl: string;
-};
-
-const mockDatabase: TreeData[] = [
-  {
-    id: 1,
-    name: '1Acer platanoides',
-    family: 'Fabaceae',
-    genus: 'Gymnocladus',
-    plantingDate: '14/01/2016',
-    speciesEN: 'Kentucky Coffee Tree',
-    speciesFR: 'Chicot du Canada',
-    speciesLA: 'Gymnocladus dioicus',
-    imageUrl: 'https://arbresenligne.com/cdn/shop/files/SAULE-BRILLANT.jpg',
-  },
-  {
-    id: 2,
-    name: '2Pinus sylvestris',
-    family: 'Pinaceae',
-    genus: 'Pinus',
-    plantingDate: '22/08/2010',
-    speciesEN: 'Scots Pine',
-    speciesFR: 'Pin sylvestre',
-    speciesLA: 'Pinus sylvestris',
-    imageUrl: 'https://example.com/scots-pine.jpg',
-  },
-  {
-    id: 3,
-    name: '3Pinus sylvestris',
-    family: 'Pinaceae',
-    genus: 'Pinus',
-    plantingDate: '22/08/2010',
-    speciesEN: 'Scots Pine',
-    speciesFR: 'Pin sylvestre',
-    speciesLA: 'Pinus sylvestris',
-    imageUrl: 'https://example.com/scots-pine.jpg',
-  },
-];
-
-export default function ValidationScreen() {
-  const [treeData, setTreeData] = useState<TreeData | null>(null);
-  const [treeList, setTreeList] = useState<TreeData[]>(mockDatabase);
+export default function ValidationScreen({ propsTreeList, startIdx }: { propsTreeList: Tree[], startIdx: number }) {
+  const [treeData, setTreeData] = useState<Tree | null>(propsTreeList[startIdx]);
+  const [treeList, setTreeList] = useState<Tree[]>(propsTreeList);
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
-
-  useEffect(() => {
-    const fetchTreeData = () => {
-      setTimeout(() => {
-        const data = treeList.find((tree) => tree.id === 1);
-        setTreeData(data || null);
-      }, 1000);
-    };
-    if (treeData == null) fetchTreeData();
-  }, [treeList]);
 
   const modifyTreeStatus = async (id: number, status: string) => {
     try {
@@ -87,7 +30,7 @@ export default function ValidationScreen() {
     }
   };
 
-  const exitToMenu =  () => {} // TODO
+  const exitToMenu = () => { } // TODO
 
 
 
@@ -121,33 +64,34 @@ export default function ValidationScreen() {
     exitToMenu();
     return false;
   }
-  
+
   const handleValidate = async () => {
-    console.log('Arbre validé:', treeData?.name);
+    console.log('Arbre validé:', treeData?.essence_fr);
     if (treeData) {
-      modifyTreeStatus(treeData!.id, 'approved');
+
+      modifyTreeStatus(treeData.id_tree, 'approved');
       seekNextTree(true);
     }
   };
 
   const handleSkip = () => {
-    console.log('Arbre ignoré:', treeData?.name);
+    console.log('Arbre ignoré:', treeData?.essence_fr);
     seekNextTree(false);
   };
 
   const handleModify = () => {
-    console.log('Modifier l\'arbre:', treeData?.name);
+    console.log('Modifier l\'arbre:', treeData?.essence_fr);
   };
 
   return (
     <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#fff' }]}>
       <Screen
-        title={treeData ? treeData.name : 'Chargement...'}
+        title={treeData ? treeData.essence_fr : 'Chargement...'}
         content={
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            {treeData?.imageUrl ? (
+            {treeData?.image_url ? (
               <Image
-                source={{ uri: treeData.imageUrl }}
+                source={{ uri: treeData.image_url }}
                 style={styles.treeImage}
               />
             ) : (
@@ -158,27 +102,27 @@ export default function ValidationScreen() {
             <View style={styles.infoContainer}>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Famille:</Text>
-                <Text style={styles.infoValue}>{treeData?.family}</Text>
+                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Genre:</Text>
-                <Text style={styles.infoValue}>{treeData?.genus}</Text>
+                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Date de plantation:</Text>
-                <Text style={styles.infoValue}>{treeData?.plantingDate}</Text>
+                <Text style={styles.infoValue}>{treeData?.date_plantation}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (EN):</Text>
-                <Text style={styles.infoValue}>{treeData?.speciesEN}</Text>
+                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (FR):</Text>
-                <Text style={styles.infoValue}>{treeData?.speciesFR}</Text>
+                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (LA):</Text>
-                <Text style={styles.infoValue}>{treeData?.speciesLA}</Text>
+                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
               </View>
             </View>
           </ScrollView>
