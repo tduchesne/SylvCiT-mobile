@@ -73,17 +73,18 @@ def filter():
 
     keyword = request.args.get('keyword', '')
     query = db.session.query(Tree).join(Tree.location).join(Tree.type)
+    query = query.filter(Tree.approbation_status.ilike("pending"))
 
     # TODO: update filtered fields when db fields are added
     if keyword:
         query = query.filter(
             Tree.date_plantation.ilike(f"%{keyword}%") |
-                Tree.date_measure.ilike(f"%{keyword}%") |
-                location.Location.latitude.ilike(f"%{keyword}%") |
-                location.Location.longitude.ilike(f"%{keyword}%") |
-                type.Type.name_fr.ilike(f"%{keyword}%") |
-                type.Type.name_en.ilike(f"%{keyword}%") |
-                type.Type.name_la.ilike(f"%{keyword}%")
+            Tree.date_measure.ilike(f"%{keyword}%") |
+            location.Location.latitude.ilike(f"%{keyword}%") |
+            location.Location.longitude.ilike(f"%{keyword}%") |
+            type.Type.name_fr.ilike(f"%{keyword}%") |
+            type.Type.name_en.ilike(f"%{keyword}%") |
+            type.Type.name_la.ilike(f"%{keyword}%")
         )
 
     trees = query.all()
