@@ -26,7 +26,7 @@ export default function TabTwoScreen() {
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedDHP, setSelectedDHP] = useState("");
 
-  const [sortedTrees, setSortedTrees] = useState([]);
+  const [sortedTrees, setSortedTrees] = useState<Tree[]>([]);
   const [showBox] = useState(true);
 
   const openFilterModal = () => setFilterModalVisible(true);
@@ -59,7 +59,7 @@ export default function TabTwoScreen() {
   /**
    *  Fetch trees from backend using the API
    */
-  const fetchFilteredTrees = async (keyword) => {
+  const fetchFilteredTrees = async (keyword:string) => {
     try {
       const response = await fetch(`${Config.API_URL}/api/trees/filter?keyword=${encodeURIComponent(keyword)}`, {
         method: 'GET',
@@ -74,9 +74,7 @@ export default function TabTwoScreen() {
       }
 
       const data = await response.json();
-      console.log(data);
       setSortedTrees(data);
-
     } catch (error) {
       console.error("Error: fetching trees unsuccesful: ", error);
     } 
