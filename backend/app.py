@@ -261,71 +261,35 @@ def create_app(config_name=None):
     def modifier_arbre(no_emp):
         try:
             info = request.get_json()
-            print(f"Demande reçue pour modifier l'arbre avec l'ID : {no_emp}")
+            print(f"Demande reçue pour modifier l'arbre avec le numéro d'emplacement : {no_emp}")
 
             tree = Tree.query.filter_by(no_emp=no_emp).first()
             if not tree:
                 print(f"Arbre avec l'ID {no_emp} introuvable.")
                 return jsonify({"message": "Arbre introuvable"}), 404
 
-            tree.date_plantation = info.get('date_plantation', tree.date_plantation)
+            tree.emplacement = info.get('emplacement', tree.emplacement)
+            tree.dhp = info.get('dhp', tree.dhp)
             tree.date_measure = info.get('date_measure', tree.date_measure)
-
-            family_name = info.get('family')
-            if family_name:
-                family = Family.query.get(tree.id_family)
-                if family:
-                    family.name = family_name
-                    print(f"Nom de famille mis à jour en {family_name} pour l'arbre avec le numéro d'emplacement : {no_emp}")
-                else:
-                    print(f"Famille avec l'ID {tree.id_family} introuvable.")
-
-            genre_name = info.get('genre')
-            if genre_name:
-                genre = Genre.query.get(tree.id_genre)
-                if genre:
-                    genre.name = genre_name
-                    print(f"Nom de genre mis à jour en {genre_name} pour l'arbre avec l'ID : {no_emp}")
-                else:
-                    print(f"Genre avec l'ID {tree.id_genre} introuvable.")
-
-            functional_group_name = info.get('functional_group')
-            if functional_group_name:
-                functional_group = FunctionalGroup.query.get(tree.id_functional_group)
-                if functional_group:
-                    functional_group.group = functional_group_name
-                    print(f"Groupe fonctionnel mis à jour en {functional_group_name} pour l'arbre avec l'ID : {no_emp}")
-                else:
-                    print(f"Groupe fonctionnel avec l'ID {tree.id_functional_group} introuvable.")
-
-            type_name = info.get('type')
-            if type_name:
-                type_ = Type.query.get(tree.id_type)
-                if type_:
-                    type_.name_fr = type_name
-                    print(f"Type mis à jour en {type_name} pour l'arbre avec l'ID : {no_emp}")
-                else:
-                    print(f"Type avec l'ID {tree.id_type} introuvable.")
-
-            latitude = info.get('latitude')
-            longitude = info.get('longitude')
-
-            if latitude and longitude:
-                location = Location.query.get(tree.id_location)
-                if location:
-                    if not (-90 <= float(latitude) <= 90):
-                        abort(400, description="Latitude invalide.")
-                    if not (-180 <= float(longitude) <= 180):
-                        abort(400, description="Longitude invalide.")
-
-                    location.latitude = latitude
-                    location.longitude = longitude
-                    print(f"Emplacement mis à jour avec latitude : {latitude} et longitude : {longitude} pour l'arbre avec l'ID : {no_emp}")
-                else:
-                    print(f"Emplacement avec l'ID {tree.id_location} introuvable.")
+            tree.date_plantation = info.get('date_plantation', tree.date_plantation)
+            tree.latitude = info.get('latitude', tree.latitude)
+            tree.longitude = info.get('longitude', tree.longitude)
+            tree.inv_type = info.get('inv_type', tree.inv_type)
+            if isinstance(tree, TreeRue):
+                tree.adresse = info.get('adresse', tree.adresse)
+                tree.localisation = info.get('localisation', tree.localisation)
+                tree.localisation_code = info.get('localisation_code', tree.localisation_code)
+                tree.rue_de = info.get('rue_de', tree.rue_de)
+                tree.rue_a = info.get('rue_a', tree.rue_a)
+                tree.distance_pave = info.get('distance_pave', tree.distance_pave)
+                tree.distance_ligne_rue = info.get('distance_ligne_rue', tree.distance_ligne_rue)
+                tree.stationnement_jour = info.get('stationnement_jour', tree.stationnement_jour)
+                tree.stationnement_heure = info.get('stationnement_heure', tree.stationnement_heure)
+                tree.district = info.get('district', tree.district)
+                tree.arbre_remarquable = info.get('arbre_remarquable', tree.arbre_remarquable)
 
             db.session.commit()
-            print(f"Arbre avec l'ID {no_emp} et les informations associées mises à jour avec succès.")
+            print(f"Arbre avec le numéro d'emplacement {no_emp} et les informations associées mises à jour avec succès.")
 
             return jsonify(tree.to_dict()), 200
 
