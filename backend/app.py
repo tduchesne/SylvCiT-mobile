@@ -275,6 +275,7 @@ def create_app(config_name=None):
             tree.latitude = info.get('latitude', tree.latitude)
             tree.longitude = info.get('longitude', tree.longitude)
             tree.inv_type = info.get('inv_type', tree.inv_type)
+            tree.is_valid = True
             if isinstance(tree, TreeRue):
                 tree.adresse = info.get('adresse', tree.adresse)
                 tree.localisation = info.get('localisation', tree.localisation)
