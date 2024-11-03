@@ -141,7 +141,7 @@ export default function TabTwoScreen() {
     await fetchFilteredTrees("");
   };
 
-  if (inValidation == true && selectedTree != null) {
+  if (inValidation && selectedTree != null) {
     return <ValidationScreen propsTreeList={sortedTrees} startIdx={selectedTree.idx} handleEndValidation={handleEndValidation} />;
   }
   else {
