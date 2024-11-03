@@ -38,9 +38,9 @@ class Tree(db.Model):
     def to_dict(self):
         return {
             'no_emp': self.no_emp,
-            'arrondissement': self.no_arrondissement,
+            'arrondissement': self.arrondissement.to_dict(),
             'emplacement': self.emplacement,
-            'sigle': self.sigle,
+            'essence': self.essence.to_dict(),
             'dhp': self.dhp,
             'date_measure': self.date_measure.isoformat(),
             'date_plantation': self.date_plantation.isoformat(),
@@ -109,8 +109,8 @@ class TreeHorsRue(Tree):
     def to_dict(self):
         attributes = super().to_dict()
         attributes.update({
-            'code_parc': self.code_parc,
-            'code_secteur': self.code_secteur
+            'code_parc': self.parc.to_dict(),
+            'code_secteur': self.secteur.to_dict()
         })
         return attributes
 
