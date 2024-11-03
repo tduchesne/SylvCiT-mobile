@@ -32,14 +32,14 @@ export default function FormAjoutArbre() {
     const [modalDatePreleve, setModalDatePreleve] = useState(false)
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
     const [indicateur, setIndicateur] = useState(false);
-    const [invType, setInvType] = useState();
+    const [invType, setInvType] = useState('');
 
 
     const colorScheme = useColorScheme();
 
     const sauvegarder = () => {
 
-        if (!dateReleve || !longitude || !latitude) {
+        if (!dateReleve || !longitude || !latitude || !invType) {
             Alert.alert("Merci de remplir tous les champs obligatoires");
 
         } else {
@@ -149,6 +149,7 @@ export default function FormAjoutArbre() {
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="No emplacement" keyboardType="numeric" />
                     <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)} style={[styles.input, styles.champObligatoire]}>
+                        <Picker.Item label="Inv Type" value=" " />
                         <Picker.Item label="Type Rue" value="R" />
                         <Picker.Item label="Type Hors Rue" value="H" />
                     </Picker>
