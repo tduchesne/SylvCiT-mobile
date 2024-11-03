@@ -10,6 +10,10 @@ import { useUserRole } from "@/context/UserRoleContext";
 import Config from "../../config";
 import ValidationScreen from "@/components/ValidationPage";
 
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();
+
 // These are the fields used for each tree in the list
 export interface Tree {
   id_tree: number,
@@ -31,7 +35,6 @@ export default function TabTwoScreen() {
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedDHP, setSelectedDHP] = useState("");
 
-  const [showBox, setIsShowBox] = useState(false);
   const [sortedTrees, setSortedTrees] = useState<Tree[]>([]);
   const [selectedTree, setSelectedTree] = useState<{ tree: Tree, idx: number } | null>(null);
   const [inValidation, setInValidation] = useState<boolean>(false);
@@ -51,7 +54,6 @@ export default function TabTwoScreen() {
   useEffect(() => {
     if (userRole >= 2) {
       setShowAuthScreen(false); 
-      setIsShowBox(true);
     }
   }, [userRole]);
 
