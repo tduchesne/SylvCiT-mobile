@@ -10,8 +10,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import * as Location from 'expo-location';
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
-import MapView from 'react-native-maps';
-import { map } from "leaflet";
+//https://github.com/react-native-maps/react-native-maps
+import MapView, { Region } from 'react-native-maps';
+import { Picker } from '@react-native-picker/picker';
 
 export default function FormAjoutArbre() {
 
@@ -31,6 +32,7 @@ export default function FormAjoutArbre() {
     const [modalDatePreleve, setModalDatePreleve] = useState(false)
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
     const [indicateur, setIndicateur] = useState(false);
+    const [invType, setInvType] = useState();
 
 
     const colorScheme = useColorScheme();
@@ -49,6 +51,7 @@ export default function FormAjoutArbre() {
                 },
                 body: JSON.stringify({
                     "no_emp": empNo,
+                    "inv_type": invType,
                     "adresse": adresse,
                     "essence_latin": essenceLatin,
                     "essence_fr": essenceFr,
@@ -61,11 +64,7 @@ export default function FormAjoutArbre() {
                     "date_releve": formatDate(dateReleve)
                 })
             })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .then(() => setIndicateur(false))
-                .then(() => Alert.alert("Informations sauvegardées"))
-                .then(nettoyerChamps)
+                .then((reponse) => validerReponse(reponse))
                 .catch((response) => {
                     setIndicateur(false)
                     Alert.alert("Erreur lors du sauvegarde des données. Merci de réessayer")
@@ -78,21 +77,38 @@ export default function FormAjoutArbre() {
     }
 
 
-    const trouverPosition = async () => {
+    const validerReponse = (response: Response) => {
+        setIndicateur(false)
+        if (response.status == 201) {
+            Alert.alert("Informations sauvegardées")
+            nettoyerChamps()
+        }
+        else {
+            const description = response.json()
+                .then(info => Alert.alert(info['description']))
+
+
+        }
+
+
+    }
+
+    const trouverPosition = async (region: Region) => {
         setIndicateur(true);
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
             setMsgErreur('Permission pour accéder à votre position refusée');
             return;
         }
-        let location = await Location.getCurrentPositionAsync({});
-        setLatitude(location.coords.latitude.toString());
-        setLongitude(location.coords.longitude.toString());
-        const coord = {
-            latitude: latitude,
-            longitude: longitude,
+        const location = await Location.reverseGeocodeAsync({
+            latitude: region.latitude,
+            longitude: region.longitude,
+        });
 
-        };
+        setAdresse(location[0].formattedAddress?.toString())
+        /* setLatitude(location.coords.latitude.toString());
+         setLongitude(location.coords.longitude.toString());*/
+
 
         setIndicateur(false);
 
@@ -132,6 +148,10 @@ export default function FormAjoutArbre() {
                         * Les champs en rouge sont obligatoires</ThemedText>
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="No emplacement" keyboardType="numeric" />
+                    <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)} style={[styles.input, styles.champObligatoire]}>
+                        <Picker.Item label="Type Rue" value="R" />
+                        <Picker.Item label="Type Hors Rue" value="H" />
+                    </Picker>
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
@@ -149,7 +169,7 @@ export default function FormAjoutArbre() {
                     </View>
                     <TextInput editable={false} placeholder="Date de plantation" style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]}>{datePlantation}</TextInput>
                     <View style={styles.container}>
-                        <MapView style={styles.map} showsUserLocation={true} onRegionChangeComplete={(region) => { setLatitude(region.latitude.toString()), setLongitude(region.longitude.toString()) }} />
+                        <MapView style={styles.map} showsUserLocation={true} onRegionChangeComplete={(region) => { setLatitude(region.latitude.toString()), setLongitude(region.longitude.toString()), trouverPosition(region) }} />
 
                     </View>
 
