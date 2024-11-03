@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Screen from "@/components/Screen";
-import { StyleSheet, TextInput, Modal, FlatList, Image, Pressable } from "react-native";
+import { StyleSheet, TextInput, Modal, FlatList, Image, Pressable, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
@@ -9,6 +9,7 @@ import Config from "../../config";
 
 // These are the fields used for each tree in the list
 interface Tree {
+  tree_id: string,
   essence_latin: string;
   essence_ang: string;
   essence_fr: string;
@@ -27,7 +28,7 @@ export default function TabTwoScreen() {
   const [selectedDHP, setSelectedDHP] = useState("");
 
   const [sortedTrees, setSortedTrees] = useState<Tree[]>([]);
-  const [showBox] = useState(true);
+  const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
 
   const openFilterModal = () => setFilterModalVisible(true);
   const closeFilterModal = () => setFilterModalVisible(false);
@@ -61,6 +62,14 @@ export default function TabTwoScreen() {
     } catch (error) {
       console.error("Error: fetching trees unsuccesful: ", error);
     }
+  }
+
+  const handlePressItem = (item:Tree) => {
+    setSelectedTree(item);
+  }
+
+  const handleBeginValidation = () => {
+
   }
 
   // ================================================================ //
@@ -183,15 +192,17 @@ export default function TabTwoScreen() {
 
             <FlatList
               data={sortedTrees}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item, index) => `${index}-${item.tree_id}`}
               renderItem={({ item }) => (
-                <ThemedView style={styles.treeItem}>
-                  <ThemedView>
-                    <ThemedText style={styles.region}>{item.arrondissement}</ThemedText>
-                    <ThemedText style={styles.treeSpecies}>{item.essence_fr}</ThemedText>
+                <TouchableOpacity onPress={() => handlePressItem(item)}>
+                  <ThemedView style={styles.treeItem}>
+                    <ThemedView>
+                      <ThemedText style={styles.region}>{item.arrondissement}</ThemedText>
+                      <ThemedText style={styles.treeSpecies}>{item.essence_fr}</ThemedText>
+                    </ThemedView>
+                    <ThemedText style={styles.date}>{item.date_plantation}</ThemedText>
                   </ThemedView>
-                  <ThemedText style={styles.date}>{item.date_plantation}</ThemedText>
-                </ThemedView>
+                </TouchableOpacity>
               )}
             />
           </ThemedView>
@@ -200,7 +211,7 @@ export default function TabTwoScreen() {
           <Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />
         }
       />
-      {showBox && (
+      {selectedTree && (
         <ThemedView style={styles.fixedBox}>
           <ThemedText style={styles.overlayText}>Actions Possibles</ThemedText>
           <ThemedView style={styles.buttonContainer}>
@@ -214,7 +225,9 @@ export default function TabTwoScreen() {
             <Pressable style={({ pressed }) => [
               styles.modalButton,
               { opacity: pressed ? 0.5 : 1 },
-            ]}>
+            ]}
+              onPress={handleBeginValidation}
+            >
               <ThemedText style={styles.modalButtonText}>Démarrer la validation</ThemedText>
             </Pressable>
           </ThemedView>

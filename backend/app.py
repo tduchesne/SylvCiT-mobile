@@ -90,6 +90,7 @@ def filter():
     # TODO: update filtered fields when db fields are added
     return jsonify(
         [{
+            'id_tree': tree.id_tree,
             'date_plantation': tree.date_plantation,
             'date_releve': tree.date_measure,
             'essence_latin': tree.type.name_la,
