@@ -32,16 +32,6 @@ export default function TabTwoScreen() {
   const openFilterModal = () => setFilterModalVisible(true);
   const closeFilterModal = () => setFilterModalVisible(false);
 
-  const [isPressed, setIsPressed] = useState(false);
-
-  const handlePressIn = () => {
-    setIsPressed(true);
-  };
-
-  const handlePressOut = () => {
-    setIsPressed(false);
-  };
-
   // ================================================================ //
 
   // Load all trees on page load
@@ -49,22 +39,15 @@ export default function TabTwoScreen() {
     fetchFilteredTrees(""); // Fetch all trees on initial load
   }, []);
 
-  // Only apply filter when user presses Enter. We fetch only when the word is typed out fully
-  const handleKeyPress = (event) => {
-    if (event.nativeEvent.key === "Enter") {
-      fetchFilteredTrees(searchText);
-    }
-  }
-
   /**
    *  Fetch trees from backend using the API
    */
-  const fetchFilteredTrees = async (keyword:string) => {
+  const fetchFilteredTrees = async (keyword: string) => {
     try {
       const response = await fetch(`${Config.API_URL}/api/trees/filter?keyword=${encodeURIComponent(keyword)}`, {
         method: 'GET',
-        headers : {
-          'Content-Type' : 'application/json',
+        headers: {
+          'Content-Type': 'application/json',
         }
       });
 
@@ -77,8 +60,8 @@ export default function TabTwoScreen() {
       setSortedTrees(data);
     } catch (error) {
       console.error("Error: fetching trees unsuccesful: ", error);
-    } 
-  } 
+    }
+  }
 
   // ================================================================ //
 
@@ -132,7 +115,7 @@ export default function TabTwoScreen() {
             <ThemedView style={styles.searchBar}>
               <Pressable onPress={openFilterModal}
                 style={({ pressed }) => [
-                    { opacity: pressed ? 0.5 : 1 }
+                  { opacity: pressed ? 0.5 : 1 }
                 ]}>
 
                 <Ionicons name="options-outline" size={24} color="gray" style={styles.filterIcon} />
@@ -163,34 +146,34 @@ export default function TabTwoScreen() {
                       <ThemedText style={styles.filterLabel}>{label}</ThemedText>
                       <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={styles.picker}>
                         <Picker.Item label={`Sélectionner une option`} value="" />
-                          {options.map((option, idx) => (
+                        {options.map((option, idx) => (
                           <Picker.Item key={idx} label={option} value={option} />
 
-                          ))}
+                        ))}
                       </Picker>
-                      
+
                     </ThemedView>
                   ))}
-                  
-                  <Pressable onPress={applyFilters} 
+
+                  <Pressable onPress={applyFilters}
                     style={({ pressed }) => [
-                        styles.applyButton,
-                        { opacity: pressed ? 0.5 : 1 }
+                      styles.applyButton,
+                      { opacity: pressed ? 0.5 : 1 }
                     ]}>
                     <ThemedText style={styles.buttonText}>Apply Filters</ThemedText>
                   </Pressable>
                   <Pressable
-                    onPress={clearFilters} 
+                    onPress={clearFilters}
                     style={({ pressed }) => [
-                        styles.clearButton,
-                        { opacity: pressed ? 0.5 : 1 }
+                      styles.clearButton,
+                      { opacity: pressed ? 0.5 : 1 }
                     ]}>
                     <ThemedText style={styles.buttonText}>Clear Filters</ThemedText>
                   </Pressable>
-                  <Pressable onPress={closeFilterModal} 
+                  <Pressable onPress={closeFilterModal}
                     style={({ pressed }) => [
-                    styles.closeButton,
-                    { opacity: pressed ? 0.5 : 1 }
+                      styles.closeButton,
+                      { opacity: pressed ? 0.5 : 1 }
                     ]}>
                     <ThemedText style={styles.buttonText}>Close</ThemedText>
                   </Pressable>
@@ -203,11 +186,11 @@ export default function TabTwoScreen() {
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <ThemedView style={styles.treeItem}>
-                    <ThemedView>
-                        <ThemedText style={styles.region}>{item.arrondissement}</ThemedText>
-                        <ThemedText style={styles.treeSpecies}>{item.essence_fr}</ThemedText>
-                    </ThemedView>
-                    <ThemedText style={styles.date}>{item.date_plantation}</ThemedText>
+                  <ThemedView>
+                    <ThemedText style={styles.region}>{item.arrondissement}</ThemedText>
+                    <ThemedText style={styles.treeSpecies}>{item.essence_fr}</ThemedText>
+                  </ThemedView>
+                  <ThemedText style={styles.date}>{item.date_plantation}</ThemedText>
                 </ThemedView>
               )}
             />
@@ -218,62 +201,62 @@ export default function TabTwoScreen() {
         }
       />
       {showBox && (
-                <ThemedView style={styles.fixedBox}>
-                    <ThemedText style={styles.overlayText}>Actions Possibles</ThemedText>
-                    <ThemedView style={styles.buttonContainer}>
-                        <Pressable style={({ pressed }) => [
-                            styles.modifierButton,
-                            {opacity: pressed ? 0.5 : 1},
-                        ]}>
-                            <ThemedText style={styles.modifierButtonText}>Modifier</ThemedText>
-                        </Pressable>
+        <ThemedView style={styles.fixedBox}>
+          <ThemedText style={styles.overlayText}>Actions Possibles</ThemedText>
+          <ThemedView style={styles.buttonContainer}>
+            <Pressable style={({ pressed }) => [
+              styles.modifierButton,
+              { opacity: pressed ? 0.5 : 1 },
+            ]}>
+              <ThemedText style={styles.modifierButtonText}>Modifier</ThemedText>
+            </Pressable>
 
-                        <Pressable style={({ pressed }) => [
-                            styles.modalButton,
-                            {opacity: pressed ? 0.5 : 1},
-                        ]}>
-                            <ThemedText style={styles.modalButtonText}>Démarrer la validation</ThemedText>
-                        </Pressable>
-                    </ThemedView>
-                </ThemedView>
-            )}
+            <Pressable style={({ pressed }) => [
+              styles.modalButton,
+              { opacity: pressed ? 0.5 : 1 },
+            ]}>
+              <ThemedText style={styles.modalButtonText}>Démarrer la validation</ThemedText>
+            </Pressable>
+          </ThemedView>
+        </ThemedView>
+      )}
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1 
+  container: {
+    flex: 1
   },
-  treeLogo: { 
-    height: 230, 
-    width: 310, 
-    bottom: 0, 
-    left: 36, 
-    position: "absolute" 
-},
-  searchBar: { 
-    flexDirection: "row", 
-    alignItems: "center", 
-    backgroundColor: "#f0f0f0", 
-    borderRadius: 25, 
-    padding: 15, 
-    width: "100%", 
-    alignSelf: "center", 
-    marginVertical: 10 
-},
-  filterIcon: { 
-    marginRight: 5 
-},
-  searchInput: { 
-    flex: 1, 
-    fontSize: 16, 
-    paddingVertical: 0, 
-    paddingHorizontal: 10 
-},
-  searchIcon: { 
-    marginLeft: 5 
-},
+  treeLogo: {
+    height: 230,
+    width: 310,
+    bottom: 0,
+    left: 36,
+    position: "absolute"
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 25,
+    padding: 15,
+    width: "100%",
+    alignSelf: "center",
+    marginVertical: 10
+  },
+  filterIcon: {
+    marginRight: 5
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 0,
+    paddingHorizontal: 10
+  },
+  searchIcon: {
+    marginLeft: 5
+  },
   modalBackground: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
