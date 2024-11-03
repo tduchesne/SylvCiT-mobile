@@ -1,6 +1,7 @@
 import Screen from "@/components/Screen";
 import { StyleSheet, Image, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
+import React from 'react';
 import { useUserRole } from "@/context/UserRoleContext"; 
 import { useEffect, useState } from "react";
 import AuthScreen from "@/components/AuthScreen";

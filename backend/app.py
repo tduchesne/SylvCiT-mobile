@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, Enum
 import bcrypt
 import os
 
@@ -35,32 +35,56 @@ def get_trees():
     trees = Tree.query.all()
     return jsonify(
         [{
-            'id_tree': t.id_tree, 
-            'date_plantation': t.date_plantation, 
-            'id_family': t.id_family, 
-            'id_functional_group': t.id_functional_group, 
-            'id_genre': t.id_genre, 
-            'id_location': t.id_location, 
-            'id_type': t.id_type
+            'id_tree': t.id_tree,
+            'date_plantation': t.date_plantation.isoformat(),
+            'date_measure': t.date_measure.isoformat(),
+            'approbation_status': t.approbation_status,
+            'details_url': t.details_url,
+            'image_url': t.image_url,
+            'id_type': t.id_type,
+            'id_genre': t.id_genre,
+            'id_family': t.id_family,
+            'id_functional_group': t.id_functional_group,
+            'id_location': t.id_location
             } for t in trees
         ])
+
+@app.route('/api/tree/status/<int:id_tree>', methods=['PUT'])
+def update_tree_status(id_tree):
+    data = request.get_json()
+
+    if 'approbation_status' not in data:
+        abort(400, description="Appropriation status is required.")
+    if data['approbation_status'] not in ["pending", "approved"]:
+        abort(400, description="Invalid approbation status.")
+
+    # Get, modify and save tree
+    tree = Tree.query.get(id_tree)
+    if not tree:
+        abort(404, description="Tree not found.")
+
+    tree.approbation_status = data['approbation_status']
+    db.session.commit()
+
+    return jsonify({"message": "Tree status updated successfully."}), 200
 
 @app.route('/api/trees/filter', methods=['GET'])
 def filter():
 
     keyword = request.args.get('keyword', '')
-    query = db.session.query(Tree).join(Tree.location).join(Tree.type)
+    query = db.session.query(Tree).join(Tree.location).join(Tree.type).join(Tree.genre).join(Tree.family)
+    query = query.filter(Tree.approbation_status.ilike("pending"))
 
     # TODO: update filtered fields when db fields are added
     if keyword:
         query = query.filter(
             Tree.date_plantation.ilike(f"%{keyword}%") |
-                Tree.date_measure.ilike(f"%{keyword}%") |
-                location.Location.latitude.ilike(f"%{keyword}%") |
-                location.Location.longitude.ilike(f"%{keyword}%") |
-                type.Type.name_fr.ilike(f"%{keyword}%") |
-                type.Type.name_en.ilike(f"%{keyword}%") |
-                type.Type.name_la.ilike(f"%{keyword}%")
+            Tree.date_measure.ilike(f"%{keyword}%") |
+            location.Location.latitude.ilike(f"%{keyword}%") |
+            location.Location.longitude.ilike(f"%{keyword}%") |
+            type.Type.name_fr.ilike(f"%{keyword}%") |
+            type.Type.name_en.ilike(f"%{keyword}%") |
+            type.Type.name_la.ilike(f"%{keyword}%")
         )
 
     trees = query.all()
@@ -68,6 +92,8 @@ def filter():
     # TODO: update filtered fields when db fields are added
     return jsonify(
         [{
+            'id_tree': tree.id_tree,
+            'image_url': tree.image_url,
             'date_plantation': tree.date_plantation,
             'date_releve': tree.date_measure,
             'essence_latin': tree.type.name_la,
@@ -75,6 +101,8 @@ def filter():
             'essence_fr': tree.type.name_fr,
             'latitude': tree.location.latitude,
             'longitude': tree.location.longitude,
+            'genre_name': tree.genre.name,
+            'family_name': tree.family.name,
         } for tree in trees]
     )
 
