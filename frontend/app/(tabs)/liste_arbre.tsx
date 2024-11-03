@@ -10,9 +10,6 @@ import { useUserRole } from "@/context/UserRoleContext";
 import Config from "../../config";
 import ValidationScreen from "@/components/ValidationPage";
 
-import { LogBox } from 'react-native';
-LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs();
 
 // These are the fields used for each tree in the list
 export interface Tree {
