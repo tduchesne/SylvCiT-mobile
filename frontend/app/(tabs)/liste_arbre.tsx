@@ -5,6 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import AuthScreen from "@/components/AuthScreen";
+import { useUserRole } from "@/context/UserRoleContext"; 
 import Config from "../../config";
 import ValidationScreen from "@/components/ValidationPage";
 
@@ -29,12 +31,29 @@ export default function TabTwoScreen() {
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedDHP, setSelectedDHP] = useState("");
 
+  const [showBox, setIsShowBox] = useState(false);
   const [sortedTrees, setSortedTrees] = useState<Tree[]>([]);
   const [selectedTree, setSelectedTree] = useState<{ tree: Tree, idx: number } | null>(null);
   const [inValidation, setInValidation] = useState<boolean>(false);
 
   const openFilterModal = () => setFilterModalVisible(true);
   const closeFilterModal = () => setFilterModalVisible(false);
+
+  const [isPressed, setIsPressed] = useState(false);
+
+  const { userRole } = useUserRole(); 
+  const [showAuthScreen, setShowAuthScreen] = useState(false);
+
+  const handleShowAuthScreen = () => {
+    setShowAuthScreen(true);
+  };
+
+  useEffect(() => {
+    if (userRole >= 2) {
+      setShowAuthScreen(false); 
+      setIsShowBox(true);
+    }
+  }, [userRole]);
 
   // ================================================================ //
 
@@ -134,7 +153,11 @@ export default function TabTwoScreen() {
         <Screen
           title="Données à valider"
           content={
-            <ThemedView style={styles.container}>
+            showAuthScreen ? (
+            <AuthScreen />
+          ) :
+          userRole >= 1 ?  (
+          <ThemedView style={styles.container}>
               <ThemedView style={styles.searchBar}>
                 <Pressable onPress={openFilterModal}
                   style={({ pressed }) => [
@@ -220,7 +243,23 @@ export default function TabTwoScreen() {
                 )}
               />
             </ThemedView>
-          }
+          ) : (
+          <ThemedView>
+          <ThemedText>
+            Vous devez vous authentifier avec les bonnes permissions pour voir
+            le contenu de cette page.
+            </ThemedText>
+            <TouchableOpacity 
+                style={styles.button} 
+                onPress={handleShowAuthScreen}>
+              <ThemedText style={{ textDecorationLine: "underline" }}>
+                se connecter.
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+          
+        )
+      }
           headerImage={
             <Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />
           }
@@ -372,7 +411,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderTopLeftRadius: 25,
@@ -381,6 +419,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     elevation: 10,
     shadowColor: "#000",
+    backgroundColor: "#fff",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: -5 },
     shadowRadius: 10,
@@ -400,6 +439,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
+    backgroundColor:"#fff",
     width: "100%",
   },
 
@@ -446,5 +486,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
+  },
+  button: {
+    textDecorationLine: "underline",
+    marginTop:25,
+    justifyContent:"center",
+    alignSelf: "center",
   },
 });
