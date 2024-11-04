@@ -14,11 +14,10 @@ import { useEffect, useState } from "react";
 
 import { CameraCapturedPicture } from "expo-camera";
 
-
 async function* streamResponseChunks(response: Response) {
-  let buffer = '';
+  let buffer = "";
 
-  const CHUNK_SEPARATOR = '\n\n';
+  const CHUNK_SEPARATOR = "\n\n";
 
   let processBuffer = async function* (streamDone = false) {
     while (true) {
@@ -34,7 +33,7 @@ async function* streamResponseChunks(response: Response) {
 
       let chunk = buffer.substring(0, chunkSeparatorIndex);
       buffer = buffer.substring(chunkSeparatorIndex + CHUNK_SEPARATOR.length);
-      chunk = chunk.replace(/^data:\s*/, '').trim();
+      chunk = chunk.replace(/^data:\s*/, "").trim();
       if (!chunk) {
         if (flush) break;
         continue;
@@ -58,12 +57,12 @@ async function* streamResponseChunks(response: Response) {
 
   const reader = response.body?.getReader();
   if (!reader) {
-    throw new Error('Response body is null');
+    throw new Error("Response body is null");
   }
-  
+
   try {
     while (true) {
-      const { done, value } = await reader.read()
+      const { done, value } = await reader.read();
       if (done) break;
       buffer += new TextDecoder().decode(value);
       yield* processBuffer();
@@ -75,8 +74,6 @@ async function* streamResponseChunks(response: Response) {
   yield* processBuffer(true);
 }
 
-
-
 type Content = {
   role: string;
   parts: (
@@ -85,18 +82,25 @@ type Content = {
   )[];
 };
 
-
 export async function* streamGemini({
-  model = 'gemini-1.5-flash',
+  model = "gemini-1.5-flash",
   contents = [],
 }: { model?: string; contents?: Content[] } = {}) {
-  let response = await fetch("http://localhost:5001/api/generate", {
+  let response = await fetch("http://192.168.0.238:5001/api/generate", {
     method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ model, contents })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model, contents }),
   });
 
-  yield* streamResponseChunks(response);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const responseBody = await response.json();
+  console.log("Response Body:", responseBody);
+  yield responseBody;
+
+  //yield* streamResponseChunks(response);
 }
 
 export default function TreeAnalyzerCapture() {
@@ -114,65 +118,82 @@ export default function TreeAnalyzerCapture() {
     // Add AI logic here
     let result = "Analyzing...";
     let imageBase64;
-      try {
-          imageBase64 = photo?.base64;
-          if (imageBase64) {
-            imageBase64 = imageBase64.replace("data:image/png;base64,", "");
-            let contents = [
+
+    try {
+      imageBase64 = photo?.base64;
+
+      if (imageBase64) {
+        // for mobile
+        imageBase64 = imageBase64.replace("data:image/png;base64,", "");
+        // for web
+        imageBase64 = imageBase64.replace("data:image/jpeg;base64,", "");
+
+        let contents = [
+          {
+            role: "user",
+            parts: [
+              { inline_data: { mime_type: "image/png", data: imageBase64 } },
               {
-                role: 'user',
-                parts: [
-                  { inline_data: { mime_type: 'image/png', data: imageBase64 } },
-                  { text: 'Provide the name of the family, latin name and genre of the tree in the image in JSON format.' }
-                ]
-              }
-            ];
+                text: "Provide the name of the family, latin name and genre of the tree in the image in JSON format.",
+              },
+            ],
+          },
+        ];
 
-            let buffer = [];
-            for await (let chunk of streamGemini({ model: 'gemini-1.5-flash', contents })) {
-              buffer.push(chunk);
-            }
-            result = buffer.join('');
-            console.log("Raw result from Gemini:", result); 
-            
-            result = result.replace(/```json/g, '').replace(/```/g, '').trim();
-            const jsonMatch = result.match(/({[\s\S]*?})/); // This regex captures only the JSON block
-            if (jsonMatch) {
-              const jsonString = jsonMatch[1];
+        let buffer = [];
+        for await (let chunk of streamGemini({
+          model: "gemini-1.5-flash",
+          contents,
+        })) {
+          console.log("chunk:", chunk);
 
-            let parsedResult;
-            try {
-              parsedResult = JSON.parse(result);
-              console.log("Parsed JSON result:", parsedResult);
-              
-              router.push({
-                pathname: "/tree-analyzer/analysis-results",
-                params: {
-                  family: parsedResult.family,
-                  latinName: parsedResult['latin name'],
-                  genre: parsedResult.genre,
-                },
-              });
-            } catch (jsonError) {
-              console.error("Error parsing JSON:", jsonError);
-              console.error("Result is not valid JSON:", result);
-            }
+          buffer.push(chunk);
+        }
 
-          } else {
-            console.error("No JSON content found in the result:", result);
+        let result = buffer[0].text;
+
+        console.log("Raw result from Gemini:", result);
+
+        result = result
+          .replace(/```json/g, "")
+          .replace(/```/g, "")
+          .trim();
+        const jsonMatch = result.match(/({[\s\S]*?})/); // This regex captures only the JSON block
+        if (jsonMatch) {
+          const jsonString = jsonMatch[1];
+
+          let parsedResult;
+          try {
+            parsedResult = JSON.parse(result);
+            console.log("Parsed JSON result:", parsedResult);
+
+            router.push({
+              pathname: "/tree-analyzer/analysis-results",
+              params: {
+                family: parsedResult.family,
+                latinName: parsedResult["latin name"],
+                genre: parsedResult.genre,
+              },
+            });
+          } catch (jsonError) {
+            console.error("Error parsing JSON:", jsonError);
+            console.error("Result is not valid JSON:", result);
           }
         } else {
-          throw new Error('Failed to convert image to base64');
+          console.error("No JSON content found in the result:", result);
         }
-        } catch (error) {
-        console.error(`Error getting image as base64: ${error}`);
+      } else {
+        throw new Error("Failed to convert image to base64");
       }
-    
+    } catch (error) {
+      console.error(`Error getting image as base64: ${error}`);
+    }
+
     // navigate to results page
     //alternative: router.push with same arguments
     //router.navigate({
     //  pathname: "/tree-analyzer/analysis-results",
-   // });
+    // });
   };
 
   if (!cameraPermission || !galleryPermission) {

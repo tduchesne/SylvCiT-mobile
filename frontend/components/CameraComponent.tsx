@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, Button, StyleSheet, Dimensions } from "react-native";
-import { CameraCapturedPicture, CameraView, CameraPictureOptions} from "expo-camera";
+import {
+  CameraCapturedPicture,
+  CameraView,
+  CameraPictureOptions,
+} from "expo-camera";
 import PhotoReviewComponent from "./PhotoReviewComponent";
 import { Colors } from "@/constants/Colors";
 
@@ -12,8 +16,10 @@ const greenColor = Colors.light.buttonBackground;
 const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [cameraRef, setCameraRef] = useState<CameraView | null>();
-  const [photo, setPhoto] = useState<undefined | CameraCapturedPicture>(undefined);
-  const { height } = Dimensions.get("window"); 
+  const [photo, setPhoto] = useState<undefined | CameraCapturedPicture>(
+    undefined
+  );
+  const { height } = Dimensions.get("window");
   const handleCameraReady = () => {
     setIsCameraReady(true);
   };
@@ -26,7 +32,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
         imageType: "jpg",
       };
 
-      const photo = await cameraRef.takePictureAsync();
+      const photo = await cameraRef.takePictureAsync(options);
       setPhoto(photo);
     }
   };
@@ -50,14 +56,13 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
         >
           <View
             style={{
-              position: 'absolute', 
+              position: "absolute",
               bottom: height * 0.05,
-              left: '50%', 
+              left: "50%",
               transform: [{ translateX: -100 }],
-              width: 200, 
-              maxWidth: '100%',
+              width: 200,
+              maxWidth: "100%",
             }}
-
           >
             <Button
               title="PHOTO"
