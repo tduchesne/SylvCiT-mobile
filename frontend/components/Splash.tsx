@@ -1,6 +1,7 @@
 import { ActivityIndicator, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
+import React from "react";
 
 export default function SplashScreenComponent() {
   return (
