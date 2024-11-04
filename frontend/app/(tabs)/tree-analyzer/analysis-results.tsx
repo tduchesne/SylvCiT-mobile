@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter} from "expo-router";
 import { useState } from "react";
 import {
   TextInput,
@@ -19,6 +19,13 @@ export default function AnalyseResults() {
   // - Add a way to upload an image of the tree
   // - Add JSON data to frontend to display the tree's information
   // - Add functionality to cancel the operation, need to go back to another page ('ajouter arbre' maybe ? TBD)
+  const router = useRouter();
+
+  const params = useLocalSearchParams();
+  
+  const family: string = Array.isArray(params.family) ? params.family[0] : (params.family || "");
+  const latinName: string = Array.isArray(params.latinName) ? params.latinName[0] : (params.latinName || "");
+  const genre: string = Array.isArray(params.genre) ? params.genre[0] : (params.genre || "");
 
   const colorScheme = useColorScheme(); // Detect the color scheme (light or dark)
 
@@ -51,12 +58,12 @@ export default function AnalyseResults() {
 
   const Form_analyse_arbre = () => {
     const [adresse, setAdresse] = useState<string>("");
-    const [especeLat, setEspeceLat] = useState<string>("");
+    const [especeLat, setEspeceLat] = useState<string>(latinName);
     const [especeFr, setEspeceFr] = useState<string>("");
     const [especeAng, setEspeceAng] = useState<string>("");
     const [dhp, setDhp] = useState<string>(""); // Format: numeric/numeric
-    const [famille, setFamille] = useState<string>("");
-    const [genre, setGenre] = useState<string>("");
+    const [famille, setFamille] = useState<string>(family);
+    const [genreTree, setGenreTree] = useState(genre);
     const [datePlantation, setDatePlantation] = useState<string>("");
     const [dateMesure, setDateMesure] = useState<string>("");
 
@@ -186,8 +193,8 @@ export default function AnalyseResults() {
                 styles.input,
                 { borderColor: colors.borderColor, color: colors.textColor },
               ]}
-              onChangeText={setGenre}
-              value={genre}
+              onChangeText={setGenreTree}
+              value={genreTree}
             />
           </View>
 

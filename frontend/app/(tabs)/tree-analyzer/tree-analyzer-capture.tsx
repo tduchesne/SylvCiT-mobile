@@ -75,6 +75,8 @@ async function* streamResponseChunks(response: Response) {
   yield* processBuffer(true);
 }
 
+
+
 type Content = {
   role: string;
   parts: (
@@ -82,6 +84,7 @@ type Content = {
     | { text: string; inline_data?: undefined }
   )[];
 };
+
 
 export async function* streamGemini({
   model = 'gemini-1.5-flash',
@@ -115,7 +118,6 @@ export default function TreeAnalyzerCapture() {
           imageBase64 = photo?.base64;
           if (imageBase64) {
             imageBase64 = imageBase64.replace("data:image/png;base64,", "");
-            console.log(`Image base64 2 : ${imageBase64}`);
             let contents = [
               {
                 role: 'user',
@@ -129,21 +131,48 @@ export default function TreeAnalyzerCapture() {
             let buffer = [];
             for await (let chunk of streamGemini({ model: 'gemini-1.5-flash', contents })) {
               buffer.push(chunk);
-              result = buffer.join('');
-              console.log(`Result: ${result}`);
             }
+            result = buffer.join('');
+            console.log("Raw result from Gemini:", result); 
+            
+            result = result.replace(/```json/g, '').replace(/```/g, '').trim();
+            const jsonMatch = result.match(/({[\s\S]*?})/); // This regex captures only the JSON block
+            if (jsonMatch) {
+              const jsonString = jsonMatch[1];
+
+            let parsedResult;
+            try {
+              parsedResult = JSON.parse(result);
+              console.log("Parsed JSON result:", parsedResult);
+              
+              router.push({
+                pathname: "/tree-analyzer/analysis-results",
+                params: {
+                  family: parsedResult.family,
+                  latinName: parsedResult['latin name'],
+                  genre: parsedResult.genre,
+                },
+              });
+            } catch (jsonError) {
+              console.error("Error parsing JSON:", jsonError);
+              console.error("Result is not valid JSON:", result);
+            }
+
           } else {
-            throw new Error('Failed to convert image to base64');
+            console.error("No JSON content found in the result:", result);
           }
+        } else {
+          throw new Error('Failed to convert image to base64');
+        }
         } catch (error) {
         console.error(`Error getting image as base64: ${error}`);
       }
     
     // navigate to results page
     //alternative: router.push with same arguments
-    router.navigate({
-      pathname: "/tree-analyzer/analysis-results",
-    });
+    //router.navigate({
+    //  pathname: "/tree-analyzer/analysis-results",
+   // });
   };
 
   if (!cameraPermission || !galleryPermission) {
