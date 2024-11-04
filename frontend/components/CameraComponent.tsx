@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { View, Button, StyleSheet, Dimensions } from "react-native";
 import { CameraCapturedPicture, CameraView, CameraPictureOptions} from "expo-camera";
 import PhotoReviewComponent from "./PhotoReviewComponent";
+import { Colors } from "@/constants/Colors";
 
 interface CameraComponentProps {
   onCapture: (photo: undefined | CameraCapturedPicture) => void;
 }
+const greenColor = Colors.light.buttonBackground;
 
 const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const [isCameraReady, setIsCameraReady] = useState(false);
@@ -60,7 +62,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
             <Button
               title="PHOTO"
               onPress={takePicture}
-              color="#056122"
+              color={greenColor}
             />
           </View>
         </CameraView>
