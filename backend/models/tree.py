@@ -6,11 +6,10 @@ class Tree(db.Model):
         db.ForeignKeyConstraint(['no_arrondissement'], ['arrondissement.no_arrondissement'], name='fk_tree_arrondissement'),
         db.ForeignKeyConstraint(['sigle'], ['essence.sigle'], name='fk_tree_sigle'),
         db.Index('fk_tree_arrondissement_idx', 'no_arrondissement'),
-        db.Index('fk_tree_sigle_idx', 'sigle'),
-        db.UniqueConstraint('latitude', 'longitude', name='unique_location')
+        db.Index('fk_tree_sigle_idx', 'sigle')
     )
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    no_emp = db.Column(db.Integer,nullable=False, unique=True)
+    no_emp = db.Column(db.Integer,nullable=True, unique=True)
     no_arrondissement = db.Column(db.Integer, db.ForeignKey('arrondissement.no_arrondissement'),nullable=True)
     emplacement = db.Column(db.Enum("banquette gazonnée",
                                  "banquette asphaltée",
@@ -25,8 +24,8 @@ class Tree(db.Model):
     dhp = db.Column(db.Integer, nullable=True)
     date_measure = db.Column(db.Date, nullable=False)
     date_plantation = db.Column(db.Date, nullable=True)
-    latitude = db.Column(db.Numeric(11,8), nullable=False)
-    longitude = db.Column(db.Numeric(11,8), nullable=False)
+    latitude = db.Column(db.Numeric(21,17), nullable=False)
+    longitude = db.Column(db.Numeric(21,17), nullable=False)
     inv_type = db.Column(db.Enum('R', 'H', name="inv_type_tree"), nullable=False)
     is_valid = db.Column(db.Boolean, nullable=False)
 
@@ -56,7 +55,7 @@ class Tree(db.Model):
 class TreeRue(Tree):
     __tablename__ = 'tree_rue'
     id = db.Column(db.Integer, db.ForeignKey('tree.id'), primary_key=True, unique=True, nullable=False)
-    adresse = db.Column(db.String(45), nullable=True)
+    adresse = db.Column(db.String(128), nullable=True)
     localisation = db.Column(db.String(45), nullable=True)
     localisation_code = db.Column(db.String(10), nullable=True)
     rue_de = db.Column(db.String(45), nullable=True)
