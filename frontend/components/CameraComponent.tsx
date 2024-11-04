@@ -35,7 +35,6 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const openGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
       quality: 1,
       base64: true,
     });
