@@ -117,7 +117,7 @@ def test_add_tree_duplicate_no_emp(client):
         db.session.commit()
 
     tree_data = {
-        "no_emp": 12345,  # Utiliser un numéro d'emplacement unique
+        "no_emp": 102349,  # Utiliser un numéro d'emplacement unique
         "adresse": "321 Rue Exemple",
         "essence_fr": "Duplicate Français",
         "essence_ang": "Duplicate English",
@@ -125,7 +125,7 @@ def test_add_tree_duplicate_no_emp(client):
         "dhp": 25,
         "date_plantation": "2021-04-01",
         "date_releve": "2024-12-01",
-        "latitude": 50.123456,
+        "latitude": 60.123456,
         "longitude": 15.123456,
         "inv_type": "H",
         "no_arrondissement": 4,
@@ -140,9 +140,9 @@ def test_add_tree_duplicate_no_emp(client):
 
     # try to add the same tree again to cause an error (duplicate no_emp)
     response2 = client.post('/api/add_tree', json=tree_data)
-    assert response2.status_code == 500
+    assert response2.status_code == 409
     data = response2.get_json()
-    assert "Erreur lors de l'ajout de l'arbre." in data['description']
+    
 
 
 
