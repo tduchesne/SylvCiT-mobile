@@ -34,6 +34,7 @@ class Tree(db.Model):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'no_emp': self.no_emp,
             'arrondissement': self.arrondissement.to_dict() if self.arrondissement else None,
             'emplacement': self.emplacement,
@@ -70,6 +71,7 @@ class TreeRue(Tree):
     def to_dict(self):
         attributes = super().to_dict()
         attributes.update({
+            'id': self.id,
             'adresse': self.adresse,
             'localisation': self.localisation,
             'localisation_code': self.localisation_code,
