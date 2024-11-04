@@ -40,7 +40,7 @@ class Tree(db.Model):
             'emplacement': self.emplacement,
             'essence': self.essence.to_dict() if self.essence else None,
             'dhp': self.dhp,
-            'date_measure': self.date_measure.isoformat(),
+            'date_releve': self.date_measure.isoformat(),
             'date_plantation': self.date_plantation.isoformat() if self.date_plantation else None,
             'latitude': self.latitude,
             'longitude': self.longitude,
