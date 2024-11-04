@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, View } from "react-native";
 import { ThemedView } from "@/components/ThemedView"; // Toujours utiliser ThemedView pour garder la thématique
+import Config from '../../config';
 
 export default function RechercheArbre() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -38,7 +39,7 @@ export default function RechercheArbre() {
 
     timeout(
       5000, // Timeout de 5 secondes
-      fetch(`http://192.168.0.19:5001/api/search_tree?recherche=${searchTerm}`, {
+      fetch(`${Config.API_URL}/api/search_tree?recherche=${searchTerm}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
