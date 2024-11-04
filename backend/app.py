@@ -79,8 +79,13 @@ def create_app(config_name=None):
         no_emp = info.get('no_emp')
         if Tree.query.filter_by(no_emp=no_emp).first() :
             abort(409, description="Arbre deja existant.")
-        elif isinstance(no_emp, str):
-            abort(400, description="Numéro d'emplacement doit etre un nombre entier")
+        elif no_emp == "" :
+            no_emp = None
+        else:
+            try:
+                no_emp = int(no_emp)
+            except ValueError:
+                abort(400, description="Le numéro d'emplacement doit être un entier.")
 
         latitude = info.get('latitude')
         longitude = info.get('longitude')
@@ -95,17 +100,18 @@ def create_app(config_name=None):
         # validation de la date
         if not date_releve:
             abort(400, description="La date de relevé est requise.")
-
-        try:
-            date_releve = datetime.strptime(date_releve, '%Y-%m-%d').date()
-        except ValueError:
-            abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
+        else:
+            try:
+                date_releve = datetime.strptime(date_releve, '%Y-%m-%d').date()
+            except ValueError:
+                abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
 
         no_arrondissement = info.get('no_arrondissement')
         emplacement = info.get('emplacement')
         sigle = info.get('sigle')
+
         dhp = info.get('dhp')
-        if dhp == "" or dhp is None:
+        if dhp == "" :
             dhp = None
         else:
             try:
@@ -114,7 +120,9 @@ def create_app(config_name=None):
                 abort(400, description="Le champ 'dhp' doit être un entier.")
 
         date_plantation = info.get('date_plantation')
-        if date_plantation:
+        if date_plantation == "":
+            date_plantation = None
+        else :
             try:
                 date_plantation = datetime.strptime(date_plantation, '%Y-%m-%d').date()
             except ValueError:
@@ -170,6 +178,7 @@ def create_app(config_name=None):
             )
 
         try:
+            print(new_tree)
             db.session.add(new_tree)
             db.session.commit()
         except Exception as e:

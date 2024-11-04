@@ -1,5 +1,3 @@
-from enum import unique
-
 from app import db
 
 class Tree(db.Model):
@@ -81,7 +79,7 @@ class TreeRue(Tree):
             'distance_pave': self.distance_pave,
             'distance_ligne_rue': self.distance_ligne_rue,
             'stationnement_jour': self.stationnement_jour,
-            'stationnement_heure': self.stationnement_heure.strftime('%H:%M:%S'),
+            'stationnement_heure': self.stationnement_heure.strftime('%H:%M:%S') if self.stationnement_heure else None,
             'district': self.district,
             'arbre_remarquable': self.arbre_remarquable
         })
