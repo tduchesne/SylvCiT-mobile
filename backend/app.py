@@ -51,25 +51,12 @@ def create_app(config_name=None):
     # Routes
     @app.route('/')
     def hello_world():
-        print("Hello world")
         return  'Hi mom!'
 
-    # @app.route('/api/trees', methods=['GET'])
-    # def get_trees():
-    #     trees = Tree.query.all()
-    #     return jsonify(
-    #         [{
-    #             'id_tree': t.id_tree,
-    #             'date_plantation': t.date_plantation,
-    #             'id_family': t.id_family,
-    #             'id_functional_group': t.id_functional_group,
-    #             'id_genre': t.id_genre,
-    #             'id_location': t.id_location,
-    #             'id_type': t.id_type
-    #             } for t in trees
-    #         ])
-
-
+    @app.route('/api/trees', methods=['GET'])
+    def get_trees():
+        trees = Tree.query.all()
+        return jsonify([tree.to_dict() for tree in trees])
 
     @app.route('/api/add_tree', methods=['POST'])
     def add_tree():
