@@ -105,7 +105,7 @@ export default function FormAjoutArbre() {
             longitude: region.longitude,
         });
 
-        setAdresse(location[0].formattedAddress?.toString())
+        setAdresse(location[0].formattedAddress?.toString() ?? '')
         /* setLatitude(location.coords.latitude.toString());
          setLongitude(location.coords.longitude.toString());*/
 
