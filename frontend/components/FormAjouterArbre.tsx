@@ -148,11 +148,13 @@ export default function FormAjoutArbre() {
                         * Les champs en rouge sont obligatoires</ThemedText>
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="No emplacement" keyboardType="numeric" />
-                    <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)} style={[styles.input, styles.champObligatoire]}>
-                        <Picker.Item label="Inv Type" value=" " />
-                        <Picker.Item label="Type Rue" value="R" />
-                        <Picker.Item label="Type Hors Rue" value="H" />
-                    </Picker>
+                    <View style={[styles.input, styles.champObligatoire]}>
+                        <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)}>
+                            <Picker.Item label="Inv Type" value=" " />
+                            <Picker.Item label="Type Rue" value="R" />
+                            <Picker.Item label="Type Hors Rue" value="H" />
+                        </Picker>
+                    </View>
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
