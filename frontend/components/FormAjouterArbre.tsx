@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import React from "react";
 import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, ActivityIndicator } from 'react-native';
 //npx expo install @react-native-community/datetimepicker
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -12,6 +13,7 @@ import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 //https://github.com/react-native-maps/react-native-maps
 import MapView, { Region } from 'react-native-maps';
+//npx expo install @react-native-picker/picker
 import { Picker } from '@react-native-picker/picker';
 
 export default function FormAjoutArbre() {
@@ -58,14 +60,13 @@ export default function FormAjoutArbre() {
                     "essence_ang": essenceAng,
                     "dhp": dhp,
                     "date_plantation": datePlantation,
-
                     "latitude": latitude,
                     "longitude": longitude,
                     "date_releve": formatDate(dateReleve)
                 })
             })
                 .then((reponse) => validerReponse(reponse))
-                .catch((response) => {
+                .catch(() => {
                     setIndicateur(false)
                     Alert.alert("Erreur lors du sauvegarde des données. Merci de réessayer")
                     remettreChamps;
@@ -77,17 +78,17 @@ export default function FormAjoutArbre() {
     }
 
 
-    const validerReponse = (response: Response) => {
+    const validerReponse = async (response: Response) => {
+
         setIndicateur(false)
+
+
         if (response.status == 201) {
             Alert.alert("Informations sauvegardées")
             nettoyerChamps()
-        }
-        else {
-            const description = response.json()
-                .then(info => Alert.alert(info['description']))
-
-
+        } else {
+            const description = await response.json()
+            Alert.alert(description['description'])
         }
 
 
@@ -105,7 +106,7 @@ export default function FormAjoutArbre() {
             longitude: region.longitude,
         });
 
-        setAdresse(location[0].formattedAddress?.toString())
+        setAdresse(location[0].formattedAddress?.toString() ?? '')
         /* setLatitude(location.coords.latitude.toString());
          setLongitude(location.coords.longitude.toString());*/
 
@@ -148,11 +149,13 @@ export default function FormAjoutArbre() {
                         * Les champs en rouge sont obligatoires</ThemedText>
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="No emplacement" keyboardType="numeric" />
-                    <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)} style={[styles.input, styles.champObligatoire]}>
-                        <Picker.Item label="Inv Type" value=" " />
-                        <Picker.Item label="Type Rue" value="R" />
-                        <Picker.Item label="Type Hors Rue" value="H" />
-                    </Picker>
+                    <View style={[styles.input, styles.champObligatoire]}>
+                        <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)}>
+                            <Picker.Item label="Inv Type" value=" " />
+                            <Picker.Item label="Type Rue" value="R" />
+                            <Picker.Item label="Type Hors Rue" value="H" />
+                        </Picker>
+                    </View>
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
