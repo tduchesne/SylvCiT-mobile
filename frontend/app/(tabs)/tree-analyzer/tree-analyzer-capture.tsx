@@ -86,7 +86,7 @@ export async function* streamGemini({
   model = "gemini-1.5-flash",
   contents = [],
 }: { model?: string; contents?: Content[] } = {}) {
-  let response = await fetch("http://192.168.0.238:5001/api/generate", {
+  let response = await fetch("http://localhost:5001/api/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model, contents }),

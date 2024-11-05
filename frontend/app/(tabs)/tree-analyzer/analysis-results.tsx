@@ -38,6 +38,7 @@ export default function AnalyseResults() {
   const lightColors = {
     backgroundColor: "#F0F4F8",
     textColor: "#555",
+    insideColor: "black",
     borderColor: "#80CBC4",
     buttonGreen: "#4CAF50",
     buttonRed: "#f44336",
@@ -48,6 +49,7 @@ export default function AnalyseResults() {
   const darkColors = {
     backgroundColor: "#232825",
     textColor: "#E0E0E0",
+    insideColor: "black",
     borderColor: "#65976f",
     buttonGreen: "#447346",
     buttonRed: "#a3271d",
@@ -66,6 +68,7 @@ export default function AnalyseResults() {
     const [genreTree, setGenreTree] = useState(genre);
     const [datePlantation, setDatePlantation] = useState<string>("");
     const [dateMesure, setDateMesure] = useState<string>("");
+
 
     // Image URL received from backend
     const [imageUrl, setImageUrl] = useState<string>(""); // Empty by default
@@ -98,7 +101,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setAdresse}
               value={adresse}
@@ -112,7 +115,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setEspeceLat}
               value={especeLat}
@@ -126,7 +129,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setEspeceFr}
               value={especeFr}
@@ -140,7 +143,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setEspeceAng}
               value={especeAng}
@@ -152,21 +155,14 @@ export default function AnalyseResults() {
               <Text style={[styles.label, { color: colors.textColor }]}>
                 DHP
               </Text>
-              <Text style={[styles.label, { color: colors.textColor }]}>
-                DHP max
-              </Text>
             </View>
             <TextInput
               style={[
                 styles.input,
-                styles.dhpInput,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setDhp}
               value={dhp}
-              placeholder="DHP (numeric/numeric)"
-              keyboardType="default"
-              placeholderTextColor={isDarkMode ? "#888" : "#ccc"}
             />
           </View>
 
@@ -177,7 +173,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setFamille}
               value={famille}
@@ -191,7 +187,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setGenreTree}
               value={genreTree}
@@ -205,7 +201,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setDatePlantation}
               value={datePlantation}
@@ -270,8 +266,17 @@ function annuler() {
 const styles = StyleSheet.create({
   form: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingHorizontal: 30, // Internal padding
+    paddingVertical: 40,   // Internal padding
+    marginHorizontal: 20,  // External margin to provide spacing from screen edges
+    marginVertical: 20,
+    backgroundColor: "#2E2E2E", // Background color for the rounded container
+    borderRadius: 20,       // Rounded corners
+    shadowColor: "#000",    // Shadow to give a card effect
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,  
   },
   inputContainer: {
     marginBottom: 20,
@@ -299,7 +304,8 @@ const styles = StyleSheet.create({
   titrePage: {
     fontSize: 30,
     textTransform: "uppercase",
-    paddingBottom: 50,
+    paddingBottom: 30, // Reduced bottom padding to 30
+    paddingTop: 20,    // Added padding at the top for separation
     textAlign: "center",
     fontWeight: "bold",
   },
@@ -317,9 +323,6 @@ const styles = StyleSheet.create({
   dhpContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  dhpInput: {
-    textAlign: "center",
   },
   imageContainer: {
     alignItems: "center",
