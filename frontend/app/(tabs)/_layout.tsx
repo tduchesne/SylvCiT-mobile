@@ -57,6 +57,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="recherche_arbre"
+        options={{
+          title: "Rechercher",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "search" : "search-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="modifier_metadonnees"
         initialParams={{ no_emp }}
         options={{

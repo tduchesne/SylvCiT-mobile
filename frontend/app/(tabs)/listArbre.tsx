@@ -3,6 +3,7 @@ import TreeList from "@/components/listeArbre";
 import Screen from "@/components/Screen";
 import { ThemedView } from "@/components/ThemedView";
 import { Image, StyleSheet } from 'react-native';
+import React, { useState } from "react";
 
 
 //////////////////////////////////

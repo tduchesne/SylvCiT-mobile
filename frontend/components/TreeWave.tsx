@@ -1,6 +1,7 @@
 import { StyleSheet, Image } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
+import React from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,

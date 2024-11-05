@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Platform } from "react-native";
 import Screen from "@/components/Screen";
 import { ThemedText } from "@/components/ThemedText";
+import React, { useState } from "react";
 
 export default function HomeScreen() {
   return (
