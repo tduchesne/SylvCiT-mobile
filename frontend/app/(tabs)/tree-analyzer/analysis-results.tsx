@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { useLocalSearchParams, useRouter} from "expo-router";
+import { router, useLocalSearchParams, useRouter} from "expo-router";
 import { useState } from "react";
 import {
   TextInput,
@@ -258,7 +258,13 @@ function confirmer() {
 
 function annuler() {
   Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [
-    { text: "Oui" },
+    {
+      text: "Oui",
+      onPress: () =>
+        router.push({
+          pathname: "/tree-analyzer/tree-analyzer-capture",
+        }),
+    },
     { text: "Non" },
   ]);
 }
@@ -266,13 +272,12 @@ function annuler() {
 const styles = StyleSheet.create({
   form: {
     flex: 1,
-    paddingHorizontal: 30, // Internal padding
-    paddingVertical: 40,   // Internal padding
-    marginHorizontal: 20,  // External margin to provide spacing from screen edges
-    marginVertical: 20,
-    backgroundColor: "#2E2E2E", // Background color for the rounded container
-    borderRadius: 20,       // Rounded corners
-    shadowColor: "#000",    // Shadow to give a card effect
+    paddingHorizontal: 30, 
+    paddingVertical: 40,  
+    marginHorizontal: 20,  
+    backgroundColor: "#2E2E2E", 
+    borderRadius: 20,       
+    shadowColor: "#000",    
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
