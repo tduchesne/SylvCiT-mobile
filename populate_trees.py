@@ -149,8 +149,6 @@ def add_trees():
         data = csv.DictReader(csv_f)
 
         for tree in data:
-            # TODO: Check if tree exists in database already
-
             print("# ==================================================================== #")
             # Parse fields from current line for tree data
             date_plantation = parse_date(tree['Date_Plantation']).strftime("%Y-%m-%d %H:%M:%S")
@@ -165,6 +163,23 @@ def add_trees():
             id_location = add_position(tree['Latitude'], tree['Longitude'])
             id_functional_group = add_f_groups('A')
             
+
+            # Check if tree exists in database
+            select_query = f"SELECT * FROM tree WHERE date_plantation = '{date_plantation}' AND \
+                            date_measure = '{date_measure}' AND \
+                            dhp = '{dhp}' AND \
+                            image_url = '{image_url}' AND \
+                            id_type = '{id_type}' AND \
+                            id_genre = '{id_genre}' AND \
+                            id_family = '{id_family}' AND \
+                            id_location = '{id_location}' AND \
+                            id_functional_group = '{id_functional_group}'"
+
+            stdout, _ = execute_query(select_query)
+            if stdout.strip():
+                print(f"Tree already exists in database. Skipping over it...")
+                continue
+
             # Create insert query to for the current tree
             insert_command = (
                 f"INSERT INTO tree (date_plantation, date_measure, details_url, id_type, id_genre, "
