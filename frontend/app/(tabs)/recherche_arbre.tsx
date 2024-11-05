@@ -1,7 +1,8 @@
+import { Image, StyleSheet, TextInput, Button, Text, TouchableOpacity, View } from "react-native";
+import Screen from "@/components/Screen";
+import { ThemedText } from "@/components/ThemedText";
 import React, { useState } from "react";
-import { TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity, View } from "react-native";
-import { ThemedView } from "@/components/ThemedView"; // Toujours utiliser ThemedView pour garder la thématique
-import Config from '../../config';
+import Config from "../../config";
 
 export default function RechercheArbre() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,63 +65,56 @@ export default function RechercheArbre() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      {/* En-tête */}
-      <View style={styles.headerContainer}>
+    <Screen
+      title="Recherche d'Arbres"
+      content={
+        <View style={styles.contentContainer}>
+          {/* Champ de recherche */}
+          <TextInput
+            style={styles.input}
+            placeholder="Entrez une essence d'arbre..."
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+          />
+
+          {/* Bouton de recherche */}
+          <Button title="Rechercher" onPress={searchTrees} />
+
+          {/* Affichage du message d'erreur retourné par le backend en cas de code 400 */}
+          {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
+
+          {/* Liste des résultats sans scroll */}
+          {trees.map((item) => (
+            <TouchableOpacity key={item.no_emp.toString()} style={styles.treeItem} onPress={() => console.log("Clic sur arbre", item.no_emp)}>
+              <Text>Essence Latin: {item.essence?.la || 'Non spécifié'}</Text>
+              <Text>Essence Français: {item.essence?.fr || 'Non spécifié'}</Text>
+              <Text>Essence Anglais: {item.essence?.en || 'Non spécifié'}</Text>
+              <Text>Sigle: {item.essence?.sigle || 'Non spécifié'}</Text>
+              <Text>Emplacement: {item.emplacement || 'Non spécifié'}</Text>
+              <Text>Arrondissement: {item.arrondissement?.name || 'Non spécifié'}</Text>
+              <Text>Parc: {item.code_parc?.nom_parc || 'Non spécifié'}</Text>
+              <Text>Secteur: {item.code_secteur?.nom_secteur || 'Non spécifié'}</Text>
+              <Text>DHP: {item.dhp || 'Non spécifié'}</Text>
+              <Text>Type d'inventaire: {item.inv_type || 'Non spécifié'}</Text>
+              <Text>Date de mesure: {item.date_measure || 'Non spécifié'}</Text>
+              <Text>Date de plantation: {item.date_plantation || 'Non spécifié'}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      }
+      headerImage={
         <Image
           source={require("@/assets/images/adaptive-icon.png")}
           style={styles.treeLogo}
         />
-        <Text style={styles.headerTitle}>Recherche d'Arbres</Text>
-      </View>
-
-      {/* Champ de recherche */}
-      <TextInput
-        style={styles.input}
-        placeholder="Entrez une essence d'arbre..."
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
-
-      {/* Bouton de recherche */}
-      <Button title="Rechercher" onPress={searchTrees} />
-
-      {/* Affichage du message d'erreur retourné par le backend en cas de code 400 */}
-      {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
-
-      {/* Liste des résultats */}
-      {trees.length > 0 && (
-        <FlatList
-          data={trees}
-          keyExtractor={(item) => item.no_emp.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.treeItem} onPress={() => console.log("Clic sur arbre", item.no_emp)}>
-              <Text>Essence Latin: {item.essence_latin?.essence_latin || 'Non spécifié'}</Text>
-              <Text>Essence Français: {item.essence_latin?.essence_fr || 'Non spécifié'}</Text>
-              <Text>Essence Anglais: {item.essence_latin?.essence_en || 'Non spécifié'}</Text>
-              <Text>Sigle: {item.essence_latin?.sigle || 'Non spécifié'}</Text>
-              <Text>Emplacement: {item.emplacement || 'Non spécifié'}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      )}
-    </ThemedView>
+      }
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  contentContainer: {
     padding: 20,
-  },
-  headerContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginTop: 10,
   },
   input: {
     height: 40,
@@ -135,10 +129,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+    marginBottom: 10,
   },
   treeLogo: {
-    height: 150,
-    width: 150,
+    height: 230,
+    width: 310,
+    bottom: 0,
+    left: 36,
+    position: "absolute",
   },
   errorMessage: {
     color: 'red',
