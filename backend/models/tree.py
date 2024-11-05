@@ -9,18 +9,18 @@ class Tree(db.Model):
         db.Index('fk_tree_sigle_idx', 'sigle')
     )
     id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
-    no_emp = db.Column(db.Integer,nullable=True, unique=True)
-    no_arrondissement = db.Column(db.Integer, db.ForeignKey('arrondissement.no_arrondissement'),nullable=True)
-    emplacement = db.Column(db.Enum("banquette gazonnée",
-                                 "banquette asphaltée",
+    no_emp = db.Column(db.Integer, nullable=True, unique=True)
+    no_arrondissement = db.Column(db.Integer, db.ForeignKey('arrondissement.no_arrondissement'), nullable=True)
+    emplacement = db.Column(db.Enum("banquette gazonnee",
+                                 "banquette asphaltee",
                                  "fond de trottoir",
                                  "parc",
-                                 "parterre gazonné",
-                                 "parterre asphalté",
-                                 "parterre bétonné",
+                                 "parterre gazonne",
+                                 "parterre asphalte",
+                                 "parterre betonne",
                                  "terre plein",
-                                 "trottoir entre autres", name = "emplacement_tree", native_enum=False), nullable=True)
-    sigle = db.Column(db.String(10),db.ForeignKey('essence.sigle'), nullable=True)
+                                 "trottoir entre autres", name="emplacement_tree", native_enum=False), nullable=True)
+    sigle = db.Column(db.String(10), db.ForeignKey('essence.sigle'), nullable=True)
     dhp = db.Column(db.Integer, nullable=True)
     date_measure = db.Column(db.Date, nullable=False)
     date_plantation = db.Column(db.Date, nullable=True)

@@ -70,6 +70,30 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="supprimer_arbres"
+        options={{
+          title: "Supprimer Arbre",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "trash" : "trash-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="demande_suppression_arbres"
+        options={{
+          title: "Demande Suppression Arbres",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "cut" : "cut-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* <Tabs.Screen
         name="account"
         options={{
           title: "Account",
@@ -80,7 +104,7 @@ export default function TabLayout() {
             />
           ),
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

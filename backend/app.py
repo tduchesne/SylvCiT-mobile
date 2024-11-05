@@ -57,6 +57,32 @@ def create_app(config_name=None):
     def get_trees():
         trees = Tree.query.all()
         return jsonify([tree.to_dict() for tree in trees])
+    
+    @app.route('/api/trees_pending_deletion', methods=['GET'])
+    def get_trees_pending_deletion():
+        deletion_requests = ListDelete.query.all()
+        trees = [Tree.query.filter_by(no_emp=req.no_emp).first() for req in deletion_requests]
+        trees = [tree.to_dict() for tree in trees if tree]
+        return jsonify(trees)
+    
+    @app.route('/api/refuse_deletion/<int:no_emp>', methods=['POST'])
+    def refuse_deletion(no_emp):
+        # Find the deletion request for this tree
+        deletion_request = ListDelete.query.filter_by(no_emp=no_emp).first()
+        
+        if deletion_request is None:
+            return jsonify({"message": "Demande de suppression non trouvée"}), 404
+        
+        # Remove the deletion request
+        try:
+            db.session.delete(deletion_request)
+            db.session.commit()
+            return jsonify({"message": "Demande refusée"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"message": "Erreur lors du refus de la demande"}), 500
+
+
 
     @app.route('/api/add_tree', methods=['POST'])
     def add_tree():
@@ -225,19 +251,32 @@ def create_app(config_name=None):
 
     @app.route('/api/demande_suppression/<int:no_emp>', methods=['POST'])
     def demande_suppression_arbre(no_emp):
-        if Tree.query.filter_by(no_emp=no_emp).first() is None:
-            return jsonify({"message": "Arbre non-trouvable"}), 404
-        elif ListDelete.query.filter_by(no_emp=no_emp).first() is not None:
+        print(f"Received request to mark tree with no_emp: {no_emp} for deletion.")
+        
+        # Check if the tree exists
+        tree = Tree.query.filter_by(no_emp=no_emp).first()
+        if tree is None:
+            print(f"Tree with no_emp {no_emp} not found.")
+            return jsonify({"message": f"Arbre non-trouvable with no_emp {no_emp}"}), 404
+
+        # Check if a deletion request already exists
+        existing_request = ListDelete.query.filter_by(no_emp=no_emp).first()
+        if existing_request is not None:
+            print(f"Deletion request for tree with no_emp {no_emp} already exists.")
             return jsonify({"message": "Demande déja envoyée"}), 409
 
-        request_delete = ListDelete(
-            no_emp=no_emp
-        )
+        # Create a deletion request
+        try:
+            request_delete = ListDelete(no_emp=no_emp)
+            db.session.add(request_delete)
+            db.session.commit()
+            print(f"Deletion request for tree with no_emp {no_emp} created successfully.")
+            return jsonify({"message": "Demande envoyée"}), 200
+        except Exception as e:
+            print(f"Error creating deletion request for tree with no_emp {no_emp}: {e}")
+            db.session.rollback()
+            return jsonify({"message": "Erreur lors de la demande de suppression"}), 500
 
-        db.session.add(request_delete)
-        db.session.commit()
-
-        return jsonify({"message": "Demande envoyée"}), 200
 
     @app.route('/api/delete_tree/<int:no_emp>', methods=['POST'])
     def delete_tree(no_emp):
