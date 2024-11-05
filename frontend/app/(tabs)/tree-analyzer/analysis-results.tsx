@@ -15,14 +15,9 @@ import {
 } from "react-native";
 
 export default function AnalyseResults() {
-  //TODO:
-  // - Add a way to upload an image of the tree
-  // - Add JSON data to frontend to display the tree's information
-  // - Add functionality to cancel the operation, need to go back to another page ('ajouter arbre' maybe ? TBD)
   const router = useRouter();
 
   const params = useLocalSearchParams();
-
   const family: string = Array.isArray(params.family)
     ? params.family[0]
     : params.family || "";
@@ -32,8 +27,11 @@ export default function AnalyseResults() {
   const genre: string = Array.isArray(params.genre)
     ? params.genre[0]
     : params.genre || "";
+  const image = Array.isArray(params.image)
+    ? params.image[0]
+    : params.image || "";
 
-  const colorScheme = useColorScheme(); // Detect the color scheme (light or dark)
+  const colorScheme = useColorScheme();
 
   // cond styling based on the color scheme
   const isDarkMode = colorScheme === "dark";
@@ -93,7 +91,7 @@ export default function AnalyseResults() {
           {/* Display the image TODO*/}
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: imageUrl ? imageUrl : placeholderImage }} // Display the image or a placeholder
+              source={{ uri: image || placeholderImage }} // montrer image
               style={styles.treeImage}
               resizeMode="contain"
             />
@@ -314,8 +312,8 @@ const styles = StyleSheet.create({
   titrePage: {
     fontSize: 30,
     textTransform: "uppercase",
-    paddingBottom: 30, // Reduced bottom padding to 30
-    paddingTop: 20, // Added padding at the top for separation
+    paddingBottom: 30,
+    paddingTop: 20,
     textAlign: "center",
     fontWeight: "bold",
   },
@@ -336,11 +334,10 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    margin: 20,
   },
   treeImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
+    width: 500,
+    height: 180,
   },
 });
