@@ -175,7 +175,7 @@ export default function TreeAnalyzerCapture() {
                 family: parsedResult.family,
                 latinName: parsedResult["latin name"],
                 genre: parsedResult.genre,
-                image: `data:image/png;base64,${imageBase64}`, // donner image en plus du texte generee
+                image: `data:image/png;base64,${imageBase64}`,
               },
             });
           } catch (jsonError) {

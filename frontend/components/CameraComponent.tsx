@@ -35,7 +35,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture }) => {
   const takePicture = async () => {
     if (cameraRef && isCameraReady) {
       const options: CameraPictureOptions = {
-        quality: 0.2,
+        quality: 0.1,
         base64: true,
         imageType: "jpg",
       };
