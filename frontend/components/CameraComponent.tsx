@@ -122,10 +122,10 @@ const styles = StyleSheet.create({
   shutterButton: {
     width: 70,
     height: 70,
-    backgroundColor: greenColor,
+    backgroundColor: '#232826',
     borderRadius: 35,
     borderWidth: 4,
-    borderColor: '#fff',
+    borderColor: '#95ac9b',
   },
   buttonText: {
     color: '#fff',
