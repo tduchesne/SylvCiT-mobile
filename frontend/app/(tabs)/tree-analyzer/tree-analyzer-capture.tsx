@@ -13,6 +13,7 @@ import CameraComponent from "@/components/CameraComponent";
 import { useEffect, useState } from "react";
 
 import { CameraCapturedPicture } from "expo-camera";
+import LoadingModal from "@/components/LoadingModal";
 
 async function* streamResponseChunks(response: Response) {
   let buffer = "";
@@ -97,7 +98,6 @@ export async function* streamGemini({
   }
 
   const responseBody = await response.json();
-  console.log("Response Body:", responseBody);
   yield responseBody;
 
   //yield* streamResponseChunks(response);
@@ -107,6 +107,7 @@ export default function TreeAnalyzerCapture() {
   const colorScheme = useColorScheme();
   const { cameraPermission, galleryPermission } = usePermissions();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   let content;
 
@@ -118,6 +119,7 @@ export default function TreeAnalyzerCapture() {
     // Add AI logic here
     let result = "Analyzing...";
     let imageBase64;
+    setIsLoading(true);
 
     try {
       imageBase64 = photo?.base64;
@@ -145,8 +147,6 @@ export default function TreeAnalyzerCapture() {
           model: "gemini-1.5-flash",
           contents,
         })) {
-          console.log("chunk:", chunk);
-
           buffer.push(chunk);
         }
 
@@ -166,6 +166,8 @@ export default function TreeAnalyzerCapture() {
           try {
             parsedResult = JSON.parse(result);
             console.log("Parsed JSON result:", parsedResult);
+
+            setIsLoading(false);
 
             router.push({
               pathname: "/tree-analyzer/analysis-results",
@@ -187,13 +189,9 @@ export default function TreeAnalyzerCapture() {
       }
     } catch (error) {
       console.error(`Error getting image as base64: ${error}`);
+    } finally {
+      setIsLoading(false);
     }
-
-    // navigate to results page
-    //alternative: router.push with same arguments
-    //router.navigate({
-    //  pathname: "/tree-analyzer/analysis-results",
-    // });
   };
 
   if (!cameraPermission || !galleryPermission) {
@@ -228,7 +226,13 @@ export default function TreeAnalyzerCapture() {
   );
 
   return cameraPermission && galleryPermission ? (
-    <CameraComponent onCapture={onConfirm} />
+    <>
+      <CameraComponent onCapture={onConfirm} />
+      <LoadingModal
+        visible={isLoading}
+        text="Loading..."
+      />
+    </>
   ) : (
     defaultScreen
   );
