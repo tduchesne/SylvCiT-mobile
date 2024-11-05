@@ -48,7 +48,7 @@ def generate_api():
                 '''.replace('\n', '') })
         try:
             req_body = request.get_json()
-            print("Received request body:", req_body)
+            #print("Received request body:", req_body)
             content = req_body.get("contents")
             model = genai.GenerativeModel(model_name=req_body.get("model"))
             response = model.generate_content(content)

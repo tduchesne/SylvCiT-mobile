@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { router, useLocalSearchParams, useRouter} from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   TextInput,
@@ -22,10 +22,16 @@ export default function AnalyseResults() {
   const router = useRouter();
 
   const params = useLocalSearchParams();
-  
-  const family: string = Array.isArray(params.family) ? params.family[0] : (params.family || "");
-  const latinName: string = Array.isArray(params.latinName) ? params.latinName[0] : (params.latinName || "");
-  const genre: string = Array.isArray(params.genre) ? params.genre[0] : (params.genre || "");
+
+  const family: string = Array.isArray(params.family)
+    ? params.family[0]
+    : params.family || "";
+  const latinName: string = Array.isArray(params.latinName)
+    ? params.latinName[0]
+    : params.latinName || "";
+  const genre: string = Array.isArray(params.genre)
+    ? params.genre[0]
+    : params.genre || "";
 
   const colorScheme = useColorScheme(); // Detect the color scheme (light or dark)
 
@@ -68,7 +74,6 @@ export default function AnalyseResults() {
     const [genreTree, setGenreTree] = useState(genre);
     const [datePlantation, setDatePlantation] = useState<string>("");
     const [dateMesure, setDateMesure] = useState<string>("");
-
 
     // Image URL received from backend
     const [imageUrl, setImageUrl] = useState<string>(""); // Empty by default
@@ -261,7 +266,7 @@ function annuler() {
     {
       text: "Oui",
       onPress: () =>
-        router.push({
+        router.navigate({
           pathname: "/tree-analyzer/tree-analyzer-capture",
         }),
     },
@@ -272,16 +277,16 @@ function annuler() {
 const styles = StyleSheet.create({
   form: {
     flex: 1,
-    paddingHorizontal: 30, 
-    paddingVertical: 40,  
-    marginHorizontal: 20,  
-    backgroundColor: "#2E2E2E", 
-    borderRadius: 20,       
-    shadowColor: "#000",    
+    paddingHorizontal: 30,
+    paddingVertical: 40,
+    marginHorizontal: 20,
+    backgroundColor: "#2E2E2E",
+    borderRadius: 20,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 4,  
+    elevation: 4,
   },
   inputContainer: {
     marginBottom: 20,
@@ -310,7 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     textTransform: "uppercase",
     paddingBottom: 30, // Reduced bottom padding to 30
-    paddingTop: 20,    // Added padding at the top for separation
+    paddingTop: 20, // Added padding at the top for separation
     textAlign: "center",
     fontWeight: "bold",
   },
