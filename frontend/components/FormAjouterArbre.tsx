@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import React from "react";
 import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, ActivityIndicator } from 'react-native';
 //npx expo install @react-native-community/datetimepicker
@@ -15,6 +15,7 @@ import { ThemedText } from "@/components/ThemedText";
 import MapView, { Region } from 'react-native-maps';
 //npx expo install @react-native-picker/picker
 import { Picker } from '@react-native-picker/picker';
+
 
 export default function FormAjoutArbre() {
 
@@ -35,10 +36,9 @@ export default function FormAjoutArbre() {
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
     const [indicateur, setIndicateur] = useState(false);
     const [invType, setInvType] = useState('');
-
-
     const colorScheme = useColorScheme();
 
+    //Fonction pour envoyer les données au backend
     const sauvegarder = () => {
 
         if (!dateReleve || !longitude || !latitude || !invType) {
@@ -77,7 +77,7 @@ export default function FormAjoutArbre() {
         }
     }
 
-
+    //Fonction pour vérifier la réponse du serveur
     const validerReponse = async (response: Response) => {
 
         setIndicateur(false)
@@ -94,6 +94,7 @@ export default function FormAjoutArbre() {
 
     }
 
+    // Fonction qui trouve l'adresse à partir des coordonnées GPS
     const trouverPosition = async (region: Region) => {
         setIndicateur(true);
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -107,27 +108,27 @@ export default function FormAjoutArbre() {
         });
 
         setAdresse(location[0].formattedAddress?.toString() ?? '')
-        /* setLatitude(location.coords.latitude.toString());
-         setLongitude(location.coords.longitude.toString());*/
-
-
         setIndicateur(false);
 
     }
 
+    //Fonction pour réinitialiser les champs du formulaire
     const nettoyerChamps = () => {
         initialiserChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, setDatePlantation, setLongitude, setLatitude)
     }
 
+    //Fonction qui remet les derniers valeurs entrées par l'utilisateur dans les champs
     const remettreChamps = () => {
         remplirChamps(setEmpNo, empNo, setAdresse, adresse, setEssenceFr, essenceFr, setEssenceLatin, essenceLatin, setEssenceAng, essenceLatin, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude)
     }
+
 
     const annuler = () => {
 
         Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui", onPress: () => nettoyerChamps() }, { text: "Non" }])
     }
 
+    //Fonction qui assigne la date choisie dans le calendrier
     const choisirDateReleve = (event: any, dateReleveChoisie: any) => {
         setModalDatePreleve(false)
         setDateReleve(dateReleveChoisie)
@@ -156,7 +157,6 @@ export default function FormAjoutArbre() {
                             <Picker.Item label="Type Hors Rue" value="H" />
                         </Picker>
                     </View>
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
@@ -176,7 +176,7 @@ export default function FormAjoutArbre() {
                         <MapView style={styles.map} showsUserLocation={true} onRegionChangeComplete={(region) => { setLatitude(region.latitude.toString()), setLongitude(region.longitude.toString()), trouverPosition(region) }} />
 
                     </View>
-
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, styles.champObligatoire]} onChangeText={setLongitude} value={longitude} placeholder="Longitude" keyboardType="numeric" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLatitude} value={latitude} placeholder="Latitude" keyboardType="numeric" />
@@ -227,37 +227,11 @@ function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any,
 
 }
 
-/*
-const ChargerPhoto = () => {
-    const [image, setImage] = useState<string | null>(null);
 
-    const ChargerImage = async () => {
-        // Ajout de permission dans le sprint 2
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-        }
-    };
-
-    return (
-        <View style={styles.boutonPhoto}>
-            <Button title="Charger photo de l'arbre" onPress={ChargerImage} color="lightgreen" />
-            {image && <Image source={{ uri: image }} style={styles.image} />}
-        </View>
-    );
-}*/
-
+//Fonction qui retourne la date dans le format YYYY-MM-DD
 function formatDate(date: Date) {
     const year = String(date.getFullYear()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
@@ -335,6 +309,7 @@ const styles = StyleSheet.create({
     },
     map: {
         height: 200,
+
 
     },
 
