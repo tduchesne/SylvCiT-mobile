@@ -48,14 +48,15 @@ def generate_api():
             '''.replace('\n', '') })
     try:
         req_body = request.get_json()
-        #print("Received request body:", req_body)
+        ##print("Received request body:", req_body)
         content = req_body.get("contents")
         model = genai.GenerativeModel(model_name=req_body.get("model"))
         response = model.generate_content(content)
         print("Sending content to Gemini API:")
-        #print("Sending content to Gemini API:", content)
+        ##print("Sending content to Gemini API:", content)
         full_response = ''.join([chunk.text for chunk in response])
         print("Full response:", full_response)
+
         return jsonify({ "text": full_response })
     
     except Exception as e:

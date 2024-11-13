@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 import {
   TextInput,
   SafeAreaView,
@@ -18,13 +18,23 @@ import * as FileSystem from "expo-file-system";
 import { CameraCapturedPicture } from "expo-camera";
 
 export default function AnalyseResults() {
-  //TODO:
-  // - Add a way to upload an image of the tree
-  // - Add JSON data to frontend to display the tree's information
-  // - Add functionality to cancel the operation, need to go back to another page ('ajouter arbre' maybe ? TBD)
-  const { photo } = useLocalSearchParams();
+  const router = useRouter();
 
-  const colorScheme = useColorScheme(); // Detect the color scheme (light or dark)
+  const params = useLocalSearchParams();
+  const family: string = Array.isArray(params.family)
+    ? params.family[0]
+    : params.family || "";
+  const latinName: string = Array.isArray(params.latinName)
+    ? params.latinName[0]
+    : params.latinName || "";
+  const genre: string = Array.isArray(params.genre)
+    ? params.genre[0]
+    : params.genre || "";
+  const image = Array.isArray(params.image)
+    ? params.image[0]
+    : params.image || "";
+
+  const colorScheme = useColorScheme();
 
   // cond styling based on the color scheme
   const isDarkMode = colorScheme === "dark";
@@ -35,6 +45,7 @@ export default function AnalyseResults() {
   const lightColors = {
     backgroundColor: "#F0F4F8",
     textColor: "#555",
+    insideColor: "black",
     borderColor: "#80CBC4",
     buttonGreen: "#4CAF50",
     buttonRed: "#f44336",
@@ -45,6 +56,7 @@ export default function AnalyseResults() {
   const darkColors = {
     backgroundColor: "#232825",
     textColor: "#E0E0E0",
+    insideColor: "black",
     borderColor: "#65976f",
     buttonGreen: "#447346",
     buttonRed: "#a3271d",
@@ -55,12 +67,12 @@ export default function AnalyseResults() {
 
   const Form_analyse_arbre = () => {
     const [adresse, setAdresse] = useState<string>("");
-    const [especeLat, setEspeceLat] = useState<string>("");
+    const [especeLat, setEspeceLat] = useState<string>(latinName);
     const [especeFr, setEspeceFr] = useState<string>("");
     const [especeAng, setEspeceAng] = useState<string>("");
     const [dhp, setDhp] = useState<string>(""); // Format: numeric/numeric
-    const [famille, setFamille] = useState<string>("");
-    const [genre, setGenre] = useState<string>("");
+    const [famille, setFamille] = useState<string>(family);
+    const [genreTree, setGenreTree] = useState(genre);
     const [datePlantation, setDatePlantation] = useState<string>("");
     const [dateMesure, setDateMesure] = useState<string>("");
 
@@ -80,7 +92,7 @@ export default function AnalyseResults() {
           {/* Display the image TODO*/}
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: `data:image/jpeg;base64,${photo}` }} // Display the image or a placeholder
+              source={{ uri: image || placeholderImage }} // montrer image
               style={styles.treeImage}
               resizeMode="stretch"
             />
@@ -93,7 +105,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setAdresse}
               value={adresse}
@@ -107,7 +119,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setEspeceLat}
               value={especeLat}
@@ -121,7 +133,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setEspeceFr}
               value={especeFr}
@@ -135,7 +147,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setEspeceAng}
               value={especeAng}
@@ -147,21 +159,14 @@ export default function AnalyseResults() {
               <Text style={[styles.label, { color: colors.textColor }]}>
                 DHP
               </Text>
-              <Text style={[styles.label, { color: colors.textColor }]}>
-                DHP max
-              </Text>
             </View>
             <TextInput
               style={[
                 styles.input,
-                styles.dhpInput,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setDhp}
               value={dhp}
-              placeholder="DHP (numeric/numeric)"
-              keyboardType="default"
-              placeholderTextColor={isDarkMode ? "#888" : "#ccc"}
             />
           </View>
 
@@ -172,7 +177,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setFamille}
               value={famille}
@@ -186,10 +191,10 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
-              onChangeText={setGenre}
-              value={genre}
+              onChangeText={setGenreTree}
+              value={genreTree}
             />
           </View>
 
@@ -200,7 +205,7 @@ export default function AnalyseResults() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: colors.borderColor, color: colors.textColor },
+                { borderColor: colors.borderColor, color: colors.insideColor },
               ]}
               onChangeText={setDatePlantation}
               value={datePlantation}
@@ -257,7 +262,13 @@ function confirmer() {
 
 function annuler() {
   Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [
-    { text: "Oui" },
+    {
+      text: "Oui",
+      onPress: () =>
+        router.navigate({
+          pathname: "/tree-analyzer/tree-analyzer-capture",
+        }),
+    },
     { text: "Non" },
   ]);
 }
@@ -265,8 +276,16 @@ function annuler() {
 const styles = StyleSheet.create({
   form: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingHorizontal: 30,
+    paddingVertical: 40,
+    marginHorizontal: 20,
+    backgroundColor: "#2E2E2E",
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   inputContainer: {
     marginBottom: 20,
@@ -294,7 +313,8 @@ const styles = StyleSheet.create({
   titrePage: {
     fontSize: 30,
     textTransform: "uppercase",
-    paddingBottom: 50,
+    paddingBottom: 30,
+    paddingTop: 20,
     textAlign: "center",
     fontWeight: "bold",
   },
@@ -313,16 +333,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  dhpInput: {
-    textAlign: "center",
-  },
   imageContainer: {
     alignItems: "center",
-    marginBottom: 20,
+    margin: 20,
   },
   treeImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
+    width: 500,
+    height: 180,
   },
 });

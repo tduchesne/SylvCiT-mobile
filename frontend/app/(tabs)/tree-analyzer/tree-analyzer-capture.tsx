@@ -13,11 +13,13 @@ import CameraComponent from "@/components/CameraComponent";
 import { useEffect, useState } from "react";
 
 import { CameraCapturedPicture } from "expo-camera";
-import Config from "@/config";
+import Config from "@/config";import LoadingModal from "@/components/LoadingModal";
 
 async function* streamResponseChunks(response: Response) {
   let buffer = "";
+  let buffer = "";
 
+  const CHUNK_SEPARATOR = "\n\n";
   const CHUNK_SEPARATOR = "\n\n";
 
   let processBuffer = async function* (streamDone = false) {
@@ -87,20 +89,27 @@ export async function* streamGemini({
   model = "gemini-1.5-flash",
   contents = [],
 }: { model?: string; contents?: Content[] } = {}) {
-  //let response = await fetch("http://localhost:5001/api/generate", {
-  let response = await fetch(`http://localhost:5001/api/generate`, {
+  let response = await fetch("http://192.168.0.59:5001/api/generate", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model, contents }),
   });
 
-  yield* streamResponseChunks(response);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const responseBody = await response.json();
+  yield responseBody;
+
+  //yield* streamResponseChunks(response);
 }
 
 export default function TreeAnalyzerCapture() {
   const colorScheme = useColorScheme();
   const { cameraPermission, galleryPermission } = usePermissions();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   let content;
 
@@ -112,11 +121,16 @@ export default function TreeAnalyzerCapture() {
     // Add AI logic here
     let result = "Analyzing...";
     let imageBase64;
+    setIsLoading(true);
+
     try {
       imageBase64 = photo?.base64;
+
       if (imageBase64) {
+        // for mobile
+        imageBase64 = imageBase64.replace("data:image/png;base64,", "");
+        // for web
         imageBase64 = imageBase64.replace("data:image/jpeg;base64,", "");
-        //console.log(`Image base64 2 : ${imageBase64}`);
 
         let contents = [
           {
@@ -124,7 +138,7 @@ export default function TreeAnalyzerCapture() {
             parts: [
               { inline_data: { mime_type: "image/png", data: imageBase64 } },
               {
-                text: "Provide the name of the species in latin, the family, and the genre of the tree in the image in JSON format.",
+                text: "Provide the name of the family, latin name and genre of the tree in the image in JSON format.",
               },
             ],
           },
@@ -136,22 +150,51 @@ export default function TreeAnalyzerCapture() {
           contents,
         })) {
           buffer.push(chunk);
-          result = buffer.join("");
-          console.log(`Result: ${result}`);
+        }
+
+        let result = buffer[0].text;
+
+        console.log("Raw result from Gemini:", result);
+
+        result = result
+          .replace(/```json/g, "")
+          .replace(/```/g, "")
+          .trim();
+        const jsonMatch = result.match(/({[\s\S]*?})/); // This regex captures only the JSON block
+        if (jsonMatch) {
+          const jsonString = jsonMatch[1];
+
+          let parsedResult;
+          try {
+            parsedResult = JSON.parse(result);
+            console.log("Parsed JSON result:", parsedResult);
+
+            setIsLoading(false);
+
+            router.push({
+              pathname: "/tree-analyzer/analysis-results",
+              params: {
+                family: parsedResult.family,
+                latinName: parsedResult["latin name"],
+                genre: parsedResult.genre,
+                image: `data:image/png;base64,${imageBase64}`,
+              },
+            });
+          } catch (jsonError) {
+            console.error("Error parsing JSON:", jsonError);
+            console.error("Result is not valid JSON:", result);
+          }
+        } else {
+          console.error("No JSON content found in the result:", result);
         }
       } else {
         throw new Error("Failed to convert image to base64");
       }
     } catch (error) {
       console.error(`Error getting image as base64: ${error}`);
+    } finally {
+      setIsLoading(false);
     }
-
-    // navigate to results page
-    //alternative: router.push with same arguments
-    router.navigate({
-      pathname: "/tree-analyzer/analysis-results",
-      params: { photo: photo?.base64 },
-    });
   };
 
   if (!cameraPermission || !galleryPermission) {
@@ -186,7 +229,13 @@ export default function TreeAnalyzerCapture() {
   );
 
   return cameraPermission && galleryPermission ? (
-    <CameraComponent onCapture={onConfirm} />
+    <>
+      <CameraComponent onCapture={onConfirm} />
+      <LoadingModal
+        visible={isLoading}
+        text="Loading..."
+      />
+    </>
   ) : (
     defaultScreen
   );
