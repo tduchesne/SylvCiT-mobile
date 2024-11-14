@@ -23,6 +23,7 @@ class Tree(db.Model):
         default="pending",
         nullable=False
     )
+    commentaires_rejet = db.Column(db.String(254))
     details_url = db.Column(db.String(150))
     image_url = db.Column(db.String(254))
     id_type = db.Column(db.Integer)

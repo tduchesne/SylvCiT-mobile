@@ -62,16 +62,6 @@ def create_app(config_name=None):
     def add_tree():
         info = request.get_json()
 
-        no_emp = info.get('no_emp')
-        if Tree.query.filter_by(no_emp=no_emp).first() :
-            abort(409, description="Arbre deja existant.")
-        elif no_emp == "" :
-            no_emp = None
-        else:
-            try:
-                no_emp = int(no_emp)
-            except ValueError:
-                abort(400, description="Le numéro d'emplacement doit être un entier.")
 
         latitude = info.get('latitude')
         longitude = info.get('longitude')
@@ -92,9 +82,23 @@ def create_app(config_name=None):
             except ValueError:
                 abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
 
-        no_arrondissement = info.get('no_arrondissement')
-        emplacement = info.get('emplacement')
-        sigle = info.get('sigle')
+        date_plantation = info.get('date_plantation')
+        if date_plantation == "":
+            date_plantation = None
+        else :
+            try:
+                date_plantation = datetime.strptime(date_plantation, '%Y-%m-%d').date()
+            except ValueError:
+                abort(400, description="Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD.")
+
+        details_url=info.get('details_url')
+        image_url=info.get('image_url')
+        type=info.get('type')
+        genre=info.get('genre')
+        family=info.get('family')
+        functional_group=info.get('functional_group')
+
+
 
         dhp = info.get('dhp')
         if dhp == "" :
@@ -114,57 +118,22 @@ def create_app(config_name=None):
             except ValueError:
                 abort(400, description="Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD.")
 
-        inv_type = info.get('inv_type')
-        if inv_type == "":
-            inv_type = None
-            abort(400, description="Le champ 'inv_type' est obligatoire.")
-        elif inv_type not in ['R', 'H']:
-            abort(400, description="Le champ 'inv_type' doit être 'R' ou 'H'.")
-
-        if inv_type == 'R':
-            new_tree = TreeRue(
-                no_emp=no_emp,
-                no_arrondissement=no_arrondissement,
-                emplacement=emplacement,
-                sigle=sigle,
-                dhp=dhp,
-                date_plantation=date_plantation,
-                date_measure=date_releve,
-                longitude=longitude,
-                latitude=latitude,
-                inv_type=inv_type,
-                adresse=info.get('adresse'),
-                localisation=info.get('localisation'),
-                localisation_code=info.get('localisation_code'),
-                rue_de=info.get('rue_de'),
-                rue_a=info.get('rue_a'),
-                distance_pave=info.get('distance_pave'),
-                distance_ligne_rue=info.get('distance_ligne_rue'),
-                stationnement_jour=info.get('stationnement_jour'),
-                stationnement_heure=info.get('stationnement_heure'),
-                district=info.get('district'),
-                arbre_remarquable=info.get('arbre_remaquable'),
-                is_valid=False
-            )
-        else:
-            new_tree = TreeHorsRue(
-                no_emp=no_emp,
-                no_arrondissement=no_arrondissement,
-                emplacement=emplacement,
-                sigle=sigle,
-                dhp=dhp,
-                date_plantation=date_plantation,
-                date_measure=date_releve,
-                longitude=longitude,
-                latitude=latitude,
-                inv_type=inv_type,
-                code_parc=info.get('code_parc'),
-                code_secteur=info.get('code_secteur'),
-                is_valid=False
-            )
+        new_tree = Tree(
+            date_plantation=date_plantation,
+            date_measure=date_releve,
+            approbation_status="pending",
+            location=Location(latitude=latitude, longitude=longitude),
+            details_url=details_url,
+            image_url=image_url,
+            type=Type(name_fr=type),
+            genre=Genre(name=genre),
+            family=Family(name=family),
+            functional_group=FunctionalGroup(group=functional_group),
+            commenaires_rejet=None,
+            dhp=dhp
+        )
 
         try:
-            print(new_tree)
             db.session.add(new_tree)
             db.session.commit()
         except Exception as e:
