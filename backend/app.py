@@ -143,6 +143,25 @@ def create_app(config_name=None):
 
         return jsonify(new_tree.to_dict()), 201
 
+    @app.route('/api/genre', methods=['GET'])
+    def get_genres():
+        genres = Genre.query.all()
+        return jsonify([genre.to_dict() for genre in genres])
+
+    @app.route('/api/family', methods=['GET'])
+    def get_families():
+        families = Family.query.all()
+        return jsonify([family.to_dict() for family in families])
+
+    @app.route('/api/type', methods=['GET'])
+    def get_types():
+        types = Type.query.all()
+        return jsonify([type.to_dict() for type in types])
+
+    @app.route('/api/functional_group', methods=['GET'])
+    def get_functional_groups():
+        functional_groups = FunctionalGroup.query.all()
+        return jsonify([functional_group.to_dict() for functional_group in functional_groups])
 
     @app.route('/api/coord_tree/', methods=['GET'])
     def coord_tree():
