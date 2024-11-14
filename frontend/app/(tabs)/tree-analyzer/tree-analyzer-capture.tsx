@@ -116,7 +116,6 @@ export default function TreeAnalyzerCapture() {
   }
 
   const onConfirm = async (photo: CameraCapturedPicture | undefined) => {
-    // Add AI logic here
     let result = "Analyzing...";
     let imageBase64;
     setIsLoading(true);

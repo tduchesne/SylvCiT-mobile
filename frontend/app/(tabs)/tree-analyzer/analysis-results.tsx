@@ -1,4 +1,3 @@
-import { ThemedText } from "@/components/ThemedText";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -33,12 +32,9 @@ export default function AnalyseResults() {
 
   const colorScheme = useColorScheme();
 
-  // cond styling based on the color scheme
   const isDarkMode = colorScheme === "dark";
 
   //cannot change the colors.ts cause will change all the colors in the app...
-
-  //light mode
   const lightColors = {
     backgroundColor: "#F0F4F8",
     textColor: "#555",
@@ -49,7 +45,6 @@ export default function AnalyseResults() {
     titleColor: "#2E7D32",
   };
 
-  //dark mode
   const darkColors = {
     backgroundColor: "#232825",
     textColor: "#E0E0E0",
@@ -67,16 +62,14 @@ export default function AnalyseResults() {
     const [especeLat, setEspeceLat] = useState<string>(latinName);
     const [especeFr, setEspeceFr] = useState<string>("");
     const [especeAng, setEspeceAng] = useState<string>("");
-    const [dhp, setDhp] = useState<string>(""); // Format: numeric/numeric
+    const [dhp, setDhp] = useState<string>("");
     const [famille, setFamille] = useState<string>(family);
     const [genreTree, setGenreTree] = useState(genre);
     const [datePlantation, setDatePlantation] = useState<string>("");
     const [dateMesure, setDateMesure] = useState<string>("");
 
-    // Image URL received from backend
-    const [imageUrl, setImageUrl] = useState<string>(""); // Empty by default
+    const [imageUrl, setImageUrl] = useState<string>("");
 
-    // Placeholder image for when the image URL isn't available
     const placeholderImage = "https://via.placeholder.com/150";
 
     return (
@@ -88,10 +81,10 @@ export default function AnalyseResults() {
             Votre arbre
           </Text>
 
-          {/* Display the image TODO*/}
+          {/* Display the image */}
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: image || placeholderImage }} // montrer image
+              source={{ uri: image || placeholderImage }}
               style={styles.treeImage}
               resizeMode="contain"
             />
