@@ -99,6 +99,30 @@ export default function CarteScreen() {
                             <Text style={styles.calloutLabel}>Espèce (LA) :</Text>
                             <Text style={styles.calloutValue}>{tree.essence_latin}</Text>
                           </View>
+                          <View style={styles.calloutRow}>
+                            <Text style={styles.calloutLabel}>Genre :</Text>
+                            <Text style={styles.calloutValue}>{tree.genre_name}</Text>
+                          </View>
+                          <View style={styles.calloutRow}>
+                            <Text style={styles.calloutLabel}>Famille :</Text>
+                            <Text style={styles.calloutValue}>{tree.family_name}</Text>
+                          </View>
+                          <View style={styles.calloutRow}>
+                            <Text style={styles.calloutLabel}>Date de mesure :</Text>
+                            <Text style={styles.calloutValue}>{formatDate(tree.date_releve)}</Text>
+                          </View>
+                          <View style={styles.calloutRow}>
+                            <Text style={styles.calloutLabel}>Date de plantation :</Text>
+                            <Text style={styles.calloutValue}>{formatDate(tree.date_plantation)}</Text>
+                          </View>
+                          <View style={styles.calloutRow}>
+                            <Text style={styles.calloutLabel}>Latitude :</Text>
+                            <Text style={styles.calloutValue}>{tree.latitude}</Text>
+                          </View>
+                          <View style={styles.calloutRow}>
+                            <Text style={styles.calloutLabel}>Longitude :</Text>
+                            <Text style={styles.calloutValue}>{tree.longitude}</Text>
+                          </View>
                         </View>
                       </Callout>
                     </Marker>
