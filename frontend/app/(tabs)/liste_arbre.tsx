@@ -27,6 +27,8 @@ export interface Tree {
   date_releve: string;
   genre_name: string;
   family_name: string;
+  latitude: string;
+  longitude:string;
 }
 
 export default function TabTwoScreen() {
