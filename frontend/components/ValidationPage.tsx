@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, View, Text, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
+import { Image, StyleSheet, View, Text, ScrollView, TouchableOpacity, Modal, useColorScheme } from 'react-native';
 import Screen from '@/components/Screen';
 import Config from "@/config";
 import { Tree } from '@/app/(tabs)/liste_arbre';
 import Icon from '@expo/vector-icons/Ionicons';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 export default function ValidationScreen({ propsTreeList, startIdx, handleEndValidation }: { propsTreeList: Tree[], startIdx: number, handleEndValidation: () => void }) {
   const [treeData, setTreeData] = useState<Tree | null>(propsTreeList[startIdx]);
   const [treeList, setTreeList] = useState<Tree[]>(propsTreeList);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
 
@@ -32,14 +34,12 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
 
   const exitToMenu = () => {
     handleEndValidation();
-  }
+  };
 
-  // Open next tree in tree list. If 'removeFromList', remove tree from list and exit if list.length == 0.
-  // Otherwise, exit if list.length == 1.
   const seekNextTree = (removeFromList: boolean): boolean => {
     let index = treeData ? treeList.indexOf(treeData) : -1;
 
-    if (index != -1) {
+    if (index !== -1) {
       if (removeFromList) {
         if (treeList.length > 1) {
           setTreeData(treeList[(index + 1) % treeList.length]);
@@ -53,8 +53,7 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
           setTreeList([]);
           setTreeData(null);
         }
-      }
-      else {
+      } else {
         if (treeList.length > 1) {
           setTreeData(treeList[(index + 1) % treeList.length]);
           return true;
@@ -63,12 +62,11 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
     }
     exitToMenu();
     return false;
-  }
+  };
 
   const handleValidate = async () => {
     console.log('Arbre validé:', treeData?.essence_fr);
     if (treeData) {
-
       modifyTreeStatus(treeData.id_tree, 'approved');
       seekNextTree(true);
     }
@@ -99,16 +97,15 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
         content={
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {treeData?.image_url ? (
-              <Image
-                source={{ uri: treeData.image_url }}
-                style={styles.treeImage}
-              />
+              <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+                <Image source={{ uri: treeData.image_url }} style={styles.treeImage} />
+              </TouchableOpacity>
             ) : (
               <View style={styles.placeholder}>
                 <Text style={styles.placeholderText}>Image à venir...</Text>
               </View>
             )}
-            <View style={styles.infoContainer}>
+           <View style={styles.infoContainer}>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Famille:</Text>
                 <Text style={styles.infoValue}>{treeData?.family_name}</Text>
@@ -141,32 +138,27 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
           </ScrollView>
         }
         headerImage={
-          <Image
-            source={require('@/assets/images/adaptive-icon.png')}
-            style={styles.treeLogo}
-          />
+          <Image source={require('@/assets/images/adaptive-icon.png')} style={styles.treeLogo} />
         }
       />
+
+      {/* Modal pour afficher l'image en plein écran avec zoom */}
+      <Modal visible={isModalVisible} transparent={true} animationType="fade" onRequestClose={() => setIsModalVisible(false)}>
+        <ImageViewer imageUrls={[{ url: treeData?.image_url || '' }]} enableSwipeDown onSwipeDown={() => setIsModalVisible(false)} />
+        <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.roundCloseButton}>
+  <Icon name="close" size={24} color="#000" />
+</TouchableOpacity>
+
+      </Modal>
+
       <View style={[styles.fixedButtonContainer, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}>
-        <TouchableOpacity
-          style={[styles.modifyButton, styles.buttonOutline, { borderColor: isDarkMode ? '#8b0000' : '#c62828' }]}
-          onPress={handleModify}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={[styles.modifyButton, styles.buttonOutline, { borderColor: isDarkMode ? '#8b0000' : '#c62828' }]} onPress={handleModify}>
           <Text style={[styles.buttonText, { color: isDarkMode ? '#8b0000' : '#c62828' }]}>Modifier</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.skipButton, styles.buttonOutline, { borderColor: isDarkMode ? '#ffd700' : '#fdd835' }]}
-          onPress={handleSkip}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={[styles.skipButton, styles.buttonOutline, { borderColor: isDarkMode ? '#ffd700' : '#fdd835' }]} onPress={handleSkip}>
           <Text style={[styles.buttonText, { color: isDarkMode ? '#ffd700' : '#fdd835' }]}>Sauter</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.validateButton, styles.buttonOutline, { borderColor: isDarkMode ? '#006400' : '#2e7d32' }]}
-          onPress={handleValidate}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={[styles.validateButton, styles.buttonOutline, { borderColor: isDarkMode ? '#006400' : '#2e7d32' }]} onPress={handleValidate}>
           <Text style={[styles.buttonText, { color: isDarkMode ? '#006400' : '#2e7d32' }]}>Valider</Text>
         </TouchableOpacity>
       </View>
@@ -218,12 +210,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1,
     textAlign: 'left',
+    color: '#000',
   },
   infoValue: {
     fontSize: 14,
-    color: 'green',
     flex: 1,
     textAlign: 'right',
+    color: 'green',
   },
   fixedButtonContainer: {
     borderRadius: 10,
@@ -236,6 +229,30 @@ const styles = StyleSheet.create({
     bottom: 16,
     left: 0,
     right: 0,
+  },
+  roundCloseButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    width: 40,
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  closeButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#000',
   },
   buttonOutline: {
     borderWidth: 2,
@@ -267,9 +284,10 @@ const styles = StyleSheet.create({
   treeLogo: {
     height: 230,
     width: 310,
-    bottom: 0,
-    left: 36,
     position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -155 }, { translateY: -115 }],
   },
   backButton: {
     position: 'absolute',
