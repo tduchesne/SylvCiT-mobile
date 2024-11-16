@@ -3,7 +3,7 @@ import { StyleSheet, View, Dimensions, Image, Text, useColorScheme } from 'react
 import MapView, { Marker, Callout, Region } from 'react-native-maps';
 import { ThemedView } from '@/components/ThemedView';
 import Screen from "@/components/Screen";
-import { Tree } from '../../app/(tabs)/liste_arbre';
+import { Tree } from '../../app//(tabs)/liste_arbre';
 import Config from '@/config';
 
 export default function CarteScreen() {
@@ -11,6 +11,7 @@ export default function CarteScreen() {
   const isDarkMode = colorScheme === 'dark';
 
   const [trees, setTrees] = useState<Tree[] | null>(null);
+
 
   const initialRegion: Region = {
     latitude: 45.5017,
@@ -20,7 +21,7 @@ export default function CarteScreen() {
   };
 
   useEffect(() => {
-    if (trees == null) fetchAllTrees();
+    if (trees == null) fetchAllTrees(); 
   }, []);
 
   const fetchAllTrees = async () => {
@@ -30,7 +31,7 @@ export default function CarteScreen() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        },
+        }
       });
 
       if (!response.ok) {
@@ -41,15 +42,8 @@ export default function CarteScreen() {
       const data = await response.json();
       setTrees(data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des arbres :", error);
     }
-  };
-
-  const isValidCoordinate = (latitude: string, longitude: string) => {
-    const lat = parseFloat(latitude);
-    const lng = parseFloat(longitude);
-    return !isNaN(lat) && !isNaN(lng);
-  };
+  }
 
   const formatDate = (dateString: string | undefined): string => {
     if (!dateString) return '';
@@ -69,21 +63,16 @@ export default function CarteScreen() {
                 initialRegion={initialRegion}
                 customMapStyle={isDarkMode ? darkMapStyle : lightMapStyle}
               >
-                {trees
-                  .filter(tree => isValidCoordinate(tree.latitude, tree.longitude))
-                  .map(tree => (
+                {trees.map(tree => {
+                  return (
                     <Marker
                       key={tree.id_tree}
                       coordinate={{
                         latitude: parseFloat(tree.latitude),
-                        longitude: parseFloat(tree.longitude),
+                        longitude: parseFloat(tree.longitude) 
                       }}
                       title={tree.essence_fr}
-                      icon={
-                        tree.id_tree % 3 === 0
-                          ? require('@/assets/images/marqueurArbreMauve.png')
-                          : require('@/assets/images/marqueurArbreVert.png')
-                      }
+                      icon={tree.id_tree % 3 == 0 ? require('@/assets/images/marqueurArbreMauve.png') : require('@/assets/images/marqueurArbreVert.png')}
                     >
                       <Callout tooltip>
                         <View style={styles.callout}>
@@ -126,9 +115,11 @@ export default function CarteScreen() {
                         </View>
                       </Callout>
                     </Marker>
-                  ))}
-              </MapView>
-            )}
+                  );
+                }
+                )}
+              </MapView>)
+            }
           </View>
         }
         headerImage={
@@ -181,21 +172,52 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
     marginRight: 5,
-    width: '50%',
+    width: '50%'
   },
   calloutValue: {
     fontSize: 14,
     textAlign: 'right',
-    width: '50%',
+    width: '50%'
   },
 });
 
+
 const darkMapStyle = [
-  { elementType: 'geometry', stylers: [{ color: '#212121' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#757575' }] },
+  {
+    elementType: 'geometry',
+    stylers: [{ color: '#212121' }],
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#757575' }],
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [{ color: '#212121' }],
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [{ color: '#383838' }],
+  },
 ];
 
 const lightMapStyle = [
-  { elementType: 'geometry', stylers: [{ color: '#eaeaea' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#616161' }] },
+  {
+    elementType: 'geometry',
+    stylers: [{ color: '#eaeaea' }],
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#616161' }],
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [{ color: '#f5f5f5' }],
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [{ color: '#ffffff' }],
+  },
 ];
