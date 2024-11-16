@@ -3,7 +3,7 @@ import { StyleSheet, View, Dimensions, Image, Text, useColorScheme } from 'react
 import MapView, { Marker, Callout, Region } from 'react-native-maps';
 import { ThemedView } from '@/components/ThemedView';
 import Screen from "@/components/Screen";
-import { Tree } from '../../app//(tabs)/liste_arbre';
+import { Tree } from '../../app/(tabs)/liste_arbre';
 import Config from '@/config';
 
 export default function CarteScreen() {
@@ -42,6 +42,7 @@ export default function CarteScreen() {
       const data = await response.json();
       setTrees(data);
     } catch (error) {
+      console.error("Erreur lors de la récupération des arbres :", error);
     }
   }
 
