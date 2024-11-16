@@ -214,84 +214,55 @@ def create_app(config_name=None):
         db.session.delete(tree)
         db.session.commit()
         return jsonify({"message": "Arbre supprimé"}), 200
-    #
-    # @app.route('/api/modifier_arbre/<int:no_emp>', methods=['POST'])
-    # def modifier_arbre(no_emp):
-    #     try:
-    #         info = request.get_json()
-    #         print(f"Demande reçue pour modifier l'arbre avec le numéro d'emplacement : {no_emp}")
-    #
-    #         tree = Tree.query.filter_by(no_emp=no_emp).first()
-    #         if not tree:
-    #             print(f"Arbre avec l'ID {no_emp} introuvable.")
-    #             return jsonify({"message": "Arbre introuvable"}), 404
-    #
-    #         # Validation des attributs et conversion des dates
-    #         if 'emplacement' in info:
-    #             tree.emplacement = info['emplacement']
-    #
-    #         if 'dhp' in info:
-    #             try:
-    #                 tree.dhp = int(info['dhp'])
-    #             except ValueError:
-    #                 abort(400, description="Le champ 'dhp' doit être un entier.")
-    #
-    #         if 'date_measure' in info:
-    #             try:
-    #                 tree.date_measure = datetime.strptime(info['date_measure'], '%Y-%m-%d').date()
-    #             except ValueError:
-    #                 abort(400, description="Le format de 'date_measure' est invalide. Utilisez YYYY-MM-DD.")
-    #
-    #         if 'date_plantation' in info:
-    #             try:
-    #                 tree.date_plantation = datetime.strptime(info['date_plantation'], '%Y-%m-%d').date()
-    #             except ValueError:
-    #                 abort(400, description="Le format de 'date_plantation' est invalide. Utilisez YYYY-MM-DD.")
-    #
-    #         if 'latitude' in info:
-    #             try:
-    #                 tree.latitude = float(info['latitude'])
-    #             except (ValueError, TypeError):
-    #                 abort(400, description="Le champ 'latitude' doit être un nombre.")
-    #
-    #         if 'longitude' in info:
-    #             try:
-    #                 tree.longitude = float(info['longitude'])
-    #             except (ValueError, TypeError):
-    #                 abort(400, description="Le champ 'longitude' doit être un nombre.")
-    #
-    #         if 'inv_type' in info:
-    #             if info['inv_type'] not in ['R', 'H']:
-    #                 abort(400, description="Le champ 'inv_type' doit être 'R' ou 'H'.")
-    #             tree.inv_type = info['inv_type']
-    #
-    #         if 'is_valid' in info:
-    #             tree.is_valid = bool(info['is_valid'])
-    #
-    #         # Mise à jour des attributs spécifiques si l'arbre est de type TreeRue
-    #         if isinstance(tree, TreeRue):
-    #             tree.adresse = info.get('adresse', tree.adresse)
-    #             tree.localisation = info.get('localisation', tree.localisation)
-    #             tree.localisation_code = info.get('localisation_code', tree.localisation_code)
-    #             tree.rue_de = info.get('rue_de', tree.rue_de)
-    #             tree.rue_a = info.get('rue_a', tree.rue_a)
-    #             tree.distance_pave = info.get('distance_pave', tree.distance_pave)
-    #             tree.distance_ligne_rue = info.get('distance_ligne_rue', tree.distance_ligne_rue)
-    #             tree.stationnement_jour = info.get('stationnement_jour', tree.stationnement_jour)
-    #             tree.stationnement_heure = info.get('stationnement_heure', tree.stationnement_heure)
-    #             tree.district = info.get('district', tree.district)
-    #             tree.arbre_remarquable = info.get('arbre_remarquable', tree.arbre_remarquable)
-    #
-    #         db.session.commit()
-    #         print(f"Arbre avec le numéro d'emplacement {no_emp} et les informations associées mises à jour avec succès.")
-    #
-    #         return jsonify(tree.to_dict()), 200
-    #
-    #     except Exception as e:
-    #         print(f"Erreur lors de la modification de l'arbre : {str(e)}")
-    #         db.session.rollback()
-    #         return jsonify({"message": "Une erreur s'est produite lors de la modification de l'arbre"}), 500
-    #
+
+    @app.route('/api/modifier_arbre/<int:id_tree>', methods=['POST'])
+    def modifier_arbre(id_tree):
+        try:
+            info = request.get_json()
+            print(f"Demande reçue pour modifier l'arbre avec le numéro d'emplacement : {id_tree}")
+
+            tree = Tree.query.filter_by(id_tree=id_tree).first()
+            if not tree:
+                print(f"Arbre avec l'ID {id_tree} introuvable.")
+                return jsonify({"message": "Arbre introuvable"}), 404
+
+            date_releve = info.get('date_releve', tree.date_releve)
+            if not date_releve:
+                abort(400, description="La date de relevé est requise.")
+            else:
+                try:
+                    date_releve = datetime.strptime(tree.date_releve, '%Y-%m-%d').date()
+                except ValueError:
+                    abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
+
+            if 'dhp' in info:
+                try:
+                    tree.dhp = int(info.get ('dhp', tree('dhp')))
+                except ValueError:
+                    abort(400, description="Le champ 'dhp' doit être un entier.")
+
+            approbation_status = info.get('approbation_status', tree.approbation_status)
+
+            if approbation_status not in ['approved', 'rejected']:
+                abort(400, description="Le champ 'approbation_status' doit être 'approved' ou 'rejected'.")
+            tree.approbation_status = approbation_status
+
+            # Mise à jour des attributs spécifiques si l'arbre est de type TreeRue
+            tree.genre.name = info.get('genre', tree.genre.name)
+            tree.functional_group.group = info.get('functional_group', tree.functional_group.group)
+            tree.type.name_fr = info.get('type', tree.type.name_fr)
+            tree.family.name = info.get('family', tree.family.name)
+
+            db.session.commit()
+            print(f"Arbre avec le numéro d'emplacement {id_tree} et les informations associées mises à jour avec succès.")
+
+            return jsonify(tree.to_dict()), 200
+
+        except Exception as e:
+            print(f"Erreur lors de la modification de l'arbre : {str(e)}")
+            db.session.rollback()
+            return jsonify({"message": "Une erreur s'est produite lors de la modification de l'arbre"}), 500
+
     return app
 
 
