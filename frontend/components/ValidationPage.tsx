@@ -65,7 +65,7 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
   };
 
   const handleValidate = async () => {
-    console.log('Arbre validé:', treeData?.essence_fr);
+    console.log('Arbre validé:', treeData?.name_fr);
     if (treeData) {
       modifyTreeStatus(treeData.id_tree, 'approved');
       seekNextTree(true);
@@ -73,15 +73,15 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
   };
 
   const handleSkip = () => {
-    console.log('Arbre ignoré:', treeData?.essence_fr);
+    console.log('Arbre ignoré:', treeData?.name_fr);
     seekNextTree(false);
   };
 
   const handleModify = () => {
-    console.log('Modifier l\'arbre:', treeData?.essence_fr);
+    console.log('Modifier l\'arbre:', treeData?.name_fr);
   };
 
-  const formatDate = (dateString: string | undefined): string => {
+  const formatDate = (dateString: string | Date | undefined): string => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
@@ -93,7 +93,7 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
         <Icon name="arrow-back" size={24} color={isDarkMode ? '#fff' : '#000'} />
       </TouchableOpacity>
       <Screen
-        title={treeData ? treeData.essence_fr : 'Chargement...'}
+        title={treeData ? treeData.name_fr : 'Chargement...'}
         content={
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {treeData?.image_url ? (
@@ -112,7 +112,7 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Genre:</Text>
-                <Text style={styles.infoValue}>{treeData?.genre_name}</Text>
+                <Text style={styles.infoValue}>{treeData?.genre}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Date de plantation:</Text>
@@ -120,19 +120,19 @@ export default function ValidationScreen({ propsTreeList, startIdx, handleEndVal
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Date de mesure:</Text>
-                <Text style={styles.infoValue}>{formatDate(treeData?.date_releve)}</Text>
+                <Text style={styles.infoValue}>{formatDate(treeData?.date_measure)}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (EN):</Text>
-                <Text style={styles.infoValue}>{treeData?.essence_ang}</Text>
+                <Text style={styles.infoValue}>{treeData?.name_en}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (FR):</Text>
-                <Text style={styles.infoValue}>{treeData?.essence_fr}</Text>
+                <Text style={styles.infoValue}>{treeData?.name_fr}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: isDarkMode ? '#fff' : '#000' }]}>Espèce (LA):</Text>
-                <Text style={styles.infoValue}>{treeData?.essence_latin}</Text>
+                <Text style={styles.infoValue}>{treeData?.name_la}</Text>
               </View>
             </View>
           </ScrollView>
