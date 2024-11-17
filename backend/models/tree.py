@@ -23,9 +23,9 @@ class Tree(db.Model):
         default="pending",
         nullable=False
     )
-    commentaires_rejet = db.Column(db.String(254))
-    details_url = db.Column(db.String(150))
-    image_url = db.Column(db.String(254))
+    commentaires_rejet = db.Column(db.String(254), nullable=True)
+    details_url = db.Column(db.String(150), nullable=True)
+    image_url = db.Column(db.String(254), nullable=True)
     id_type = db.Column(db.Integer)
     id_genre = db.Column(db.Integer)
     id_family = db.Column(db.Integer)
