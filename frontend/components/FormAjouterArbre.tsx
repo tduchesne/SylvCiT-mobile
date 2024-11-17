@@ -22,9 +22,6 @@ export default function FormAjoutArbre() {
 
     const [empNo, setEmpNo] = useState('');
     const [adresse, setAdresse] = useState('');
-    const [essenceLatin, setEssenceLatin] = useState('');
-    const [essenceFr, setEssenceFr] = useState('');
-    const [essenceAng, setEssenceAng] = useState('');
     const [dhp, setDhp] = useState('');
     const [longitude, setLongitude] = useState('');
     const [latitude, setLatitude] = useState('');
@@ -155,14 +152,17 @@ export default function FormAjoutArbre() {
                     "no_emp": empNo,
                     "inv_type": invType,
                     "adresse": adresse,
-                    "essence_latin": essenceLatin,
-                    "essence_fr": essenceFr,
-                    "essence_ang": essenceAng,
+                    "essence_latin": typeChoisiLA,
+                    "essence_fr": typeChoisiFR,
+                    "essence_ang": typeChoisiEN,
                     "dhp": dhp,
                     "date_plantation": datePlantation,
                     "latitude": latitude,
                     "longitude": longitude,
-                    "date_releve": formatDate(dateReleve)
+                    "date_releve": formatDate(dateReleve),
+                    "genre": genreChoisi,
+                    "family": familyChoisi,
+                    "functional_group": functionalGroupChoisi
                 })
             })
                 .then((reponse) => validerReponse(reponse))
@@ -214,12 +214,12 @@ export default function FormAjoutArbre() {
 
     //Fonction pour réinitialiser les champs du formulaire
     const nettoyerChamps = () => {
-        initialiserChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, setDatePlantation, setLongitude, setLatitude)
+        initialiserChamps(setEmpNo, setAdresse, setTypeChoisiFR, setTypeChoisiLA, setTypeChoisiEN, setDhp, setDateReleve, setDatePlantation, setLongitude, setLatitude, setFamilyChoisi, setFunctionalGroupChoisi, setGenreChoisi)
     }
 
     //Fonction qui remet les derniers valeurs entrées par l'utilisateur dans les champs
     const remettreChamps = () => {
-        remplirChamps(setEmpNo, empNo, setAdresse, adresse, setEssenceFr, essenceFr, setEssenceLatin, essenceLatin, setEssenceAng, essenceLatin, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude)
+        remplirChamps(setEmpNo, empNo, setAdresse, adresse, setTypeChoisiFR, typeChoisiFR, setTypeChoisiLA, typeChoisiLA, setTypeChoisiEN, typeChoisiEN, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude, setFamilyChoisi, familyChoisi, setFunctionalGroupChoisi, functionalGroupChoisi, setGenreChoisi, genreChoisi)
     }
 
 
@@ -355,33 +355,39 @@ export default function FormAjoutArbre() {
 }
 
 
-function initialiserChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, setEssenceLatin: any, setEssenceAng: any, setDhp: any, setDateReleve: any, setDatePlantation: any, setLongitude: any, setLatitude: any) {
+function initialiserChamps(setEmpNo: any, setAdresse: any, setTypeChoisFr: any, setTypeChoisiLa: any, setTypeChoisiEN: any, setDhp: any, setDateReleve: any, setDatePlantation: any, setLongitude: any, setLatitude: any, setFamilyChoisi: any, setFunctionalGroupChoisi: any, setGenreChoisi: any) {
 
     setEmpNo('');
     setAdresse('');
-    setEssenceFr('');
-    setEssenceLatin('');
-    setEssenceAng('');
+    setTypeChoisFr('');
+    setTypeChoisiLa('');
+    setTypeChoisiEN('');
     setDhp('');
     setDateReleve(new Date());
     setDatePlantation('');
     setLongitude('');
     setLatitude('');
+    setFamilyChoisi('');
+    setFunctionalGroupChoisi('');
+    setGenreChoisi('');
 
 }
 
-function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any, setEssenceFr: any, essenceFr: any, setEssenceLatin: any, essenceLatin: any, setEssenceAng: any, essenceAng: any, setDhp: any, dhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, datePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any) {
+function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any, setTypeChoisiFr: any, typeChoisiFR: any, setTypeChoisiLA: any, typeChoisiLA: any, setTypeChoisiEN: any, typeChoisiEN: any, setDhp: any, dhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, datePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any, setFamilyChoisi: any, familyChoisi: any, setFunctionalGroupChoisi: any, functionalGroupChoisi: any, setGenreChoisi: any, genreChoisi: any) {
 
     setEmpNo(empNo);
     setAdresse(adresse);
-    setEssenceFr(essenceFr);
-    setEssenceLatin(essenceLatin);
-    setEssenceAng(essenceAng);
+    setTypeChoisiFr(typeChoisiFR);
+    setTypeChoisiLA(typeChoisiLA);
+    setTypeChoisiEN(typeChoisiEN);
     setDhp(dhp);
     setDateReleve(dateReleve);
     setDatePlantation(datePlantation);
     setLongitude(longitude);
     setLatitude(latitude);
+    setFamilyChoisi(familyChoisi);
+    setGenreChoisi(genreChoisi);
+    setFunctionalGroupChoisi(functionalGroupChoisi)
 
 }
 
