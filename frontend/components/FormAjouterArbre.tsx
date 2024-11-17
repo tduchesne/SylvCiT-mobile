@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, ActivityIndicator } from 'react-native';
 //npx expo install @react-native-community/datetimepicker
@@ -37,6 +37,106 @@ export default function FormAjoutArbre() {
     const [indicateur, setIndicateur] = useState(false);
     const [invType, setInvType] = useState('');
     const colorScheme = useColorScheme();
+    const [genres, setGenres] = useState([]);
+    const [types, setTypes] = useState([]);
+    const [functionalGroup, setFunctionalGroup] = useState([]);
+    const [family, setFamily] = useState([]);
+    const [genreChoisi, setGenreChoisi] = useState('');
+    const [typeChoisiFR, setTypeChoisiFR] = useState('');
+    const [typeChoisiLA, setTypeChoisiLA] = useState('');
+    const [typeChoisiEN, setTypeChoisiEN] = useState('');
+    const [functionalGroupChoisi, setFunctionalGroupChoisi] = useState('');
+    const [familyChoisi, setFamilyChoisi] = useState('');
+
+    useEffect(() => {
+        fetchGenres();
+        fetchFamily();
+        fetchFunctionalGroup();
+        fetchTypes();
+    }, []);
+
+
+    //Fonction pour importer les genres de la table genre
+    const fetchGenres = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/genre`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les genres");
+            }
+            const data = await response.json();
+            setGenres(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les genres.");
+        }
+    };
+
+
+    //Fonction pour importer les types de la table type
+    const fetchTypes = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/type`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les types");
+            }
+            const data = await response.json();
+            setTypes(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les types.");
+        }
+    };
+
+    //Fonction pour importer les functional group de la table functional group
+    const fetchFunctionalGroup = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/functional_group`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les functional group");
+            }
+            const data = await response.json();
+            setFunctionalGroup(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les function group.");
+        }
+    };
+
+    //Fonction pour importer les types de la table type
+    const fetchFamily = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/family`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les familles");
+            }
+            const data = await response.json();
+            setFamily(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les familles.");
+        }
+    };
+
 
     //Fonction pour envoyer les données au backend
     const sauvegarder = () => {
@@ -83,7 +183,7 @@ export default function FormAjoutArbre() {
         setIndicateur(false)
 
 
-        if (response.status == 201) {
+        if (response.ok) {
             Alert.alert("Informations sauvegardées")
             nettoyerChamps()
         } else {
@@ -157,9 +257,67 @@ export default function FormAjoutArbre() {
                             <Picker.Item label="Type Hors Rue" value="H" />
                         </Picker>
                     </View>
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={genreChoisi}
+                            onValueChange={(itemValue) => setGenreChoisi(itemValue)}>
+                            <Picker.Item label="Choisir un genre" value="" />
+                            {genres.map((genre) => (
+                                <Picker.Item key={genre["id_genre"]} label={genre["name"]} value={genre["name"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={typeChoisiFR}
+                            onValueChange={(itemValue) => setTypeChoisiFR(itemValue)}>
+                            <Picker.Item label="Choisir un type FR" value="" />
+                            {types.map((type) => (
+                                <Picker.Item key={type["id_type"]} label={type["name_fr"]} value={type["name_fr"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={typeChoisiLA}
+                            onValueChange={(itemValue) => setTypeChoisiLA(itemValue)}>
+                            <Picker.Item label="Choisir un type latin" value="" />
+                            {types.map((type) => (
+                                <Picker.Item key={type["id_type"]} label={type["name_la"]} value={type["name_la"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={typeChoisiEN}
+                            onValueChange={(itemValue) => setTypeChoisiEN(itemValue)}>
+                            <Picker.Item label="Choisir un type EN" value="" />
+                            {types.map((type) => (
+                                <Picker.Item key={type["id_type"]} label={type["name_en"]} value={type["name_en"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={functionalGroupChoisi}
+                            onValueChange={(itemValue) => setFunctionalGroupChoisi(itemValue)}>
+                            <Picker.Item label="Choisir un functional group" value="" />
+                            {functionalGroup.map((functionalGroup) => (
+                                <Picker.Item key={functionalGroup["id_functional_group"]} label={functionalGroup["group"]} value={functionalGroup["group"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={familyChoisi}
+                            onValueChange={(itemValue) => setFamilyChoisi(itemValue)}>
+                            <Picker.Item label="Choisir une famille" value="" />
+                            {family.map((famille) => (
+                                <Picker.Item key={famille["id_family"]} label={famille["name"]} value={famille["name"]} />
+                            ))}
+                        </Picker>
+                    </View>
+
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
                     <View style={styles.labelCal}><ThemedText style={styles.label} >Date relevé</ThemedText>
                         <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePreleve(true)} />
