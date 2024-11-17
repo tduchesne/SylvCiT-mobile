@@ -129,7 +129,7 @@ def create_app(config_name=None):
             genre=Genre(name=genre),
             family=Family(name=family),
             functional_group=FunctionalGroup(group=functional_group),
-            commenaires_rejet=None,
+            commentaires_rejet=None,
             dhp=dhp
         )
 
