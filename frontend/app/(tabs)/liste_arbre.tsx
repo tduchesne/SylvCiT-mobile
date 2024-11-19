@@ -259,6 +259,7 @@ export default function TabTwoScreen() {
               <FlatList
                 data={sortedTrees}
                 keyExtractor={(item, index) => `${index}-${item.id_tree}`}
+                nestedScrollEnabled={true}
                 renderItem={({ item, index }) => (
                   <TouchableOpacity onPress={() => handlePressItem(item, index)}>
                     <ThemedView style={styles.treeItem}>
