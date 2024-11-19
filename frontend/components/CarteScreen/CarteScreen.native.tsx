@@ -3,8 +3,21 @@ import { StyleSheet, View, Dimensions, Image, Text, useColorScheme } from 'react
 import MapView, { Marker, Callout, Region } from 'react-native-maps';
 import { ThemedView } from '@/components/ThemedView';
 import Screen from "@/components/Screen";
-import { Tree } from '../../app/(tabs)/liste_arbre';
 import Config from '@/config';
+
+interface Tree {
+  id_tree: number;
+  latitude: string;
+  longitude:string;
+  name_fr: string;
+  name_en: string;
+  name_la: string;
+  genre: string;
+  family_name: string;
+  date_measure: string;
+  date_plantation: string;
+  image_url: string;
+}
 
 export default function CarteScreen() {
   const colorScheme = useColorScheme();
@@ -72,26 +85,26 @@ export default function CarteScreen() {
                         latitude: parseFloat(tree.latitude),
                         longitude: parseFloat(tree.longitude) 
                       }}
-                      title={tree.essence_fr}
+                      title={tree.name_fr}
                       icon={tree.id_tree % 3 == 0 ? require('@/assets/images/marqueurArbreMauve.png') : require('@/assets/images/marqueurArbreVert.png')}
                     >
                       <Callout tooltip>
                         <View style={styles.callout}>
                           <View style={styles.calloutRow}>
                             <Text style={styles.calloutLabel}>Espèce (FR) :</Text>
-                            <Text style={styles.calloutValue}>{tree.essence_fr}</Text>
+                            <Text style={styles.calloutValue}>{tree.name_fr}</Text>
                           </View>
                           <View style={styles.calloutRow}>
                             <Text style={styles.calloutLabel}>Espèce (EN) :</Text>
-                            <Text style={styles.calloutValue}>{tree.essence_ang}</Text>
+                            <Text style={styles.calloutValue}>{tree.name_en}</Text>
                           </View>
                           <View style={styles.calloutRow}>
                             <Text style={styles.calloutLabel}>Espèce (LA) :</Text>
-                            <Text style={styles.calloutValue}>{tree.essence_latin}</Text>
+                            <Text style={styles.calloutValue}>{tree.name_la}</Text>
                           </View>
                           <View style={styles.calloutRow}>
                             <Text style={styles.calloutLabel}>Genre :</Text>
-                            <Text style={styles.calloutValue}>{tree.genre_name}</Text>
+                            <Text style={styles.calloutValue}>{tree.genre}</Text>
                           </View>
                           <View style={styles.calloutRow}>
                             <Text style={styles.calloutLabel}>Famille :</Text>
@@ -99,7 +112,7 @@ export default function CarteScreen() {
                           </View>
                           <View style={styles.calloutRow}>
                             <Text style={styles.calloutLabel}>Date de mesure :</Text>
-                            <Text style={styles.calloutValue}>{formatDate(tree.date_releve)}</Text>
+                            <Text style={styles.calloutValue}>{formatDate(tree.date_measure)}</Text>
                           </View>
                           <View style={styles.calloutRow}>
                             <Text style={styles.calloutLabel}>Date de plantation :</Text>

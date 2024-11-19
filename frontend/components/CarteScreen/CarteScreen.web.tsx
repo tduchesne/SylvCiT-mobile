@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/ThemedView';
 import Screen from '@/components/Screen';
 import Config from '@/config';
 
-// Charger dynamiquement Leaflet et ses styles côté client
+
 let L: any;
 if (typeof window !== 'undefined') {
   L = require('leaflet');
@@ -13,24 +13,26 @@ if (typeof window !== 'undefined') {
 const greenTreeIconUrl = 'https://cdn-icons-png.flaticon.com/512/685/685025.png';
 const purpleTreeIconUrl = 'https://cdn-icons-png.flaticon.com/512/685/685025.png';
 
-export default function CarteScreen() {
+
+interface Tree {
+  id_tree: number;
+  latitude: string;
+  longitude: string;
+  name_fr: string;
+  name_en: string;
+  name_la: string;
+  genre: string;
+  family_name: string;
+  date_measure: string;
+  date_plantation: string;
+  image_url: string;
+}
+
+export default function CarteScreenWeb() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const markersGroupRef = useRef<any>(null);
 
-  const [trees, setTrees] = useState<
-    {
-      latitude: number;
-      longitude: number;
-      essence_fr: string;
-      essence_ang: string;
-      essence_latin: string;
-      genre_name: string;
-      family_name: string;
-      date_releve: string;
-      date_plantation: string;
-      id_tree: number;
-    }[]
-  >([]);
+  const [trees, setTrees] = useState<Tree[]>([]);
 
   useEffect(() => {
     fetchAllTrees();
@@ -57,12 +59,12 @@ export default function CarteScreen() {
     }
   };
 
+  // Initialiser la carte et ajouter les marqueurs
   useEffect(() => {
     let map: any;
     if (typeof window !== 'undefined' && mapRef.current) {
-      // Initialiser la carte , coordonnées de Montréal
       map = L.map(mapRef.current, {
-        center: [45.5017, -73.5673], 
+        center: [45.5017, -73.5673],
         zoom: 13,
       });
 
@@ -70,36 +72,36 @@ export default function CarteScreen() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
-      // Créer un groupe de marqueurs
       markersGroupRef.current = L.layerGroup().addTo(map);
 
       // Ajouter les marqueurs après récupération des arbres
-      if (trees && markersGroupRef.current) {
-        markersGroupRef.current.clearLayers(); 
-        trees.forEach((tree) => {
+      if (trees.length > 0 && markersGroupRef.current) {
+        markersGroupRef.current.clearLayers();
 
+        trees.forEach((tree) => {
           const customIcon = L.icon({
             iconUrl: tree.id_tree % 3 === 0 ? purpleTreeIconUrl : greenTreeIconUrl,
+            // Taille de l'icône
             iconSize: [12, 12], 
             iconAnchor: [20, 40], 
             popupAnchor: [0, -40], 
           });
 
           const marker = L.marker([tree.latitude, tree.longitude], {
-            title: tree.essence_fr,
             icon: customIcon,
           });
 
           marker.bindPopup(`
-            <strong>Espèce (FR) :</strong> ${tree.essence_fr}<br />
-            <strong>Espèce (EN) :</strong> ${tree.essence_ang}<br />
-            <strong>Espèce (LA) :</strong> ${tree.essence_latin}<br />
-            <strong>Genre :</strong> ${tree.genre_name}<br />
+            <strong>Espèce (FR) :</strong> ${tree.name_fr}<br />
+            <strong>Espèce (EN) :</strong> ${tree.name_en}<br />
+            <strong>Espèce (LA) :</strong> ${tree.name_la}<br />
+            <strong>Genre :</strong> ${tree.genre}<br />
             <strong>Famille :</strong> ${tree.family_name}<br />
-            <strong>Date de mesure :</strong> ${formatDate(tree.date_releve)}<br />
+            <strong>Date de mesure :</strong> ${formatDate(tree.date_measure)}<br />
             <strong>Date de plantation :</strong> ${formatDate(tree.date_plantation)}<br />
-            <strong>Latitude :</strong> ${tree.latitude}<br />
-            <strong>Longitude :</strong> ${tree.longitude}
+               <strong>Latitude :</strong> ${tree.latitude}<br />
+            <strong>Longitude :</strong> ${tree.longitude}<br />
+            <img src="${tree.image_url}" alt="Image de l'arbre" style="width: 100px; height: auto; margin-top: 5px;" />
           `);
 
           marker.addTo(markersGroupRef.current);
@@ -114,7 +116,7 @@ export default function CarteScreen() {
     };
   }, [trees]);
 
-  const formatDate = (dateString: string | undefined): string => {
+  const formatDate = (dateString: string): string => {
     if (!dateString) return 'Non spécifiée';
     const date = new Date(dateString);
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
