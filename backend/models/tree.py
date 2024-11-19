@@ -16,7 +16,7 @@ class Tree(db.Model):
     )
 
     id_tree = db.Column(db.Integer, primary_key=True)
-    date_plantation = db.Column(db.Date, nullable=False)
+    date_plantation = db.Column(db.Date, nullable=True)
     date_measure = db.Column(db.Date, nullable=False)
     approbation_status = db.Column(
         db.Enum("rejected","pending", "approved", name="approbation_status_enum"),
@@ -26,11 +26,11 @@ class Tree(db.Model):
     commentaires_rejet = db.Column(db.String(254), nullable=True)
     details_url = db.Column(db.String(150), nullable=True)
     image_url = db.Column(db.String(254), nullable=True)
-    id_type = db.Column(db.Integer)
-    id_genre = db.Column(db.Integer)
-    id_family = db.Column(db.Integer)
-    id_functional_group = db.Column(db.Integer)
-    id_location = db.Column(db.Integer)
+    id_type = db.Column(db.Integer, nullable=True)
+    id_genre = db.Column(db.Integer, nullable=True)
+    id_family = db.Column(db.Integer, nullable=True)
+    id_functional_group = db.Column(db.Integer,  nullable=True)
+    id_location = db.Column(db.Integer, nullable=False)
 
     dhp = db.Column(db.Integer)
 
