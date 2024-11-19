@@ -2,11 +2,10 @@
   "dependencies": {
     "expo": "^51.0.35",
     "expo-router": "^3.5.23",
-    "typescript": "~5.3.3",
-    "@types/react": "~18.2.79",
     "react": "18.2.0",
     "react-native": "0.74.5",
-    "@react-native-picker/picker": "^2.4.2"
+    "react-native-image-zoom-viewer": "^3.0.1",
+    "typescript": "~5.3.3"
   },
   "name": "inm5151-a2024-sylvcit",
   "version": "1.0.0",
