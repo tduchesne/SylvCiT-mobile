@@ -139,8 +139,6 @@ def filter():
     if year_planted:
         year_planted = year_planted.strip("'")
         query = query.filter(Tree.date_plantation.like(f'{year_planted}-%'))
-        
-        app.logger.info(year_planted, query)
 
     # If keyword filter exists, strip quotes then apply filter on certain important attributes
     if keyword:
