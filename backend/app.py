@@ -118,6 +118,10 @@ def create_app(config_name=None):
             except ValueError:
                 abort(400, description="Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD.")
 
+        type_id = Type.query.filter_by(name_fr=type).first().id_type
+        genre_id = Genre.query.filter_by(name=genre).first().id_genre
+        family_id = Family.query.filter_by(name=family).first().id_family
+        functional_group_id = FunctionalGroup.query.filter_by(group=functional_group).first().id_functional_group
         new_tree = Tree(
             date_plantation=date_plantation,
             date_measure=date_releve,
@@ -125,10 +129,10 @@ def create_app(config_name=None):
             location=Location(latitude=latitude, longitude=longitude),
             details_url=details_url,
             image_url=image_url,
-            type=Type(name_fr=type),
-            genre=Genre(name=genre),
-            family=Family(name=family),
-            functional_group=FunctionalGroup(group=functional_group),
+            type=type_id,
+            genre=genre_id,
+            family=family_id,
+            functional_group=functional_group_id,
             commentaires_rejet=None,
             dhp=dhp
         )
