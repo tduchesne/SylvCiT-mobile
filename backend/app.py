@@ -42,13 +42,13 @@ def get_trees():
             'id_tree': tree.id_tree,
             'image_url': tree.image_url,
             'date_plantation': tree.date_plantation,
-            'date_releve': tree.date_measure,
-            'essence_latin': tree.type.name_la,
-            'essence_ang': tree.type.name_en,
-            'essence_fr': tree.type.name_fr,
+           'date_measure': tree.date_measure,
+             'name_la': tree.type.name_la,
+            'name_en': tree.type.name_en,
+            'name_fr': tree.type.name_fr,
             'latitude': tree.location.latitude,
             'longitude': tree.location.longitude,
-            'genre_name': tree.genre.name,
+            'genre': tree.genre.name,
             'family_name': tree.family.name,
             } for tree in trees
         ])
