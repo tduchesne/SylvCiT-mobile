@@ -99,21 +99,21 @@ def add_genre(g_name: str):
 # Function responsible for adding positions in db (Honestly irrelevant since positions are all unique**)
 # (recursive calls if id isnt found currently in DB)
 # ===================================================================== #
-def add_position(latitude, longitude):
-    query = f"SELECT id_location FROM location WHERE latitude = '{latitude}' AND longitude = '{longitude}'"
+def add_position(latitude, longitude, region: str):
+    query = f"SELECT id_location FROM location WHERE latitude = '{latitude}' AND longitude = '{longitude}' AND region = '{region}'"
     stdout, _ = execute_query(query)
     if stdout.strip():
-        print(f"Found location: {latitude}, {longitude}. Returning id.")
+        print(f"Found location: {latitude}, {longitude}, {region}. Returning id.")
         return int(stdout.splitlines()[1])
 
-    print(f"Location {latitude}, {longitude} not found in database: Inserting...")
-    insert_command = f"INSERT INTO location (latitude, longitude) VALUES ('{latitude}', '{longitude}');"
+    print(f"Location {latitude}, {longitude}, {region} not found in database: Inserting...")
+    insert_command = f"INSERT INTO location (latitude, longitude, region) VALUES ('{latitude}', '{longitude}', '{region}');"
     _, stderr = execute_query(insert_command)
     if "ERROR" in stderr:
-        print(f"Error inserting location: {latitude}, {longitude}. Aborting...")
+        print(f"Error inserting location: {latitude}, {longitude}, {region}. Aborting...")
         print(stderr)
         exit(-1) 
-    return add_position(latitude, longitude)
+    return add_position(latitude, longitude, region)
 
 
 # ===================================================================== #
@@ -141,6 +141,7 @@ def add_type(n_latin: str, n_french: str, n_english: str):
         exit(-1) 
     return add_type(n_latin, n_french, n_english)
 
+
 # ===================================================================== #
 # Function responsible for adding trees in db based on other function calls
 # ===================================================================== #
@@ -160,7 +161,7 @@ def add_trees():
             id_type = add_type(tree['Essence_latin'], tree['Essence_fr'], tree['Essence_ang'])
             id_genre = add_genre(tree['Essence_latin'].split(' ')[0])
             id_family = add_family(tree['Essence_latin'].split(' ')[1])
-            id_location = add_position(tree['Latitude'], tree['Longitude'])
+            id_location = add_position(tree['Latitude'], tree['Longitude'], tree['ARROND_NOM'])
             id_functional_group = add_f_groups('A')
             
 
@@ -196,6 +197,7 @@ def add_trees():
                 exit(-1) 
 
             print("Tree inserted succesfully.")
+
 
 def main():
     add_trees()

@@ -1,12 +1,10 @@
 from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import MetaData, Enum, func, extract, or_, cast, String
+from sqlalchemy import MetaData, func, or_ 
 from flask_cors import CORS  
 import bcrypt
 import os
-from sqlalchemy.orm import joinedload
-import logging
 
 app = Flask(__name__)
 # To enable CORS for all routes of the application
@@ -89,9 +87,13 @@ def setfilters():
     
     dhp_values = db.session.query(Tree.dhp).all()
     dhp_values = [value[0] for value in dhp_values if value[0] is not None]
-    min_dhp, max_dhp = min(dhp_values), max(dhp_values)
-    dhp_intervals = 5
-    dhp_ranges = [f"{i}-{i + dhp_intervals}" for i in range(min_dhp, max_dhp + 1, dhp_intervals)]
+
+    ## TODO: might not be the correct fix, but this checks that dhp_values is not empty before trying to calculate min-max
+    dhp_ranges = []
+    if dhp_values:
+        min_dhp, max_dhp = min(dhp_values), max(dhp_values)
+        dhp_intervals = 5
+        dhp_ranges = [f"{i}-{i + dhp_intervals}" for i in range(min_dhp, max_dhp + 1, dhp_intervals)]
 
     return jsonify({
         "years": unique_years,
