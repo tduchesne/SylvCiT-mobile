@@ -160,6 +160,15 @@ def create_app(config_name=None):
         types = Type.query.all()
         return jsonify([type.to_dict() for type in types])
 
+    @app.route('/api/fetch_type', methods=['GET'])
+    def get_functional_groups():
+        type_fr = request.get_json().get('type')
+        type_obj = Type.query.filter_by(name_fr=type_fr).first()
+        return jsonify({
+            'name_en': type_obj.name_en,
+            'name_la': type_obj.name_la
+        })
+
     @app.route('/api/functional_group', methods=['GET'])
     def get_functional_groups():
         functional_groups = FunctionalGroup.query.all()
@@ -205,6 +214,11 @@ def create_app(config_name=None):
         db.session.commit()
 
         return jsonify({"message": "Demande envoyée"}), 200
+
+    @app.route('api/arbre_rejet', methods=['GET'])
+    def arbre_rejet():
+        trees = Tree.query.filter_by(approbation_status="rejected").all()
+        return jsonify([tree.to_dict() for tree in trees]), 200
 
     @app.route('/api/delete_tree/<int:id_tree>', methods=['POST'])
     def delete_tree(id_tree):
