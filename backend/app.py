@@ -109,35 +109,28 @@ def create_app(config_name=None):
             except ValueError:
                 abort(400, description="Le champ 'dhp' doit être un entier.")
 
-        date_plantation = info.get('date_plantation')
-        if date_plantation == "":
-            date_plantation = None
-        else :
-            try:
-                date_plantation = datetime.strptime(date_plantation, '%Y-%m-%d').date()
-            except ValueError:
-                abort(400, description="Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD.")
-
-        type_id = Type.query.filter_by(name_fr=type).first().id_type
-        genre_id = Genre.query.filter_by(name=genre).first().id_genre
-        family_id = Family.query.filter_by(name=family).first().id_family
-        functional_group_id = FunctionalGroup.query.filter_by(group=functional_group).first().id_functional_group
+        type = Type.query.filter_by(name_fr=type).first()
+        genre = Genre.query.filter_by(name=genre).first()
+        family = Family.query.filter_by(name=family).first()
+        functional_group = FunctionalGroup.query.filter_by(group=functional_group).first()
         existing_location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
         if not existing_location:
             existing_location = Location(latitude=latitude, longitude=longitude)
             db.session.add(existing_location)
+            db.session.flush()
+            existing_location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
 
         new_tree = Tree(
             date_plantation=date_plantation,
             date_measure=date_releve,
             approbation_status="pending",
-            location=existing_location.id_location,
+            location=existing_location,
             details_url=details_url,
             image_url=image_url,
-            type=type_id,
-            genre=genre_id,
-            family=family_id,
-            functional_group=functional_group_id,
+            type=type,
+            genre=genre,
+            family=family,
+            functional_group=functional_group,
             commentaires_rejet=None,
             dhp=dhp
         )
