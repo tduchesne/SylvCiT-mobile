@@ -44,18 +44,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="ajouter_arbre"
         options={{
           title: "Ajouter Arbre",
@@ -71,19 +59,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "leaf" : "leaf"}
-              color={color}
-            />
-          ),
-        }}
-      />
-      
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: "Account",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "person" : "person-circle"}
               color={color}
             />
           ),
