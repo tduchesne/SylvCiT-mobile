@@ -151,7 +151,7 @@ export default function FormAjoutArbre() {
                     "no_emp": empNo,
                     "adresse": adresse,
                     "essence_latin": typeChoisiLA,
-                    "essence_fr": typeChoisiFR,
+                    "type": typeChoisiFR,
                     "essence_ang": typeChoisiEN,
                     "dhp": dhp,
                     "date_plantation": datePlantation,
