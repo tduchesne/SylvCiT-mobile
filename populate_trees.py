@@ -141,6 +141,7 @@ def add_type(n_latin: str, n_french: str, n_english: str):
         exit(-1) 
     return add_type(n_latin, n_french, n_english)
 
+
 # ===================================================================== #
 # Function responsible for adding trees in db based on other function calls
 # ===================================================================== #
@@ -196,6 +197,7 @@ def add_trees():
                 exit(-1) 
 
             print("Tree inserted succesfully.")
+
 
 def main():
     add_trees()
