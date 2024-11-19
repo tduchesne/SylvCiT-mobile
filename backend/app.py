@@ -42,15 +42,15 @@ def get_trees():
             'id_tree': tree.id_tree,
             'image_url': tree.image_url,
             'date_plantation': tree.date_plantation,
-           'date_measure': tree.date_measure,
-             'name_la': tree.type.name_la,
+            'date_measure': tree.date_measure,
+            'name_la': tree.type.name_la,
             'name_en': tree.type.name_en,
             'name_fr': tree.type.name_fr,
             'latitude': tree.location.latitude,
             'longitude': tree.location.longitude,
             'genre': tree.genre.name,
             'family_name': tree.family.name,
-            } for tree in trees
+        } for tree in trees
         ])
 
 @app.route('/api/tree/status/<int:id_tree>', methods=['PUT'])

@@ -40,10 +40,8 @@ def add_f_groups(group: str):
     query = f"SELECT id_functional_group FROM functional_group WHERE \\`group\\` = '{group}'"
     stdout, _ = execute_query(query)
     if stdout.strip():
-        print(f"Found family: {group}. Returning id.")
         return int(stdout.splitlines()[1])
 
-    print(f"Functionnal group {group} not found in database: Inserting...")
     insert_command = f"INSERT INTO functional_group (\\`group\\`, description) VALUES ('{group}', 'description to be added');"
     _, stderr = execute_query(insert_command)
     if "ERROR" in stderr:
@@ -61,10 +59,8 @@ def add_family(f_name: str):
     query = f"SELECT id_family FROM family WHERE name = '{f_name}'"
     stdout, _ = execute_query(query)
     if stdout.strip():
-        print(f"Found family: {f_name}. Returning id.")
         return int(stdout.splitlines()[1])
 
-    print(f"Family {f_name} not found in database: Inserting...")
     insert_command = f"INSERT INTO family (name) VALUES ('{f_name}');"
     _, stderr = execute_query(insert_command)
     if "ERROR" in stderr:
@@ -82,10 +78,8 @@ def add_genre(g_name: str):
     query = f"SELECT id_genre FROM genre WHERE name = '{g_name}'"
     stdout, _ = execute_query(query)
     if stdout.strip():
-        print(f"Found genre: {g_name}. Returning id.")
         return int(stdout.splitlines()[1])
 
-    print(f"Genre {g_name} not found in database: Inserting...")
     insert_command = f"INSERT INTO genre (name) VALUES ('{g_name}');"
     _, stderr = execute_query(insert_command)
     if "ERROR" in stderr:
@@ -103,10 +97,8 @@ def add_position(latitude, longitude, region: str):
     query = f"SELECT id_location FROM location WHERE latitude = '{latitude}' AND longitude = '{longitude}' AND region = '{region}'"
     stdout, _ = execute_query(query)
     if stdout.strip():
-        print(f"Found location: {latitude}, {longitude}, {region}. Returning id.")
         return int(stdout.splitlines()[1])
 
-    print(f"Location {latitude}, {longitude}, {region} not found in database: Inserting...")
     insert_command = f"INSERT INTO location (latitude, longitude, region) VALUES ('{latitude}', '{longitude}', '{region}');"
     _, stderr = execute_query(insert_command)
     if "ERROR" in stderr:
@@ -129,10 +121,8 @@ def add_type(n_latin: str, n_french: str, n_english: str):
     query = f"SELECT id_type FROM type WHERE name_la = '{n_latin}'"
     stdout, _ = execute_query(query)
     if stdout.strip():
-        print(f"Found type: {n_latin}, {n_french}, {n_english}. Returning id.")
         return int(stdout.splitlines()[1]) 
 
-    print(f"Type {n_latin}, {n_french}, {n_english} not found in database: Inserting...")
     insert_command = f"INSERT INTO type (name_fr, name_en, name_la) VALUES ('{n_french}', '{n_english}', '{n_latin}');"
     _, stderr = execute_query(insert_command)
     if "ERROR" in stderr:
@@ -150,12 +140,11 @@ def add_trees():
         data = csv.DictReader(csv_f)
 
         for tree in data:
-            print("# ==================================================================== #")
             # Parse fields from current line for tree data
             date_plantation = parse_date(tree['Date_Plantation']).strftime("%Y-%m-%d %H:%M:%S")
             date_measure = parse_date(tree['Date_Releve']).strftime("%Y-%m-%d %H:%M:%S")
             dhp = tree['DHP']
-            image_url = "https://arbres.hydroquebec.com/image/9034"
+            image_url = "https:arbres.hydroquebec.com/image/9034"
 
             # Fetch matching id's for fields
             id_type = add_type(tree['Essence_latin'], tree['Essence_fr'], tree['Essence_ang'])
