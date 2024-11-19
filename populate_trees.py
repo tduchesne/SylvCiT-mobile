@@ -7,7 +7,7 @@ from datetime import datetime
 # ===================================================================== #
 def escape_string(value: str) -> str:
     if "'" in value:
-        return value.replace("'", "\\'")
+        return value.replace("'", "")
     return value
 
 
