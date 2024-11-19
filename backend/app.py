@@ -122,11 +122,15 @@ def create_app(config_name=None):
         genre_id = Genre.query.filter_by(name=genre).first().id_genre
         family_id = Family.query.filter_by(name=family).first().id_family
         functional_group_id = FunctionalGroup.query.filter_by(group=functional_group).first().id_functional_group
+        existing_location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
+        if not existing_location:
+            existing_location = Location(latitude=latitude, longitude=longitude)
+
         new_tree = Tree(
             date_plantation=date_plantation,
             date_measure=date_releve,
             approbation_status="pending",
-            location=Location(latitude=latitude, longitude=longitude),
+            location=existing_location.id_location,
             details_url=details_url,
             image_url=image_url,
             type=type_id,
