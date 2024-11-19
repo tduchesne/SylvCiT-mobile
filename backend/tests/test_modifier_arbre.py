@@ -1,9 +1,9 @@
 # backend/tests/test_modifier_arbre.py
 
-import pytest
 from datetime import datetime
 from app import db, create_app
 from models import Tree, TreeRue, TreeHorsRue, Essence, Arrondissement
+import pytest
 
 """
     TODO: verify the response content (is not working well beccause of the table Essence and Arrondissement)
@@ -43,7 +43,7 @@ def test_modifier_arbre_success(client):
             no_emp=12345,
             no_arrondissement=1,
             emplacement="parterre gazonné",
-            sigle="TESTSIGLE",
+            # sigle="TESTSIGLE",
             dhp=10,
             date_measure=datetime.strptime("2024-10-01", "%Y-%m-%d").date(),
             date_plantation=datetime.strptime("2020-01-01", "%Y-%m-%d").date(),
@@ -60,9 +60,9 @@ def test_modifier_arbre_success(client):
         "no_emp": 12345,
         "no_arrondissement": 1,
         "emplacement": "banquette gazonnée",
-        "sigle": "TESTSIGLE",
+        # "sigle": "TESTSIGLE",
         "dhp": 15,
-        "date_measure": "2024-11-01",
+        "date_releve": "2024-10-01",
         "date_plantation": "2021-01-01",
         "latitude": 48.123456,
         "longitude": 13.123456,
@@ -77,49 +77,54 @@ def test_modifier_arbre_success(client):
     
     # verify the response content
     data = response.get_json()
+    
+
     expected_output = {
-        "arrondissement": None,
+        "arrondissement": {
+            "name": "Exemple",
+            "no_arrondissement": 1
+        },
         "code_parc": None,
         "code_secteur": None,
-        "date_measure": "2024-11-01",
+        "date_releve": "2024-10-01",
         "date_plantation": "2021-01-01",
         "dhp": 15,
         "emplacement": "banquette gazonnée",
         "inv_type": "H",
         "is_valid": False,
-        "latitude": "48.12345600",
-        "longitude": "13.12345600",
+        "latitude": "48.12345599999999735",
+        "longitude": "13.12345599999999912",
         "no_emp": 12345,
-        "sigle": "TESTSIGLE"
+        # "sigle": "TESTSIGLE"
     }
 
     # comapre the response data with the expected data
-    # for key, value in expected_output.items():
-        # assert key in data, f"Le champ '{key}' est manquant dans la réponse."
-        #assert data[key] == value, f"Mismatch pour '{key}': attendu '{value}', obtenu '{data[key]}'"
+    for key, value in expected_output.items():
+        assert key in data, f"Le champ '{key}' est manquant dans la réponse."
+        if key == "arrondissement":
+            if isinstance(data[key], dict):
+                assert data[key]["name"] == value["name"], f"Mismatch pour 'name': attendu '{value['name']}', obtenu '{data[key]['name']}'"
+                assert data[key]["no_arrondissement"] == value["no_arrondissement"], f"Mismatch pour 'no_arrondissement': attendu '{value['no_arrondissement']}', obtenu '{data[key]['no_arrondissement']}'"
+            elif data[key] is None:
+                assert value is None, f"Mismatch pour 'arrondissement': attendu '{value}', obtenu '{data[key]}'"
+            else:
+                raise AssertionError(f"Type inattendu pour 'arrondissement': {type(data[key])}")
+        else:
+            assert data[key] == value, f"Mismatch pour '{key}': attendu '{value}', obtenu '{data[key]}'"
 
     # verify the data in the database is updated
     with client.application.app_context():
         modified_tree = Tree.query.filter_by(no_emp=12345).first()
         assert modified_tree is not None
+        assert isinstance(modified_tree, TreeHorsRue) 
         assert modified_tree.emplacement == modified_data["emplacement"]
         assert modified_tree.dhp == modified_data["dhp"]
-        assert modified_tree.date_measure.isoformat() == modified_data["date_measure"]
+        assert modified_tree.date_measure.isoformat() == modified_data["date_releve"]
         assert modified_tree.date_plantation.isoformat() == modified_data["date_plantation"]
         assert float(modified_tree.latitude) == modified_data["latitude"]
         assert float(modified_tree.longitude) == modified_data["longitude"]
         assert modified_tree.inv_type == modified_data["inv_type"]
         assert modified_tree.is_valid == modified_data["is_valid"]
-        # verify that the specific fields of TreeRue are null if the tree is not of type Rue
-        assert isinstance(modified_tree, TreeHorsRue)
-       # assert modified_tree.adresse is None
-        #assert modified_tree.localisation is None
-        #assert modified_tree.localisation_code is None
-        # assert modified_tree.rue_de is None
-        # assert modified_tree.rue_a is None
-        # assert modified_tree.distance_pave is None
-        # assert modified_tree.distance_ligne_rue is None
-        # assert modified_tree.stationnement_jour is None
-        # assert modified_tree.stationnement_heure is None
-        # assert modified_tree.district is None
-        # assert modified_tree.arbre_remarquable is None
+        assert modified_tree.code_parc is None
+        assert modified_tree.code_secteur is None
+
