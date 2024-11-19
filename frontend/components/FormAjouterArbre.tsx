@@ -32,7 +32,6 @@ export default function FormAjoutArbre() {
     const [modalDatePreleve, setModalDatePreleve] = useState(false)
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
     const [indicateur, setIndicateur] = useState(false);
-    const [invType, setInvType] = useState('');
     const colorScheme = useColorScheme();
     const [genres, setGenres] = useState([]);
     const [types, setTypes] = useState([]);
@@ -138,7 +137,7 @@ export default function FormAjoutArbre() {
     //Fonction pour envoyer les données au backend
     const sauvegarder = () => {
 
-        if (!dateReleve || !longitude || !latitude || !invType) {
+        if (!dateReleve || !longitude || !latitude) {
             Alert.alert("Merci de remplir tous les champs obligatoires");
 
         } else {
@@ -150,7 +149,6 @@ export default function FormAjoutArbre() {
                 },
                 body: JSON.stringify({
                     "no_emp": empNo,
-                    "inv_type": invType,
                     "adresse": adresse,
                     "essence_latin": typeChoisiLA,
                     "essence_fr": typeChoisiFR,
@@ -250,13 +248,7 @@ export default function FormAjoutArbre() {
                         * Les champs en rouge sont obligatoires</ThemedText>
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="No emplacement" keyboardType="numeric" />
-                    <View style={[styles.input, styles.champObligatoire]}>
-                        <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)}>
-                            <Picker.Item label="Inv Type" value=" " />
-                            <Picker.Item label="Type Rue" value="R" />
-                            <Picker.Item label="Type Hors Rue" value="H" />
-                        </Picker>
-                    </View>
+
                     <View style={[styles.input]}>
                         <Picker
                             selectedValue={genreChoisi}
