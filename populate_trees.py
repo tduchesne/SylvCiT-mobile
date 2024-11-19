@@ -107,7 +107,7 @@ def add_position(latitude, longitude, region: str):
         return int(stdout.splitlines()[1])
 
     print(f"Location {latitude}, {longitude}, {region} not found in database: Inserting...")
-    insert_command = f"INSERT INTO location (latitude, longitude) VALUES ('{latitude}', '{longitude}', '{region}');"
+    insert_command = f"INSERT INTO location (latitude, longitude, region) VALUES ('{latitude}', '{longitude}', '{region}');"
     _, stderr = execute_query(insert_command)
     if "ERROR" in stderr:
         print(f"Error inserting location: {latitude}, {longitude}, {region}. Aborting...")
