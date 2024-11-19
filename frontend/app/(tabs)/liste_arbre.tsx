@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Screen from "@/components/Screen";
-import { StyleSheet, TextInput, Modal, FlatList, Image, Pressable, TouchableOpacity } from "react-native";
+import { StyleSheet, TextInput, Modal, FlatList, Image, Pressable, TouchableOpacity, useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
@@ -16,24 +16,40 @@ LogBox.ignoreAllLogs();
 
 // These are the fields used for each tree in the list
 export interface Tree {
-  id_tree: number,
-  image_url: string,
-  essence_latin: string;
-  essence_ang: string;
-  essence_fr: string;
-  date_plantation: string;
-  arrondissement: string;
-  dhp: number;
-  date_releve: string;
-  genre_name: string;
+  id_tree: number;
   family_name: string;
-  latitude: string;
-  longitude:string;
+  group: string;
+  description: string;
+  genre: string;
+  latitude: number;
+  longitude: number;
+  date_plantation: Date;
+  date_measure: string;
+  approbation_status: string;
+  details_url: string;
+  image_url: string;
+  dhp: number;
+  name_la: string;
+  name_en: string;
+  name_fr: string;
+  region: string;
 }
 
 export default function TabTwoScreen() {
   const [searchText, setSearchText] = useState("");
+
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
+
+  // sets filter option global variables
+  const [uniqueYears, setUniqueYears] = useState([]);
+  const [uniqueSpecies, setUniqueSpecies] = useState([]);
+  const [uniqueRegions, setUniqueRegions] = useState([]);
+  const [uniqueDHPRanges, setUniqueDHPRanges] = useState([]);
+
+  // sets whether the filter box pops up
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedSpecies, setSelectedSpecies] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
@@ -66,13 +82,44 @@ export default function TabTwoScreen() {
     fetchFilteredTrees(""); // Fetch all trees on initial load
   }, []);
 
-  /**
-   *  Fetch trees from backend using the API
-   */
+  // Fetch unique filter options from backend database on page load
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const response = await fetch(`${Config.API_URL}/api/trees/setfilters`);
+        if (response.ok) {
+          const data = await response.json();
+          setUniqueYears(data.years);
+          setUniqueSpecies(data.species);
+          setUniqueRegions(data.regions);
+          setUniqueDHPRanges(data.dhp_ranges);
+        } else {
+          console.error('Error fetching filters');
+        }
+      } catch (error) {
+        console.error('Error fetching filters:', error);
+      }
+    };
+
+    fetchFilters();
+  }, []);
+
+  // Fetch trees with keyword and four filters as params, accepts no param
   const fetchFilteredTrees = async (keyword: string) => {
     console.log('fetch trees');
+    console.log(selectedYear, selectedSpecies, selectedDHP);
+
+    const queryParams = [];
+    if (keyword) queryParams.push(`keyword=${encodeURIComponent(keyword)}`);
+    if (selectedYear) queryParams.push(`year='${encodeURIComponent(selectedYear)}'`);
+    if (selectedSpecies) queryParams.push(`species='${encodeURIComponent(selectedSpecies)}'`);
+    if (selectedRegion) queryParams.push(`region='${encodeURIComponent(selectedRegion)}'`);
+    if (selectedDHP) queryParams.push(`dhp='${encodeURIComponent(selectedDHP)}'`);
+
+    const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
+
     try {
-      const response = await fetch(`${Config.API_URL}/api/trees/filter?keyword=${encodeURIComponent(keyword)}`, {
+      const response = await fetch(`${Config.API_URL}/api/trees/filter${queryString}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +132,6 @@ export default function TabTwoScreen() {
       }
 
       const data = await response.json();
-      console.log(data);
       setSortedTrees(data);
     } catch (error) {
     }
@@ -105,38 +151,12 @@ export default function TabTwoScreen() {
     fetchFilteredTrees(searchText)
   }
 
-  // ================================================================ //
 
-  const uniqueYears = [...new Set(sortedTrees.map(tree => parseInt(tree.date_plantation.split("-")[0])))].sort((a, b) => a - b).map(year => year.toString());
-  const uniqueSpecies = [...new Set(sortedTrees.map(tree => tree.essence_latin))].sort();
-  const uniqueRegions = [...new Set(sortedTrees.map(tree => tree.arrondissement))].sort();
-  const uniqueDHPRanges = () => {
-    const dhpIntervals = 5;
-    const dhpValues = sortedTrees.map(tree => tree.dhp);
-    const minDHP = Math.min(...dhpValues);
-    const maxDHP = Math.max(...dhpValues);
-    const ranges = [];
-    for (let i = Math.floor(minDHP / dhpIntervals) * dhpIntervals; i <= maxDHP; i += dhpIntervals) {
-      ranges.push(`${i}-${i + dhpIntervals}`);
-    }
-    return ranges.sort((a, b) => parseInt(a.split("-")[0]) - parseInt(b.split("-")[0]));
-  };
+  // ================================================================ //
 
   const applyFilters = async () => {
     // use API call without keyword to fetch and populate the list
     await fetchFilteredTrees("");
-    let filteredData = [...sortedTrees];
-
-    // Modify each call here to fetch tree in backend using a keyword linked to the field 
-    if (selectedYear) filteredData = filteredData.filter(tree => tree.date_plantation.startsWith(selectedYear));
-    if (selectedSpecies) filteredData = filteredData.filter(tree => tree.essence_latin === selectedSpecies);
-    if (selectedRegion) filteredData = filteredData.filter(tree => tree.arrondissement === selectedRegion);
-    if (selectedDHP) {
-      const [minDHP, maxDHP] = selectedDHP.split("-").map(Number);
-      filteredData = filteredData.filter(tree => tree.dhp >= minDHP && tree.dhp < maxDHP);
-    }
-
-    setSortedTrees(filteredData);
     closeFilterModal();
   };
 
@@ -176,25 +196,30 @@ export default function TabTwoScreen() {
                   placeholderTextColor="gray"
                   value={searchText}
                   onChangeText={setSearchText}
-                  // onKeyPress={handleKeyPress} // Apply the filter only when the word is fully typed out
                   onSubmitEditing={() => fetchFilteredTrees(searchText)}
                 />
                 <Ionicons name="search-outline" size={24} color="gray" style={styles.searchIcon} />
               </ThemedView>
 
-              <Modal visible={filterModalVisible} transparent={true} animationType="slide">
+              <Modal
+                style={{ backgroundColor: isDarkMode ? '#fff' : '#000' }}
+                visible={filterModalVisible}
+                transparent={true}
+                animationType="slide"
+              >
                 <ThemedView style={styles.modalBackground}>
-                  <ThemedView style={styles.modalContent}>
-                    <ThemedText style={styles.modalTitle}>Filtrer les Arbres</ThemedText>
+                  <ThemedView style={[styles.modalContent, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}>
+                    <ThemedText style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#232825' }]}>Filtrer les Arbres</ThemedText>
                     {[
                       { label: "Date de plantation (Année)", value: selectedYear, options: uniqueYears, setter: setSelectedYear },
                       { label: "Espèce", value: selectedSpecies, options: uniqueSpecies, setter: setSelectedSpecies },
                       { label: "Région", value: selectedRegion, options: uniqueRegions, setter: setSelectedRegion },
-                      { label: "DHP (Diamètre à la Hauteur Poitrine)", value: selectedDHP, options: uniqueDHPRanges(), setter: setSelectedDHP }
+                      { label: "DHP (Diamètre à la Hauteur Poitrine)", value: selectedDHP, options: uniqueDHPRanges, setter: setSelectedDHP }
                     ].map(({ label, value, options, setter }, index) => (
-                      <ThemedView style={styles.row} key={index}>
-                        <ThemedText style={styles.filterLabel}>{label}</ThemedText>
-                        <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={styles.picker}>
+                      <ThemedView style={[styles.row, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]} 
+                      key={index}>
+                        <ThemedText style={[styles.filterLabel, { color: isDarkMode ? '#fff' : '#232825' }]}>{label}</ThemedText>
+                        <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={[styles.picker, { backgroundColor: '#fff' }]}>
                           <Picker.Item label={`Sélectionner une option`} value="" />
                           {options.map((option, idx) => (
                             <Picker.Item key={idx} label={option} value={option} />
@@ -238,10 +263,10 @@ export default function TabTwoScreen() {
                   <TouchableOpacity onPress={() => handlePressItem(item, index)}>
                     <ThemedView style={styles.treeItem}>
                       <ThemedView>
-                        <ThemedText style={styles.region}>{item.arrondissement}</ThemedText>
-                        <ThemedText style={styles.treeSpecies}>{item.essence_fr}</ThemedText>
+                        <ThemedText style={styles.region}>{item.region}</ThemedText>
+                        <ThemedText style={styles.treeSpecies}>{item.name_la}</ThemedText>
                       </ThemedView>
-                      <ThemedText style={styles.date}>{item.date_plantation}</ThemedText>
+                      <ThemedText style={styles.date}>{new Date(item.date_plantation).toLocaleDateString()}</ThemedText>
                     </ThemedView>
                   </TouchableOpacity>
                 )}
@@ -337,7 +362,6 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: "80%",
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
     alignItems: "center",

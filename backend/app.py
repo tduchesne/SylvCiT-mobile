@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import MetaData, Enum
+from sqlalchemy import MetaData, Enum, func, extract, or_, cast, String
 from flask_cors import CORS  
 import bcrypt
 import os
+from sqlalchemy.orm import joinedload
+import logging
 
 app = Flask(__name__)
 # To enable CORS for all routes of the application
@@ -22,7 +24,7 @@ db = SQLAlchemy(app, metadata=metadata)
 migrate = Migrate(app, db)
 
 # Import models after db initialization
-from models import Tree, User, location, type
+from models import Tree, User, location, type, genre, family
 
 @app.before_first_request
 def create_tables():
@@ -62,7 +64,7 @@ def update_tree_status(id_tree):
     if data['approbation_status'] not in ["pending", "approved"]:
         abort(400, description="Invalid approbation status.")
 
-      # Get, modify and save tree
+    # Get, modify and save tree
     tree = Tree.query.get(id_tree)
     if not tree:
         abort(404, description="Tree not found.")
@@ -72,41 +74,114 @@ def update_tree_status(id_tree):
 
     return jsonify({"message": "Tree status updated successfully."}), 200
 
+@app.route('/api/trees/setfilters', methods=['GET'])
+def setfilters():
+    
+    # Grab unique values for different filters using database query
+    unique_years = db.session.query(func.extract('year', Tree.date_plantation)).distinct().order_by(func.extract('year', Tree.date_plantation)).all()
+    unique_years = [str(int(year[0])) for year in unique_years]
+
+    unique_species = db.session.query(type.Type.name_la).distinct().order_by(type.Type.name_la).all()
+    unique_species = [species[0] for species in unique_species]
+
+    unique_regions = db.session.query(location.Location.region).distinct().order_by(location.Location.region).all()
+    unique_regions = [regions[0] for regions in unique_regions]
+    
+    dhp_values = db.session.query(Tree.dhp).all()
+    dhp_values = [value[0] for value in dhp_values if value[0] is not None]
+    min_dhp, max_dhp = min(dhp_values), max(dhp_values)
+    dhp_intervals = 5
+    dhp_ranges = [f"{i}-{i + dhp_intervals}" for i in range(min_dhp, max_dhp + 1, dhp_intervals)]
+
+    return jsonify({
+        "years": unique_years,
+        "species": unique_species,
+        "regions": unique_regions,
+        "dhp_ranges": dhp_ranges
+    })
+
 @app.route('/api/trees/filter', methods=['GET'])
 def filter():
+    
+    # Grab filter options from params
     keyword = request.args.get('keyword', '')
+    region = request.args.get('region', None)
+    dhp_range = request.args.get('dhp', None)
+    species = request.args.get('species', None)
+    year_planted = request.args.get('year', None)
+
     query = db.session.query(Tree).join(Tree.location).join(Tree.type).join(Tree.genre).join(Tree.family)
     query = query.filter(Tree.approbation_status.ilike("pending"))
+    
+    if region:
+        # Strips quotes around param
+        region = region.strip("'")
+        query = query.filter(location.Location.region.ilike(f"%{region}%"))
 
-   # TODO: update filtered fields when db fields are added
+    if dhp_range:
+        dhp_range = dhp_range.strip("'")
+    
+        try:
+            # Receives dhp filter option under format "x-y"
+            min_dhp, max_dhp = map(float, dhp_range.split('-'))
+            query = query.filter(Tree.dhp >= min_dhp, Tree.dhp <= max_dhp)
+        except ValueError:
+            return jsonify({"error": "Invalid DHP range format. Expected format: 'min-max'."}), 400
+
+
+    if species:
+        species = species.strip("'")
+        query = query.filter(type.Type.name_la.ilike(f"%{species}%"))
+
+
+    if year_planted:
+        year_planted = year_planted.strip("'")
+        query = query.filter(Tree.date_plantation.like(f'{year_planted}-%'))
+        
+        app.logger.info(year_planted, query)
+
+    # If keyword filter exists, strip quotes then apply filter on certain important attributes
     if keyword:
+        keyword = keyword.strip("'")
+        
         query = query.filter(
-            Tree.date_plantation.ilike(f"%{keyword}%") |
-            Tree.date_measure.ilike(f"%{keyword}%") |
-            location.Location.latitude.ilike(f"%{keyword}%") |
-            location.Location.longitude.ilike(f"%{keyword}%") |
-            type.Type.name_fr.ilike(f"%{keyword}%") |
-            type.Type.name_en.ilike(f"%{keyword}%") |
-            type.Type.name_la.ilike(f"%{keyword}%")
+            or_(
+            Tree.date_plantation.ilike(f"%{keyword}%"),
+            Tree.date_measure.ilike(f"%{keyword}%"),
+            type.Type.name_la.ilike(f"%{keyword}%"),
+            type.Type.name_en.ilike(f"%{keyword}%"),
+            type.Type.name_fr.ilike(f"%{keyword}%"),
+            genre.Genre.name.like(f"%{keyword}%"),
+            family.Family.name.like(f"%{keyword}%"),
+            Tree.dhp.ilike(f"%{keyword}%"),
+            location.Location.region.ilike(f"%{keyword}%")
+            )
         )
 
     trees = query.all()
- # TODO: update filtered fields when db fields are added
-    return jsonify(
-        [{
+
+    return jsonify([
+        {
             'id_tree': tree.id_tree,
-            'image_url': tree.image_url,
-            'date_plantation': tree.date_plantation,
-            'date_releve': tree.date_measure,
-            'essence_latin': tree.type.name_la,
-            'essence_ang': tree.type.name_en,
-            'essence_fr': tree.type.name_fr,
+            'family_name': tree.family.name,
+            'group': tree.functional_group.group,
+            'description': tree.functional_group.description,
+            'genre': tree.genre.name,
             'latitude': tree.location.latitude,
             'longitude': tree.location.longitude,
-            'genre_name': tree.genre.name,
-            'family_name': tree.family.name,
-        } for tree in trees]
-    )
+            'date_plantation': tree.date_plantation,
+            'date_measure': tree.date_measure,
+            'approbation_status': tree.approbation_status,
+            'details_url': tree.details_url,
+            'image_url': tree.image_url,
+            'name_la': tree.type.name_la,
+            'name_en': tree.type.name_en,
+            'name_fr': tree.type.name_fr,
+            'dhp': tree.dhp,
+            'region': tree.location.region
+        }
+        for tree in trees
+    ])
 
 # pas sécuritaire vraiment
 @app.route('/api/login', methods=['POST'])
