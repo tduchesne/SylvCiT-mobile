@@ -125,6 +125,7 @@ def create_app(config_name=None):
         existing_location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
         if not existing_location:
             existing_location = Location(latitude=latitude, longitude=longitude)
+            db.session.add(existing_location)
 
         new_tree = Tree(
             date_plantation=date_plantation,
