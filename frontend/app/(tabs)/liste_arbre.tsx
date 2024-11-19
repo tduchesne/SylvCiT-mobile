@@ -178,118 +178,114 @@ export default function TabTwoScreen() {
           title="Données à valider"
           content={
             showAuthScreen ? (
-            <AuthScreen />
-          ) :
-          userRole >= 1 ?  (
-          <ThemedView style={styles.container}>
-              <ThemedView style={styles.searchBar}>
-                <Pressable onPress={openFilterModal}
-                  style={({ pressed }) => [
-                    { opacity: pressed ? 0.5 : 1 }
-                  ]}>
-
-                  <Ionicons name="options-outline" size={24} color="gray" style={styles.filterIcon} />
-                </Pressable>
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Entrer un mot-clé"
-                  placeholderTextColor="gray"
-                  value={searchText}
-                  onChangeText={setSearchText}
-                  onSubmitEditing={() => fetchFilteredTrees(searchText)}
-                />
-                <Ionicons name="search-outline" size={24} color="gray" style={styles.searchIcon} />
-              </ThemedView>
-
-              <Modal
-                style={{ backgroundColor: isDarkMode ? '#fff' : '#000' }}
-                visible={filterModalVisible}
-                transparent={true}
-                animationType="slide"
-              >
-                <ThemedView style={styles.modalBackground}>
-                  <ThemedView style={[styles.modalContent, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}>
-                    <ThemedText style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#232825' }]}>Filtrer les Arbres</ThemedText>
-                    {[
-                      { label: "Date de plantation (Année)", value: selectedYear, options: uniqueYears, setter: setSelectedYear },
-                      { label: "Espèce", value: selectedSpecies, options: uniqueSpecies, setter: setSelectedSpecies },
-                      { label: "Région", value: selectedRegion, options: uniqueRegions, setter: setSelectedRegion },
-                      { label: "DHP (Diamètre à la Hauteur Poitrine)", value: selectedDHP, options: uniqueDHPRanges, setter: setSelectedDHP }
-                    ].map(({ label, value, options, setter }, index) => (
-                      <ThemedView style={[styles.row, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]} 
-                      key={index}>
-                        <ThemedText style={[styles.filterLabel, { color: isDarkMode ? '#fff' : '#232825' }]}>{label}</ThemedText>
-                        <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={[styles.picker, { backgroundColor: '#fff' }]}>
-                          <Picker.Item label={`Sélectionner une option`} value="" />
-                          {options.map((option, idx) => (
-                            <Picker.Item key={idx} label={option} value={option} />
-
-                          ))}
-                        </Picker>
-
-                      </ThemedView>
-                    ))}
-
-                    <Pressable onPress={applyFilters}
+              <AuthScreen />
+            ) :
+              userRole >= 1 ? (
+                <ThemedView style={styles.container}>
+                  <ThemedView style={styles.searchBar}>
+                    <Pressable onPress={openFilterModal}
                       style={({ pressed }) => [
-                        styles.applyButton,
                         { opacity: pressed ? 0.5 : 1 }
                       ]}>
-                      <ThemedText style={styles.buttonText}>Apply Filters</ThemedText>
+
+                      <Ionicons name="options-outline" size={24} color="gray" style={styles.filterIcon} />
                     </Pressable>
-                    <Pressable
-                      onPress={clearFilters}
-                      style={({ pressed }) => [
-                        styles.clearButton,
-                        { opacity: pressed ? 0.5 : 1 }
-                      ]}>
-                      <ThemedText style={styles.buttonText}>Clear Filters</ThemedText>
-                    </Pressable>
-                    <Pressable onPress={closeFilterModal}
-                      style={({ pressed }) => [
-                        styles.closeButton,
-                        { opacity: pressed ? 0.5 : 1 }
-                      ]}>
-                      <ThemedText style={styles.buttonText}>Close</ThemedText>
-                    </Pressable>
+                    <TextInput
+                      style={styles.searchInput}
+                      placeholder="Entrer un mot-clé"
+                      placeholderTextColor="gray"
+                      value={searchText}
+                      onChangeText={setSearchText}
+                      onSubmitEditing={() => fetchFilteredTrees(searchText)}
+                    />
+                    <Ionicons name="search-outline" size={24} color="gray" style={styles.searchIcon} />
                   </ThemedView>
-                </ThemedView>
-              </Modal>
 
-              <FlatList
-                data={sortedTrees}
-                keyExtractor={(item, index) => `${index}-${item.id_tree}`}
-                nestedScrollEnabled={true}
-                renderItem={({ item, index }) => (
-                  <TouchableOpacity onPress={() => handlePressItem(item, index)}>
-                    <ThemedView style={styles.treeItem}>
-                      <ThemedView>
-                        <ThemedText style={styles.region}>{item.region}</ThemedText>
-                        <ThemedText style={styles.treeSpecies}>{item.name_la}</ThemedText>
+                  <Modal
+                    style={{ backgroundColor: isDarkMode ? '#fff' : '#000' }}
+                    visible={filterModalVisible}
+                    transparent={true}
+                    animationType="slide"
+                  >
+                    <ThemedView style={styles.modalBackground}>
+                      <ThemedView style={[styles.modalContent, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}>
+                        <ThemedText style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#232825' }]}>Filtrer les Arbres</ThemedText>
+                        {[
+                          { label: "Date de plantation (Année)", value: selectedYear, options: uniqueYears, setter: setSelectedYear },
+                          { label: "Espèce", value: selectedSpecies, options: uniqueSpecies, setter: setSelectedSpecies },
+                          { label: "Région", value: selectedRegion, options: uniqueRegions, setter: setSelectedRegion },
+                          { label: "DHP (Diamètre à la Hauteur Poitrine)", value: selectedDHP, options: uniqueDHPRanges, setter: setSelectedDHP }
+                        ].map(({ label, value, options, setter }, index) => (
+                          <ThemedView style={[styles.row, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}
+                            key={index}>
+                            <ThemedText style={[styles.filterLabel, { color: isDarkMode ? '#fff' : '#232825' }]}>{label}</ThemedText>
+                            <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={[styles.picker, { backgroundColor: '#fff' }]}>
+                              <Picker.Item label={`Sélectionner une option`} value="" />
+                              {options.map((option, idx) => (
+                                <Picker.Item key={idx} label={option} value={option} />
+
+                              ))}
+                            </Picker>
+
+                          </ThemedView>
+                        ))}
+
+                        <Pressable onPress={applyFilters}
+                          style={({ pressed }) => [
+                            styles.applyButton,
+                            { opacity: pressed ? 0.5 : 1 }
+                          ]}>
+                          <ThemedText style={styles.buttonText}>Apply Filters</ThemedText>
+                        </Pressable>
+                        <Pressable
+                          onPress={clearFilters}
+                          style={({ pressed }) => [
+                            styles.clearButton,
+                            { opacity: pressed ? 0.5 : 1 }
+                          ]}>
+                          <ThemedText style={styles.buttonText}>Clear Filters</ThemedText>
+                        </Pressable>
+                        <Pressable onPress={closeFilterModal}
+                          style={({ pressed }) => [
+                            styles.closeButton,
+                            { opacity: pressed ? 0.5 : 1 }
+                          ]}>
+                          <ThemedText style={styles.buttonText}>Close</ThemedText>
+                        </Pressable>
                       </ThemedView>
-                      <ThemedText style={styles.date}>{new Date(item.date_plantation).toLocaleDateString()}</ThemedText>
                     </ThemedView>
+                  </Modal>
+                  {sortedTrees.map((item, index) => (
+                    <TouchableOpacity key={`${index}-${item.id_tree}`} onPress={() => handlePressItem(item, index)}>
+                      <ThemedView style={styles.treeItem}>
+                        <ThemedView>
+                          <ThemedText style={styles.region}>{item.region}</ThemedText>
+                          <ThemedText style={styles.treeSpecies}>{item.name_la}</ThemedText>
+                        </ThemedView>
+                        <ThemedText style={styles.date}>
+                          {new Date(item.date_plantation).toLocaleDateString()}
+                        </ThemedText>
+                      </ThemedView>
+                    </TouchableOpacity>
+                  ))}
+                </ThemedView>
+              ) : (
+                <ThemedView>
+                  <ThemedText>
+                    Vous devez vous authentifier avec les bonnes permissions pour voir
+                    le contenu de cette page.
+                  </ThemedText>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleShowAuthScreen}>
+                    <ThemedText style={{ textDecorationLine: "underline" }}>
+                      se connecter.
+                    </ThemedText>
                   </TouchableOpacity>
-                )}
-              />
-            </ThemedView>
-          ) : (
-          <ThemedView>
-          <ThemedText>
-            Vous devez vous authentifier avec les bonnes permissions pour voir
-            le contenu de cette page.
-            </ThemedText>
-            <TouchableOpacity 
-                style={styles.button} 
-                onPress={handleShowAuthScreen}>
-              <ThemedText style={{ textDecorationLine: "underline" }}>
-                se connecter.
-              </ThemedText>
-            </TouchableOpacity>
-          </ThemedView>
-          
-        )
-      }
+                </ThemedView>
+
+              )
+          }
           headerImage={
             <Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />
           }
