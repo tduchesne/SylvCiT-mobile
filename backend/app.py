@@ -161,7 +161,7 @@ def create_app(config_name=None):
         return jsonify([type.to_dict() for type in types])
 
     @app.route('/api/fetch_type', methods=['GET'])
-    def get_functional_groups():
+    def fetch_type_details():
         type_fr = request.get_json().get('type')
         type_obj = Type.query.filter_by(name_fr=type_fr).first()
         return jsonify({
@@ -215,7 +215,7 @@ def create_app(config_name=None):
 
         return jsonify({"message": "Demande envoyée"}), 200
 
-    @app.route('api/arbre_rejet', methods=['GET'])
+    @app.route('/api/arbre_rejet', methods=['GET'])
     def arbre_rejet():
         trees = Tree.query.filter_by(approbation_status="rejected").all()
         return jsonify([tree.to_dict() for tree in trees]), 200
