@@ -148,8 +148,8 @@ def test_add_duplicate_tree(client, db_fixture, init_database):
         'longitude': '-73.45703',
         'date_releve': '2023-10-01',
         'date_plantation': '2022-05-10',
-        'details_url': 'http://example.com/details1',  # Même URL
-        'image_url': 'http://example.com/image1.jpg',  # Même URL
+        'details_url': 'http://example.com/details1',  
+        'image_url': 'http://example.com/image1.jpg',  
         'type': 'Catalpa de lOuest',
         'genre': 'Catalpa',
         'family': 'Sapindaceae',
