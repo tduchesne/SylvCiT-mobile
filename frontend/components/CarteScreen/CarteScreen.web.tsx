@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ThemedView } from '@/components/ThemedView';
 import Screen from '@/components/Screen';
 import Config from '@/config';
+import { Tree } from '@/constants/Tree';
 
 
 let L: any;
@@ -12,21 +13,6 @@ if (typeof window !== 'undefined') {
 
 const greenTreeIconUrl = 'https://cdn-icons-png.flaticon.com/512/685/685025.png';
 const purpleTreeIconUrl = 'https://cdn-icons-png.flaticon.com/512/685/685025.png';
-
-
-interface Tree {
-  id_tree: number;
-  latitude: string;
-  longitude: string;
-  name_fr: string;
-  name_en: string;
-  name_la: string;
-  genre: string;
-  family_name: string;
-  date_measure: string;
-  date_plantation: string;
-  image_url: string;
-}
 
 export default function CarteScreenWeb() {
   const mapRef = useRef<HTMLDivElement | null>(null);

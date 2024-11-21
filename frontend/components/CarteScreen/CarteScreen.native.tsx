@@ -4,20 +4,7 @@ import MapView, { Marker, Callout, Region } from 'react-native-maps';
 import { ThemedView } from '@/components/ThemedView';
 import Screen from "@/components/Screen";
 import Config from '@/config';
-
-interface Tree {
-  id_tree: number;
-  latitude: string;
-  longitude: string;
-  name_fr: string;
-  name_en: string;
-  name_la: string;
-  genre: string;
-  family_name: string;
-  date_measure: string;
-  date_plantation: string;
-  image_url: string;
-}
+import { Tree } from '@/constants/Tree';
 
 export default function CarteScreen() {
   const colorScheme = useColorScheme();

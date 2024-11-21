@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Screen from "@/components/Screen";
-import { StyleSheet, TextInput, Modal, FlatList, Image, Pressable, TouchableOpacity, useColorScheme } from "react-native";
+import { StyleSheet, TextInput, Modal, Image, Pressable, TouchableOpacity, useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
@@ -11,29 +11,9 @@ import Config from "../../config";
 import ValidationScreen from "@/components/ValidationPage";
 
 import { LogBox } from 'react-native';
+import { Tree } from "@/constants/Tree";
 LogBox.ignoreLogs(['Warning: ...']);
 LogBox.ignoreAllLogs();
-
-// These are the fields used for each tree in the list
-export interface Tree {
-  id_tree: number;
-  family_name: string;
-  group: string;
-  description: string;
-  genre: string;
-  latitude: number;
-  longitude: number;
-  date_plantation: Date;
-  date_measure: string;
-  approbation_status: string;
-  details_url: string;
-  image_url: string;
-  dhp: number;
-  name_la: string;
-  name_en: string;
-  name_fr: string;
-  region: string;
-}
 
 export default function TabTwoScreen() {
   const [searchText, setSearchText] = useState("");
