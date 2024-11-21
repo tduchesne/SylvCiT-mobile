@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Dimensions, Image, Text, useColorScheme } from 'react-native';
+import { StyleSheet, View, Dimensions, Image, Text, useColorScheme, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Callout, Region } from 'react-native-maps';
 import { ThemedView } from '@/components/ThemedView';
 import Screen from "@/components/Screen";
@@ -8,7 +8,7 @@ import Config from '@/config';
 interface Tree {
   id_tree: number;
   latitude: string;
-  longitude:string;
+  longitude: string;
   name_fr: string;
   name_en: string;
   name_la: string;
@@ -34,7 +34,7 @@ export default function CarteScreen() {
   };
 
   useEffect(() => {
-    if (trees == null) fetchAllTrees(); 
+    if (trees == null) fetchAllTrees();
   }, []);
 
   const fetchAllTrees = async () => {
@@ -71,11 +71,11 @@ export default function CarteScreen() {
         title="Carte"
         content={
           <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#f5f5f5' }]}>
-            {trees != null && (
+            {trees ? (
               <MapView
+                mapType="standard"
                 style={styles.map}
                 initialRegion={initialRegion}
-                customMapStyle={isDarkMode ? darkMapStyle : lightMapStyle}
               >
                 {trees.map(tree => {
                   return (
@@ -83,7 +83,7 @@ export default function CarteScreen() {
                       key={tree.id_tree}
                       coordinate={{
                         latitude: parseFloat(tree.latitude),
-                        longitude: parseFloat(tree.longitude) 
+                        longitude: parseFloat(tree.longitude)
                       }}
                       title={tree.name_fr}
                       icon={tree.id_tree % 3 == 0 ? require('@/assets/images/marqueurArbreMauve.png') : require('@/assets/images/marqueurArbreVert.png')}
@@ -132,7 +132,11 @@ export default function CarteScreen() {
                   );
                 }
                 )}
-              </MapView>)
+              </MapView>) : (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+              </View>
+            )
             }
           </View>
         }
@@ -193,45 +197,9 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     width: '50%'
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
-
-
-const darkMapStyle = [
-  {
-    elementType: 'geometry',
-    stylers: [{ color: '#212121' }],
-  },
-  {
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#757575' }],
-  },
-  {
-    elementType: 'labels.text.stroke',
-    stylers: [{ color: '#212121' }],
-  },
-  {
-    featureType: 'road',
-    elementType: 'geometry',
-    stylers: [{ color: '#383838' }],
-  },
-];
-
-const lightMapStyle = [
-  {
-    elementType: 'geometry',
-    stylers: [{ color: '#eaeaea' }],
-  },
-  {
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#616161' }],
-  },
-  {
-    elementType: 'labels.text.stroke',
-    stylers: [{ color: '#f5f5f5' }],
-  },
-  {
-    featureType: 'road',
-    elementType: 'geometry',
-    stylers: [{ color: '#ffffff' }],
-  },
-];
