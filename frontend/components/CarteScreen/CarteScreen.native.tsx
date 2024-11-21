@@ -56,6 +56,7 @@ export default function CarteScreen() {
       setTrees(data);
     } catch (error) {
       console.error("Erreur lors de la récupération des arbres :", error);
+      setTimeout(fetchAllTrees, 5000);
     }
   }
 
