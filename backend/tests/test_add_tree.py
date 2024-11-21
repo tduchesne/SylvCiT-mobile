@@ -21,7 +21,6 @@ def test_add_tree_success(client, db_fixture, init_database):
     assert response.status_code == 201
     response_data = response.get_json()
     assert response_data['approbation_status'] == 'pending'
-    # Comparer avec une tolérance pour les flottants
     assert float(response_data['location']['latitude']) == pytest.approx(45.72587, rel=1e-5)
     assert float(response_data['location']['longitude']) == pytest.approx(-73.45703, rel=1e-5)
 
@@ -88,7 +87,7 @@ def test_add_tree_invalid_date_plantation(client, db_fixture, init_database):
         'latitude': '45.72587',
         'longitude': '-73.45703',
         'date_releve': '2023-10-01',
-        'date_plantation': 'invalid-date',  # Invalid date format
+        'date_plantation': 'invalid-date',  # invalid date format
         'details_url': 'http://example.com/details',
         'image_url': 'http://example.com/image.jpg',
         'type': 'Catalpa de lOuest',
@@ -114,7 +113,7 @@ def test_add_tree_invalid_dhp(client, db_fixture, init_database):
         'genre': 'Catalpa',
         'family': 'Sapindaceae',
         'functional_group': '1A',
-        'dhp': 'invalid-dhp'  # Non-integer value
+        'dhp': 'invalid-dhp'  # non-integer value
     }
     response = client.post('/api/add_tree', json=data)
     assert response.status_code == 400
@@ -122,7 +121,6 @@ def test_add_tree_invalid_dhp(client, db_fixture, init_database):
     assert response_data['description'] == "Le champ 'dhp' doit être un entier."
 
 def test_add_duplicate_tree(client, db_fixture, init_database):
-    # Données de l'arbre initial
     data1 = {
         'latitude': '45.72587',
         'longitude': '-73.45703',
@@ -142,7 +140,6 @@ def test_add_duplicate_tree(client, db_fixture, init_database):
     assert response_data1['approbation_status'] == 'pending'
     location_id1 = response_data1['location']['id_location']
 
-    # Données identiques pour le deuxième arbre
     data2 = {
         'latitude': '45.72587',
         'longitude': '-73.45703',
