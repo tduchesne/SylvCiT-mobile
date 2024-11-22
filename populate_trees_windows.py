@@ -173,9 +173,9 @@ def add_trees():
             # Create insert query to for the current tree
             insert_command = (
                 f"INSERT INTO tree (date_plantation, date_measure, details_url, id_type, id_genre, "
-                f"id_family, id_functional_group, id_location, dhp, image_url) "
+                f"id_family, id_functional_group, id_location, dhp, image_url, approbation_status) "
                 f"VALUES ('{date_plantation}', '{date_measure}', 'https://arbres.hydroquebec.com/fiche-arbre-arbuste/4857', '{id_type}', "
-                f"'{id_genre}', '{id_family}', '{id_functional_group}', '{id_location}', '{dhp}', '{image_url}');"
+                f"'{id_genre}', '{id_family}', '{id_functional_group}', '{id_location}', '{dhp}', '{image_url}', 'approved');"
             )
 
             # Execute the query in the database
