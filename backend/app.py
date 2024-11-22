@@ -5,6 +5,7 @@ from sqlalchemy import MetaData, func, or_
 from flask_cors import CORS  
 import bcrypt
 import os
+import flask
 
 app = Flask(__name__)
 # To enable CORS for all routes of the application
@@ -24,9 +25,14 @@ migrate = Migrate(app, db)
 # Import models after db initialization
 from models import Tree, User, location, type, genre, family
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
+flask_version = tuple(map(int, flask.__version__.split('.')[:2]))
+if flask_version < (2, 0):
+    @app.before_first_request
+    def before_first_request():
+        db.create_all()
+else:  # Flask 2.0 or newer
+    with app.app_context():
+        db.create_all()
 
 # Routes
 @app.route('/')
