@@ -1,16 +1,17 @@
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, send_file, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import MetaData, func, or_ 
 from flask_cors import CORS  
 import bcrypt
+import json
+import google.generativeai as genai
 import os
 import flask
 
 app = Flask(__name__)
-# To enable CORS for all routes of the application
-CORS(app)  
 
+CORS(app, origins=["http://localhost:8081"]) 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DATABASE')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -25,6 +26,9 @@ migrate = Migrate(app, db)
 # Import models after db initialization
 from models import Tree, User, location, type, genre, family
 
+API_KEY = 'GEMINI_API_KEY_HERE' # Your API key here
+genai.configure(api_key=API_KEY)
+
 flask_version = tuple(map(int, flask.__version__.split('.')[:2]))
 if flask_version < (2, 0):
     @app.before_first_request
@@ -38,6 +42,35 @@ else:  # Flask 2.0 or newer
 @app.route('/')
 def hello_world():
     return 'Hi mom!'
+
+@app.route('/health')
+def health_check():
+    return {'status': 'ok'}, 200
+
+@app.route("/api/generate", methods=["POST"])
+def generate_api():
+    if request.method == "POST":
+        if API_KEY == '':
+            return jsonify({ "error": '''
+                To get started, get an API key at
+                https://g.co/ai/idxGetGeminiKey and enter it in
+                main.py
+                '''.replace('\n', '') })
+        try:
+            req_body = request.get_json()
+            #print("Received request body:", req_body)
+            content = req_body.get("contents")
+            model = genai.GenerativeModel(model_name=req_body.get("model"))
+            response = model.generate_content(content)
+            #print("Sending content to Gemini API:", content)
+            full_response = ''.join([chunk.text for chunk in response])
+            print("Full response:", full_response)
+
+            return jsonify({ "text": full_response })
+        
+        except Exception as e:
+            print("Error in API:", str(e)) 
+            return jsonify({ "error": str(e) })
 
 @app.route('/api/trees', methods=['GET'])
 def get_trees():
@@ -58,7 +91,7 @@ def get_trees():
             'family_name': tree.family.name,
         } for tree in trees
         ])
-
+    
 @app.route('/api/tree/status/<int:id_tree>', methods=['PUT'])
 def update_tree_status(id_tree):
     data = request.get_json()
@@ -207,7 +240,7 @@ def login():
 
     return jsonify({"role": -1}), 401
 
-if __name__ == '__main__':
+if __name__== '__main__':
     app.run(debug=True, host='0.0.0.0')
 
 

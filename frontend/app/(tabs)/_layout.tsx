@@ -53,6 +53,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="tree-analyzer"
+        options={{
+          title: "Tree Analyzer",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "aperture-outline" : "aperture-sharp"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="liste_arbre"
         options={{
           title: "Liste d'arbres",
