@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import FormModifierArbre from "./FormModifierArbre";
+import Config from '../config';
 
 interface Tree {
   id_tree: number;
@@ -41,7 +42,7 @@ interface Tree {
 }
 
 export default function TreeManagement() {
-  const API_URL = "http://localhost:5001";
+  const API_URL = `${Config.API_URL}`;
   const [trees, setTrees] = useState<Tree[]>([]);
   const [editingTree, setEditingTree] = useState<Tree | null>(null);
 

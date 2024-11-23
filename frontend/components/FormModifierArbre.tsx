@@ -13,6 +13,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
+import Config from '../config';
 
 interface Tree {
   id_tree: number;
@@ -79,7 +80,7 @@ export default function FormModifierArbre({
   tree,
   onSave,
 }: FormModifierArbreProps) {
-  const API_URL = "http://localhost:5001";
+  const API_URL = `${Config.API_URL}`;
 
   const colorScheme = useColorScheme();
 
@@ -89,8 +90,8 @@ export default function FormModifierArbre({
   const [dateMeasure, setDateMeasure] = useState<Date>(
     parseDateString(tree.date_measure) || new Date()
   );
-  const [datePlantation, setDatePlantation] = useState<Date | null>(
-    parseDateString(tree.date_plantation)
+  const [datePlantation, setDatePlantation] = useState<Date>(
+    parseDateString(tree.date_plantation) || new Date()
   );
   const [type, setType] = useState(tree.type?.name_fr || "");
   const [family, setFamily] = useState(tree.family?.name || "");
@@ -102,14 +103,14 @@ export default function FormModifierArbre({
   const [modalDatePlantation, setModalDatePlantation] = useState(false);
 
   const saveTreeData = () => {
-    if (!latitude || !longitude || !type) {
+    if (!latitude || !longitude) {
       Alert.alert("Merci de remplir tous les champs obligatoires");
       return;
     }
 
     const updatedTree: Tree = {
       ...tree,
-      date_plantation: datePlantation ? formatDate(datePlantation) : null,
+      date_plantation: formatDate(datePlantation),
       date_measure: formatDate(dateMeasure),
       dhp: dhp ? parseInt(dhp) : null,
       type: {
@@ -232,7 +233,7 @@ export default function FormModifierArbre({
             />
             {modalDatePlantation && (
               <DateTimePicker
-                value={datePlantation || new Date()}
+                value={datePlantation}
                 mode="date"
                 onChange={(event, selectedDate) => {
                   setModalDatePlantation(false);

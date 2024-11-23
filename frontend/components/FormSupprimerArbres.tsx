@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, Button, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import Config from '../config';
+
 
 interface Tree {
   id_tree: number;
@@ -32,7 +34,7 @@ interface Tree {
 }
 
 export default function FormSupprimerArbres() {
-  const API_URL = "http://localhost:5001";
+  const API_URL = `${Config.API_URL}`;
   const [trees, setTrees] = useState<Tree[]>([]);
   const [selectedTrees, setSelectedTrees] = useState<Set<number>>(new Set());
 

@@ -150,9 +150,7 @@ export default function FormAjoutArbre() {
                 body: JSON.stringify({
                     "no_emp": empNo,
                     "adresse": adresse,
-                    "essence_latin": typeChoisiLA,
                     "type": typeChoisiFR,
-                    "essence_ang": typeChoisiEN,
                     "dhp": dhp,
                     "date_plantation": datePlantation,
                     "latitude": latitude,
@@ -266,26 +264,6 @@ export default function FormAjoutArbre() {
                             <Picker.Item label="Choisir un type FR" value="" />
                             {types.map((type) => (
                                 <Picker.Item key={type["id_type"]} label={type["name_fr"]} value={type["name_fr"]} />
-                            ))}
-                        </Picker>
-                    </View>
-                    <View style={[styles.input]}>
-                        <Picker
-                            selectedValue={typeChoisiLA}
-                            onValueChange={(itemValue) => setTypeChoisiLA(itemValue)}>
-                            <Picker.Item label="Choisir un type latin" value="" />
-                            {types.map((type) => (
-                                <Picker.Item key={type["id_type"]} label={type["name_la"]} value={type["name_la"]} />
-                            ))}
-                        </Picker>
-                    </View>
-                    <View style={[styles.input]}>
-                        <Picker
-                            selectedValue={typeChoisiEN}
-                            onValueChange={(itemValue) => setTypeChoisiEN(itemValue)}>
-                            <Picker.Item label="Choisir un type EN" value="" />
-                            {types.map((type) => (
-                                <Picker.Item key={type["id_type"]} label={type["name_en"]} value={type["name_en"]} />
                             ))}
                         </Picker>
                     </View>
