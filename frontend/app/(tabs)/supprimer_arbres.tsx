@@ -1,15 +1,13 @@
-import FormModifierArbre from "@/components/FormModifierArbre";
-import Screen from "@/components/Screen";
 import React from "react";
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, View } from "react-native";
+import FormSupprimerArbres from "@/components/FormSupprimerArbres";
+import Screen from "@/components/Screen";
 
-export default function ModifierArbre() {
+export default function SupprimerArbres() {
   return (
     <Screen
-      title="Modifications"
-      content={
-        <FormModifierArbre />
-      } 
+      title="Supprimer Arbres"
+      content={<FormSupprimerArbres />}
       headerImage={
         <Image
           source={require("@/assets/images/adaptive-icon.png")}

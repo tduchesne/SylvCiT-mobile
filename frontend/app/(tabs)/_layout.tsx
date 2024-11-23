@@ -69,7 +69,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="modifier_metadonnees"
+        name="tree_management"
         initialParams={{ no_emp }}
         options={{
           title: "Modifier Métadonnées",
@@ -82,12 +82,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="supprimer_arbres"
+        options={{
+          title: "Supprimer Arbres",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "trash" : "trash-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="account"
         options={{
           title: "Account",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "person" : "person-circle"}
+              name={focused ? "person-circle" : "person-circle-outline"}
               color={color}
             />
           ),

@@ -42,6 +42,7 @@ def create_app(config_name=None):
     
     # Import models after db initialization
     from models import Tree, Family, FunctionalGroup, Genre, Location, Type
+    from models import Tree, Family, FunctionalGroup, Genre, Location, Type
 
 
     @app.before_request
@@ -57,6 +58,40 @@ def create_app(config_name=None):
     def get_trees():
         trees = Tree.query.all()
         return jsonify([tree.to_dict() for tree in trees])
+    
+    @app.route('/api/trees_pending_deletion', methods=['GET'])
+    def get_trees_pending_deletion():
+        deletion_requests = ListDelete.query.all()
+        trees = [Tree.query.filter_by(no_emp=req.no_emp).first() for req in deletion_requests]
+        trees = [tree.to_dict() for tree in trees if tree]
+        return jsonify(trees)
+    
+    @app.route('/api/refuse_deletion/<int:id_tree>', methods=['POST'])
+    def refuse_deletion(id_tree):
+        tree = Tree.query.filter_by(id_tree=id_tree, approbation_status='rejected').first()
+
+        if tree is None:
+            abort(400, description="Aucune demande de suppression trouvée pour cet arbre")
+
+        tree.approbation_status = 'approved'
+        db.session.commit()
+        return jsonify({"message": "Demande de suppression refusée"}), 200
+    
+    @app.route('/api/approve_deletion/<int:id_tree>', methods=['POST'])
+    def approve_deletion(id_tree):
+        tree = Tree.query.filter_by(id_tree=id_tree, approbation_status='rejected').first()
+
+        if tree is None:
+            abort(400, description="Aucune demande de suppression trouvée pour cet arbre")
+
+        try:
+            db.session.delete(tree)
+            db.session.commit()
+            return jsonify({"message": "Arbre supprimé avec succès"}), 200
+        except Exception as e:
+            print(f"Erreur lors de la suppression de l'arbre {id_tree}: {e}")
+            db.session.rollback()
+            return jsonify({"message": "Erreur lors de la suppression de l'arbre"}), 500
 
     @app.route('/api/add_tree', methods=['POST'])
     def add_tree():
@@ -99,6 +134,23 @@ def create_app(config_name=None):
         functional_group=info.get('functional_group')
 
 
+        date_plantation = info.get('date_plantation')
+        if date_plantation == "":
+            date_plantation = None
+        else :
+            try:
+                date_plantation = datetime.strptime(date_plantation, '%Y-%m-%d').date()
+            except ValueError:
+                abort(400, description="Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD.")
+
+        details_url=info.get('details_url')
+        image_url=info.get('image_url')
+        type=info.get('type')
+        genre=info.get('genre')
+        family=info.get('family')
+        functional_group=info.get('functional_group')
+
+
 
         dhp = info.get('dhp')
         if dhp == "" :
@@ -109,6 +161,31 @@ def create_app(config_name=None):
             except ValueError:
                 abort(400, description="Le champ 'dhp' doit être un entier.")
 
+        type = Type.query.filter_by(name_fr=type).first()
+        genre = Genre.query.filter_by(name=genre).first()
+        family = Family.query.filter_by(name=family).first()
+        functional_group = FunctionalGroup.query.filter_by(group=functional_group).first()
+        existing_location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
+        if not existing_location:
+            existing_location = Location(latitude=latitude, longitude=longitude)
+            db.session.add(existing_location)
+            db.session.flush()
+            existing_location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
+
+        new_tree = Tree(
+            date_plantation=date_plantation,
+            date_measure=date_releve,
+            approbation_status="pending",
+            location=existing_location,
+            details_url=details_url,
+            image_url=image_url,
+            type=type,
+            genre=genre,
+            family=family,
+            functional_group=functional_group,
+            commentaires_rejet=None,
+            dhp=dhp
+        )
         type = Type.query.filter_by(name_fr=type).first()
         genre = Genre.query.filter_by(name=genre).first()
         family = Family.query.filter_by(name=family).first()
@@ -215,69 +292,135 @@ def create_app(config_name=None):
 
         return jsonify({"message": "Demande envoyée"}), 200
 
+
     @app.route('/api/arbre_rejet', methods=['GET'])
     def arbre_rejet():
         trees = Tree.query.filter_by(approbation_status="rejected").all()
         return jsonify([tree.to_dict() for tree in trees]), 200
 
+
     @app.route('/api/delete_tree/<int:id_tree>', methods=['POST'])
     def delete_tree(id_tree):
-        tree = Tree.query.filter_by(id_tree=id_tree).first()
+        tree = Tree.query.filter_by(id_tree=id_tree, approbation_status='rejected').first()
 
-        if tree is None:
-            abort(400, description="message:Arbre non-trouvable")
+        if not tree:
+            abort(400, description="Aucune demande de suppression trouvée ou l'arbre n'existe pas")
 
-        db.session.delete(tree)
-        db.session.commit()
-        return jsonify({"message": "Arbre supprimé"}), 200
+        try:
+            db.session.delete(tree)
+            db.session.commit()
+            return jsonify({"message": "Arbre supprimé avec succès"}), 200
+        except Exception as e:
+            print(f"Erreur lors de la suppression de l'arbre {id_tree}: {e}")
+            db.session.rollback()
+            return jsonify({"message": "Erreur lors de la suppression de l'arbre"}), 500
+
 
     @app.route('/api/modifier_arbre/<int:id_tree>', methods=['POST'])
     def modifier_arbre(id_tree):
         try:
             info = request.get_json()
-            print(f"Demande reçue pour modifier l'arbre avec le numéro d'emplacement : {id_tree}")
+            print(f"Demande reçue pour modifier l'arbre avec l'ID : {id_tree}")
+            print(f"Payload reçu : {info}")
 
             tree = Tree.query.filter_by(id_tree=id_tree).first()
             if not tree:
-                print(f"Arbre avec l'ID {id_tree} introuvable.")
                 return jsonify({"message": "Arbre introuvable"}), 404
 
-            date_releve = info.get('date_releve', tree.date_releve)
-            if not date_releve:
-                abort(400, description="La date de relevé est requise.")
+            dhp = info.get('dhp')
+            if dhp is not None:
+                try:
+                    tree.dhp = int(dhp)
+                except ValueError:
+                    return jsonify({"message": "Le champ 'dhp' doit être un entier."}), 400
+
+            tree.details_url = info.get('details_url', tree.details_url)
+            tree.image_url = info.get('image_url', tree.image_url)
+
+            if 'location' in info:
+                loc_info = info['location']
+                latitude = loc_info.get('latitude')
+                longitude = loc_info.get('longitude')
+
+                if latitude and longitude:
+                    location = Location.query.filter_by(latitude=latitude, longitude=longitude).first()
+                    if not location:
+                        location = Location(latitude=latitude, longitude=longitude)
+                        db.session.add(location)
+                        db.session.flush()
+                    tree.location = location
+
+            date_measure = info.get('date_measure')
+            if date_measure:
+                try:
+                    tree.date_measure = datetime.strptime(date_measure, '%Y-%m-%d').date()
+                except ValueError:
+                    return jsonify({"message": "Le format de la date relevé est invalide. Utilisez YYYY-MM-DD."}), 400
+
+            date_plantation = info.get('date_plantation')
+            if date_plantation:
+                try:
+                    tree.date_plantation = datetime.strptime(date_plantation, '%Y-%m-%d').date()
+                except ValueError:
+                    return jsonify({"message": "Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD."}), 400
             else:
-                try:
-                    date_releve = datetime.strptime(tree.date_releve, '%Y-%m-%d').date()
-                except ValueError:
-                    abort(400, description="Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD.")
+                tree.date_plantation = None
 
-            if 'dhp' in info:
-                try:
-                    tree.dhp = int(info.get ('dhp', tree('dhp')))
-                except ValueError:
-                    abort(400, description="Le champ 'dhp' doit être un entier.")
+            if 'type' in info and info['type']:
+                type_info = info['type']
+                type_name_fr = type_info.get('name_fr')
+                if type_name_fr:
+                    type_obj = Type.query.filter_by(name_fr=type_name_fr).first()
+                    if not type_obj:
+                        type_obj = Type(
+                            name_fr=type_name_fr,
+                            name_en=type_info.get('name_en', ''),
+                            name_la=type_info.get('name_la', '')
+                        )
+                        db.session.add(type_obj)
+                        db.session.flush()
+                    tree.type = type_obj
 
-            approbation_status = info.get('approbation_status', tree.approbation_status)
+            if 'family' in info and info['family']:
+                family_info = info['family']
+                family_name = family_info.get('name')
+                if family_name:
+                    family_obj = Family.query.filter_by(name=family_name).first()
+                    if not family_obj:
+                        family_obj = Family(name=family_name)
+                        db.session.add(family_obj)
+                        db.session.flush()
+                    tree.family = family_obj
 
-            if approbation_status not in ['approved', 'rejected']:
-                abort(400, description="Le champ 'approbation_status' doit être 'approved' ou 'rejected'.")
-            tree.approbation_status = approbation_status
+            if 'genre' in info and info['genre']:
+                genre_info = info['genre']
+                genre_name = genre_info.get('name')
+                if genre_name:
+                    genre_obj = Genre.query.filter_by(name=genre_name).first()
+                    if not genre_obj:
+                        genre_obj = Genre(name=genre_name)
+                        db.session.add(genre_obj)
+                        db.session.flush()
+                    tree.genre = genre_obj
 
-            # Mise à jour des attributs spécifiques si l'arbre est de type TreeRue
-            tree.genre.name = info.get('genre', tree.genre.name)
-            tree.functional_group.group = info.get('functional_group', tree.functional_group.group)
-            tree.type.name_fr = info.get('type', tree.type.name_fr)
-            tree.family.name = info.get('family', tree.family.name)
+            if 'functional_group' in info and info['functional_group']:
+                fg_info = info['functional_group']
+                group_name = fg_info.get('group')
+                if group_name:
+                    fg_obj = FunctionalGroup.query.filter_by(group=group_name).first()
+                    if not fg_obj:
+                        fg_obj = FunctionalGroup(group=group_name, description=fg_info.get('description', ''))
+                        db.session.add(fg_obj)
+                        db.session.flush()
+                    tree.functional_group = fg_obj
 
             db.session.commit()
-            print(f"Arbre avec le numéro d'emplacement {id_tree} et les informations associées mises à jour avec succès.")
-
-            return jsonify(tree.to_dict()), 200
-
+            return jsonify({"message": "Arbre modifié avec succès"}), 200
         except Exception as e:
-            print(f"Erreur lors de la modification de l'arbre : {str(e)}")
+            print(f"Erreur lors de la modification de l'arbre : {e}")
             db.session.rollback()
-            return jsonify({"message": "Une erreur s'est produite lors de la modification de l'arbre"}), 500
+            return jsonify({"message": "Erreur interne du serveur"}), 500
+
 
     return app
 
