@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import { Stack } from "expo-router";
 import { PermissionProvider } from "@/context/PermissionContext";
+import React from "react";
 
 export default function TreeAnalyzerStackLayout() {
   return (

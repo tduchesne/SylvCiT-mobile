@@ -11,9 +11,11 @@ import { usePermissions } from "@/context/PermissionContext";
 import { useRouter } from "expo-router";
 import CameraComponent from "@/components/CameraComponent";
 import { useEffect, useState } from "react";
+import Config from "../../../config";
 
 import { CameraCapturedPicture } from "expo-camera";
 import LoadingModal from "@/components/LoadingModal";
+import React from "react";
 
 async function* streamResponseChunks(response: Response) {
   let buffer = "";
@@ -87,7 +89,7 @@ export async function* streamGemini({
   model = "gemini-1.5-flash",
   contents = [],
 }: { model?: string; contents?: Content[] } = {}) {
-  let response = await fetch("http://192.168.0.59:5001/api/generate", {
+  let response = await fetch(`${Config.API_URL}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ model, contents }),

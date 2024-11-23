@@ -8,6 +8,8 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
+import React from 'react';
+
 
 export function TreeWave() {
   const rotationAnimation = useSharedValue(0);

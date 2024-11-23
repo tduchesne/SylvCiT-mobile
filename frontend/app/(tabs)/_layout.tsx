@@ -22,7 +22,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Accueil",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "home" : "home-outline"}
@@ -32,12 +32,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="carte"
         options={{
-          title: "Explore",
+          title: "Carte",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
+              name={focused ? "map" : "map-outline"}
               color={color}
             />
           ),
@@ -48,10 +48,7 @@ export default function TabLayout() {
         options={{
           title: "Ajouter Arbre",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "add" : "add-sharp"}
-              color={color}
-            />
+            <TabBarIcon name={focused ? "add" : "add-sharp"} color={color} />
           ),
         }}
       />
@@ -68,12 +65,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="account"
+        name="liste_arbre"
         options={{
-          title: "Account",
+          title: "Liste d'arbres",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "person" : "person-circle"}
+              name={focused ? "leaf" : "leaf"}
               color={color}
             />
           ),
@@ -81,4 +78,4 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-}
+}  
