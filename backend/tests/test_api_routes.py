@@ -156,3 +156,90 @@ def test_coord_tree_invalid_longitude(client, db_fixture, setup_data):
     
     data = response.get_json()
     assert data['description'] == "Longitude invalide.", f"Message d'erreur inattendu: {data['description']}"
+
+
+def test_hello_world(client):
+    """
+    Test de la route GET '/' qui devrait retourner 'Hi mom!'.
+    """
+    response = client.get('/')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+    assert response.data.decode() == 'Hi mom!', f"Réponse inattendue: {response.data.decode()}"
+
+def test_get_trees(client, setup_data):
+    """
+    Test de la route GET '/api/trees' qui devrait retourner la liste des arbres.
+    """
+    response = client.get('/api/trees')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+    
+    data = response.get_json()
+    assert isinstance(data, list), "La réponse devrait être une liste."
+
+    # Vérifier les détails du premier arbre
+    tree = data[0]
+    assert 'id_tree' in tree, "L'arbre devrait avoir un 'id_tree'."
+    assert 'date_plantation' in tree, "L'arbre devrait avoir une 'date_plantation'."
+    assert 'date_measure' in tree, "L'arbre devrait avoir une 'date_measure'."
+    assert 'approbation_status' in tree, "L'arbre devrait avoir un 'approbation_status'."
+    assert 'location' in tree, "L'arbre devrait avoir un 'location'."
+    assert 'details_url' in tree, "L'arbre devrait avoir un 'details_url'."
+    assert 'image_url' in tree, "L'arbre devrait avoir un 'image_url'."
+    assert 'type' in tree, "L'arbre devrait avoir un 'type'."
+    assert 'genre' in tree, "L'arbre devrait avoir un 'genre'."
+    assert 'family' in tree, "L'arbre devrait avoir une 'family'."
+    assert 'functional_group' in tree, "L'arbre devrait avoir un 'functional_group'."
+    assert 'dhp' in tree, "L'arbre devrait avoir un 'dhp'."
+
+def test_get_genres(client, setup_data):
+    """
+    Test de la route GET '/api/genre' qui devrait retourner la liste des genres.
+    """
+    response = client.get('/api/genre')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+
+    data = response.get_json()
+    assert isinstance(data, list), "La réponse devrait être une liste."
+    genres = [genre['name'] for genre in data]
+    assert 'Catalpa' in genres, "'Catalpa' devrait être dans les genres."
+    assert 'Acer' in genres, "'Acer' devrait être dans les genres."
+
+def test_get_families(client, setup_data):
+    """
+    Test de la route GET '/api/family' qui devrait retourner la liste des familles.
+    """
+    response = client.get('/api/family')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+
+    data = response.get_json()
+    assert isinstance(data, list), "La réponse devrait être une liste."
+    families = [family['name'] for family in data]
+    assert 'Sapindaceae' in families, "'Sapindaceae' devrait être dans les familles."
+    assert 'Juglandaceae' in families, "'Juglandaceae' devrait être dans les familles."
+
+def test_get_types(client, setup_data):
+    """
+    Test de la route GET '/api/type' qui devrait retourner la liste des types.
+    """
+    response = client.get('/api/type')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+
+    data = response.get_json()
+    assert isinstance(data, list), "La réponse devrait être une liste."
+    types = [type_['name_fr'] for type_ in data]
+    assert 'Catalpa de lOuest' in types, "'Catalpa de lOuest' devrait être dans les types."
+    assert 'Phellodendron de lAmour Maelio' in types, "'Phellodendron de lAmour Maelio' devrait être dans les types."
+
+def test_get_functional_groups(client, setup_data):
+    """
+    Test de la route GET '/api/functional_group' qui devrait retourner la liste des groupes fonctionnels.
+    """
+    response = client.get('/api/functional_group')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+
+    data = response.get_json()
+    assert isinstance(data, list), "La réponse devrait être une liste."
+ 
+    groups = [fg['group'] for fg in data]
+    assert '1A' in groups, "'1A' devrait être dans les groupes fonctionnels."
+    assert '1B' in groups, "'1B' devrait être dans les groupes fonctionnels."

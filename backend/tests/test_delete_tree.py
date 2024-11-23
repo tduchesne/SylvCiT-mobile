@@ -98,8 +98,7 @@ def test_demande_suppression_arbre_success(client, db_fixture, setup_data):
     assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
     data = response.get_json()
     assert data['message'] == "Demande envoyée", f"Message inattendu: {data['message']}"
-    
-    # Vérifier que l'arbre a bien été mis à jour dans la base de données
+
     updated_tree = Tree.query.get(tree_id)
     assert updated_tree.approbation_status == "rejected", "L'arbre n'a pas été mis à jour correctement."
 
@@ -122,3 +121,42 @@ def test_demande_suppression_arbre_already_rejected(client, db_fixture, setup_da
     
     data = response.get_json()
     assert data['description'] == "message : Demande déja envoyée", f"Message inattendu: {data['description']}"
+
+def test_delete_tree_success(client, db_fixture, setup_data):
+    """
+    Test réussi de la route POST /api/delete_tree/<id_tree>
+    """
+    # Récupérer un arbre existant
+    tree = Tree.query.first()
+    assert tree is not None, "Aucun arbre trouvé dans la base de données."
+    
+    tree_id = tree.id_tree
+    
+    response = client.post(f'/api/delete_tree/{tree_id}')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+    
+    data = response.get_json()
+    assert data['message'] == "Arbre supprimé", f"Message inattendu: {data['message']}"
+    deleted_tree = Tree.query.get(tree_id)
+    assert deleted_tree is None, "L'arbre n'a pas été supprimé de la base de données."
+
+def test_delete_tree_not_found(client, db_fixture, setup_data):
+    """
+    Test de la route POST /api/delete_tree/<id_tree> avec un ID inexistant.
+    """
+    non_existent_id = 9999
+    response = client.post(f'/api/delete_tree/{non_existent_id}')
+    assert response.status_code == 400, f"Statut attendu 400, obtenu {response.status_code}"
+    
+    data = response.get_json()
+    assert data['description'] == "message:Arbre non-trouvable", f"Message inattendu: {data['description']}"
+
+def test_delete_tree_invalid_id(client, db_fixture, setup_data):
+    """
+    Test de la route POST /api/delete_tree/<id_tree> avec un ID invalide (non entier).
+    """
+    invalid_id = 'invalid_id'
+    response = client.post(f'/api/delete_tree/{invalid_id}')
+    assert response.status_code == 404, f"Statut attendu 404, obtenu {response.status_code}"
+    data = response.get_json()
+    assert data is None, "La réponse ne doit pas contenir de données JSON pour un 404."

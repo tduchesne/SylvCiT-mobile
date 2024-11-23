@@ -6,7 +6,6 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from models import Tree, Location, Type, Genre, Family, FunctionalGroup
 
-# Activer les contraintes de clés étrangères pour SQLite en mémoire
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
@@ -25,7 +24,6 @@ def client(app):
 
 @pytest.fixture(scope='session')
 def db_fixture(app):
-    # L'instance db est déjà initialisée dans create_app
     db.create_all()
     yield db
     db.drop_all()
@@ -33,8 +31,6 @@ def db_fixture(app):
 @pytest.fixture(scope='function')
 def init_database(db_fixture):
     from models import Type, Genre, Family, FunctionalGroup
-
-    # Créer les données de référence
     functional_group = FunctionalGroup(
         group='1A',
         description='Conifères généralement tolérants à l’ombre, mais pas à la sécheresse ou l’inondation.'
@@ -46,9 +42,8 @@ def init_database(db_fixture):
     db_fixture.session.add_all([functional_group, family, genre, type_tree])
     db_fixture.session.commit()
 
-    yield db_fixture  # Les tests s'exécutent ici
+    yield db_fixture  
 
-    # Nettoyer après le test
     db_fixture.session.query(Tree).delete()
     db_fixture.session.query(Location).delete()
     db_fixture.session.commit()
