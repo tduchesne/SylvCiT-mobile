@@ -1,13 +1,13 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
-import FormDemandeSuppressionArbres from "@/components/FormDemandeSuppressionArbres";
+import { Image, StyleSheet } from "react-native";
+import TreeManagement from "@/components/TreeManagement";
 import Screen from "@/components/Screen";
 
-export default function DemandeSuppressionArbres() {
+export default function GestionArbres() {
   return (
     <Screen
-      title="Demande de Suppression"
-      content={<FormDemandeSuppressionArbres />}
+      title="Gestion des Arbres"
+      content={<TreeManagement />}
       headerImage={
         <Image
           source={require("@/assets/images/adaptive-icon.png")}

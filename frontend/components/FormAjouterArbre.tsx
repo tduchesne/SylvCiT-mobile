@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { TextInput, SafeAreaView, ScrollView, Button, Image, StyleSheet, Alert, View, ActivityIndicator } from 'react-native';
 //npx expo install @react-native-community/datetimepicker
@@ -16,14 +16,12 @@ import MapView, { Region } from 'react-native-maps';
 //npx expo install @react-native-picker/picker
 import { Picker } from '@react-native-picker/picker';
 
+
 export default function FormAjoutArbre() {
 
 
     const [empNo, setEmpNo] = useState('');
     const [adresse, setAdresse] = useState('');
-    const [essenceLatin, setEssenceLatin] = useState('');
-    const [essenceFr, setEssenceFr] = useState('');
-    const [essenceAng, setEssenceAng] = useState('');
     const [dhp, setDhp] = useState('');
     const [longitude, setLongitude] = useState('');
     const [latitude, setLatitude] = useState('');
@@ -34,14 +32,112 @@ export default function FormAjoutArbre() {
     const [modalDatePreleve, setModalDatePreleve] = useState(false)
     const [modalDatePlantation, setModalDatePlantation] = useState(false)
     const [indicateur, setIndicateur] = useState(false);
-    const [invType, setInvType] = useState('');
-
-
     const colorScheme = useColorScheme();
+    const [genres, setGenres] = useState([]);
+    const [types, setTypes] = useState([]);
+    const [functionalGroup, setFunctionalGroup] = useState([]);
+    const [family, setFamily] = useState([]);
+    const [genreChoisi, setGenreChoisi] = useState('');
+    const [typeChoisiFR, setTypeChoisiFR] = useState('');
+    const [typeChoisiLA, setTypeChoisiLA] = useState('');
+    const [typeChoisiEN, setTypeChoisiEN] = useState('');
+    const [functionalGroupChoisi, setFunctionalGroupChoisi] = useState('');
+    const [familyChoisi, setFamilyChoisi] = useState('');
 
+    useEffect(() => {
+        fetchGenres();
+        fetchFamily();
+        fetchFunctionalGroup();
+        fetchTypes();
+    }, []);
+
+
+    //Fonction pour importer les genres de la table genre
+    const fetchGenres = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/genre`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les genres");
+            }
+            const data = await response.json();
+            setGenres(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les genres.");
+        }
+    };
+
+
+    //Fonction pour importer les types de la table type
+    const fetchTypes = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/type`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les types");
+            }
+            const data = await response.json();
+            setTypes(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les types.");
+        }
+    };
+
+    //Fonction pour importer les functional group de la table functional group
+    const fetchFunctionalGroup = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/functional_group`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les functional group");
+            }
+            const data = await response.json();
+            setFunctionalGroup(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les function group.");
+        }
+    };
+
+    //Fonction pour importer les types de la table type
+    const fetchFamily = async () => {
+        try {
+            const response = await fetch(`${Config.API_URL}/api/family`, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (!response.ok) {
+                throw new Error("Impossible d'importer les familles");
+            }
+            const data = await response.json();
+            setFamily(data);
+        } catch (error) {
+            Alert.alert("Error", "Impossible d'importer les familles.");
+        }
+    };
+
+
+    //Fonction pour envoyer les données au backend
     const sauvegarder = () => {
 
-        if (!dateReleve || !longitude || !latitude || !invType) {
+        if (!dateReleve || !longitude || !latitude) {
             Alert.alert("Merci de remplir tous les champs obligatoires");
 
         } else {
@@ -53,16 +149,18 @@ export default function FormAjoutArbre() {
                 },
                 body: JSON.stringify({
                     "no_emp": empNo,
-                    "inv_type": invType,
                     "adresse": adresse,
-                    "essence_latin": essenceLatin,
-                    "essence_fr": essenceFr,
-                    "essence_ang": essenceAng,
+                    "essence_latin": typeChoisiLA,
+                    "type": typeChoisiFR,
+                    "essence_ang": typeChoisiEN,
                     "dhp": dhp,
                     "date_plantation": datePlantation,
                     "latitude": latitude,
                     "longitude": longitude,
-                    "date_releve": formatDate(dateReleve)
+                    "date_releve": formatDate(dateReleve),
+                    "genre": genreChoisi,
+                    "family": familyChoisi,
+                    "functional_group": functionalGroupChoisi
                 })
             })
                 .then((reponse) => validerReponse(reponse))
@@ -77,13 +175,13 @@ export default function FormAjoutArbre() {
         }
     }
 
-
+    //Fonction pour vérifier la réponse du serveur
     const validerReponse = async (response: Response) => {
 
         setIndicateur(false)
 
 
-        if (response.status == 201) {
+        if (response.ok) {
             Alert.alert("Informations sauvegardées")
             nettoyerChamps()
         } else {
@@ -94,6 +192,7 @@ export default function FormAjoutArbre() {
 
     }
 
+    // Fonction qui trouve l'adresse à partir des coordonnées GPS
     const trouverPosition = async (region: Region) => {
         setIndicateur(true);
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -107,27 +206,27 @@ export default function FormAjoutArbre() {
         });
 
         setAdresse(location[0].formattedAddress?.toString() ?? '')
-        /* setLatitude(location.coords.latitude.toString());
-         setLongitude(location.coords.longitude.toString());*/
-
-
         setIndicateur(false);
 
     }
 
+    //Fonction pour réinitialiser les champs du formulaire
     const nettoyerChamps = () => {
-        initialiserChamps(setEmpNo, setAdresse, setEssenceFr, setEssenceLatin, setEssenceAng, setDhp, setDateReleve, setDatePlantation, setLongitude, setLatitude)
+        initialiserChamps(setEmpNo, setAdresse, setTypeChoisiFR, setTypeChoisiLA, setTypeChoisiEN, setDhp, setDateReleve, setDatePlantation, setLongitude, setLatitude, setFamilyChoisi, setFunctionalGroupChoisi, setGenreChoisi)
     }
 
+    //Fonction qui remet les derniers valeurs entrées par l'utilisateur dans les champs
     const remettreChamps = () => {
-        remplirChamps(setEmpNo, empNo, setAdresse, adresse, setEssenceFr, essenceFr, setEssenceLatin, essenceLatin, setEssenceAng, essenceLatin, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude)
+        remplirChamps(setEmpNo, empNo, setAdresse, adresse, setTypeChoisiFR, typeChoisiFR, setTypeChoisiLA, typeChoisiLA, setTypeChoisiEN, typeChoisiEN, setDhp, dhp, setDateReleve, dateReleve, setDatePlantation, datePlantation, setLongitude, longitude, setLatitude, latitude, setFamilyChoisi, familyChoisi, setFunctionalGroupChoisi, functionalGroupChoisi, setGenreChoisi, genreChoisi)
     }
+
 
     const annuler = () => {
 
         Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [{ text: "Oui", onPress: () => nettoyerChamps() }, { text: "Non" }])
     }
 
+    //Fonction qui assigne la date choisie dans le calendrier
     const choisirDateReleve = (event: any, dateReleveChoisie: any) => {
         setModalDatePreleve(false)
         setDateReleve(dateReleveChoisie)
@@ -149,17 +248,68 @@ export default function FormAjoutArbre() {
                         * Les champs en rouge sont obligatoires</ThemedText>
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEmpNo} value={empNo} placeholder="No emplacement" keyboardType="numeric" />
-                    <View style={[styles.input, styles.champObligatoire]}>
-                        <Picker selectedValue={invType} onValueChange={(itemValue, itemIndex) => setInvType(itemValue)}>
-                            <Picker.Item label="Inv Type" value=" " />
-                            <Picker.Item label="Type Rue" value="R" />
-                            <Picker.Item label="Type Hors Rue" value="H" />
+
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={genreChoisi}
+                            onValueChange={(itemValue) => setGenreChoisi(itemValue)}>
+                            <Picker.Item label="Choisir un genre" value="" />
+                            {genres.map((genre) => (
+                                <Picker.Item key={genre["id_genre"]} label={genre["name"]} value={genre["name"]} />
+                            ))}
                         </Picker>
                     </View>
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceLatin} value={essenceLatin} placeholder="Essence_latin" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceFr} value={essenceFr} placeholder="Essence_fr" />
-                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setEssenceAng} value={essenceAng} placeholder="Essence_ang" />
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={typeChoisiFR}
+                            onValueChange={(itemValue) => setTypeChoisiFR(itemValue)}>
+                            <Picker.Item label="Choisir un type FR" value="" />
+                            {types.map((type) => (
+                                <Picker.Item key={type["id_type"]} label={type["name_fr"]} value={type["name_fr"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={typeChoisiLA}
+                            onValueChange={(itemValue) => setTypeChoisiLA(itemValue)}>
+                            <Picker.Item label="Choisir un type latin" value="" />
+                            {types.map((type) => (
+                                <Picker.Item key={type["id_type"]} label={type["name_la"]} value={type["name_la"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={typeChoisiEN}
+                            onValueChange={(itemValue) => setTypeChoisiEN(itemValue)}>
+                            <Picker.Item label="Choisir un type EN" value="" />
+                            {types.map((type) => (
+                                <Picker.Item key={type["id_type"]} label={type["name_en"]} value={type["name_en"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={functionalGroupChoisi}
+                            onValueChange={(itemValue) => setFunctionalGroupChoisi(itemValue)}>
+                            <Picker.Item label="Choisir un functional group" value="" />
+                            {functionalGroup.map((functionalGroup) => (
+                                <Picker.Item key={functionalGroup["id_functional_group"]} label={functionalGroup["group"]} value={functionalGroup["group"]} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <View style={[styles.input]}>
+                        <Picker
+                            selectedValue={familyChoisi}
+                            onValueChange={(itemValue) => setFamilyChoisi(itemValue)}>
+                            <Picker.Item label="Choisir une famille" value="" />
+                            {family.map((famille) => (
+                                <Picker.Item key={famille["id_family"]} label={famille["name"]} value={famille["name"]} />
+                            ))}
+                        </Picker>
+                    </View>
+
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setDhp} value={dhp} placeholder="DHP" keyboardType="numeric" />
                     <View style={styles.labelCal}><ThemedText style={styles.label} >Date relevé</ThemedText>
                         <Ionicons.Button backgroundColor={Colors[colorScheme ?? "light"].buttonBackground} name="calendar" onPress={() => setModalDatePreleve(true)} />
@@ -176,7 +326,7 @@ export default function FormAjoutArbre() {
                         <MapView style={styles.map} showsUserLocation={true} onRegionChangeComplete={(region) => { setLatitude(region.latitude.toString()), setLongitude(region.longitude.toString()), trouverPosition(region) }} />
 
                     </View>
-
+                    <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }]} onChangeText={setAdresse} value={adresse} placeholder="Adresse" />
 
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, styles.champObligatoire]} onChangeText={setLongitude} value={longitude} placeholder="Longitude" keyboardType="numeric" />
                     <TextInput style={[styles.input, { color: Colors[colorScheme ?? "light"].text }, , styles.champObligatoire]} onChangeText={setLatitude} value={latitude} placeholder="Latitude" keyboardType="numeric" />
@@ -197,67 +347,47 @@ export default function FormAjoutArbre() {
 }
 
 
-function initialiserChamps(setEmpNo: any, setAdresse: any, setEssenceFr: any, setEssenceLatin: any, setEssenceAng: any, setDhp: any, setDateReleve: any, setDatePlantation: any, setLongitude: any, setLatitude: any) {
+function initialiserChamps(setEmpNo: any, setAdresse: any, setTypeChoisFr: any, setTypeChoisiLa: any, setTypeChoisiEN: any, setDhp: any, setDateReleve: any, setDatePlantation: any, setLongitude: any, setLatitude: any, setFamilyChoisi: any, setFunctionalGroupChoisi: any, setGenreChoisi: any) {
 
     setEmpNo('');
     setAdresse('');
-    setEssenceFr('');
-    setEssenceLatin('');
-    setEssenceAng('');
+    setTypeChoisFr('');
+    setTypeChoisiLa('');
+    setTypeChoisiEN('');
     setDhp('');
     setDateReleve(new Date());
     setDatePlantation('');
     setLongitude('');
     setLatitude('');
+    setFamilyChoisi('');
+    setFunctionalGroupChoisi('');
+    setGenreChoisi('');
 
 }
 
-function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any, setEssenceFr: any, essenceFr: any, setEssenceLatin: any, essenceLatin: any, setEssenceAng: any, essenceAng: any, setDhp: any, dhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, datePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any) {
+function remplirChamps(setEmpNo: any, empNo: any, setAdresse: any, adresse: any, setTypeChoisiFr: any, typeChoisiFR: any, setTypeChoisiLA: any, typeChoisiLA: any, setTypeChoisiEN: any, typeChoisiEN: any, setDhp: any, dhp: any, setDateReleve: any, dateReleve: any, setDatePlantation: any, datePlantation: any, setLongitude: any, longitude: any, setLatitude: any, latitude: any, setFamilyChoisi: any, familyChoisi: any, setFunctionalGroupChoisi: any, functionalGroupChoisi: any, setGenreChoisi: any, genreChoisi: any) {
 
     setEmpNo(empNo);
     setAdresse(adresse);
-    setEssenceFr(essenceFr);
-    setEssenceLatin(essenceLatin);
-    setEssenceAng(essenceAng);
+    setTypeChoisiFr(typeChoisiFR);
+    setTypeChoisiLA(typeChoisiLA);
+    setTypeChoisiEN(typeChoisiEN);
     setDhp(dhp);
     setDateReleve(dateReleve);
     setDatePlantation(datePlantation);
     setLongitude(longitude);
     setLatitude(latitude);
+    setFamilyChoisi(familyChoisi);
+    setGenreChoisi(genreChoisi);
+    setFunctionalGroupChoisi(functionalGroupChoisi)
 
 }
 
-/*
-const ChargerPhoto = () => {
-    const [image, setImage] = useState<string | null>(null);
 
-    const ChargerImage = async () => {
-        // Ajout de permission dans le sprint 2
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.canceled) {
-            setImage(result.assets[0].uri);
-        }
-    };
-
-    return (
-        <View style={styles.boutonPhoto}>
-            <Button title="Charger photo de l'arbre" onPress={ChargerImage} color="lightgreen" />
-            {image && <Image source={{ uri: image }} style={styles.image} />}
-        </View>
-    );
-}*/
-
+//Fonction qui retourne la date dans le format YYYY-MM-DD
 function formatDate(date: Date) {
     const year = String(date.getFullYear()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
@@ -335,6 +465,7 @@ const styles = StyleSheet.create({
     },
     map: {
         height: 200,
+
 
     },
 

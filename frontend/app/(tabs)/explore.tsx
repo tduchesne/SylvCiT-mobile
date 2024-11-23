@@ -1,6 +1,7 @@
 import Screen from "@/components/Screen";
 import { StyleSheet, Image, useColorScheme, Platform } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
+import React, { useState } from "react";
 
 export default function TabTwoScreen() {
   return (

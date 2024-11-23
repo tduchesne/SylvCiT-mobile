@@ -57,7 +57,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="modifier_metadonnees"
+        name="recherche_arbre"
+        options={{
+          title: "Rechercher",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "search" : "search-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="tree_management"
         initialParams={{ no_emp }}
         options={{
           title: "Modifier Métadonnées",
@@ -72,7 +84,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="supprimer_arbres"
         options={{
-          title: "Supprimer Arbre",
+          title: "Supprimer Arbres",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "trash" : "trash-outline"}
@@ -82,29 +94,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="demande_suppression_arbres"
-        options={{
-          title: "Demande Suppression Arbres",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "cut" : "cut-outline"}
-              color={color}
-            />
-          ),
-        }}
-      />
-      {/* <Tabs.Screen
         name="account"
         options={{
           title: "Account",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "person" : "person-circle"}
+              name={focused ? "person-circle" : "person-circle-outline"}
               color={color}
             />
           ),
         }}
-      /> */}
+      />
     </Tabs>
   );
 }

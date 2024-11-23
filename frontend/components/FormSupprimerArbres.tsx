@@ -3,10 +3,32 @@ import { View, Text, Button, StyleSheet, ScrollView, Alert, TouchableOpacity } f
 import { useFocusEffect } from "@react-navigation/native";
 
 interface Tree {
-    id: number;
-  no_emp: number;
-  emplacement: string;
-  essence?: { fr: string };
+  id_tree: number;
+  date_plantation: string | null;
+  date_measure: string | null;
+  approbation_status: string;
+  details_url: string;
+  image_url: string;
+  dhp: number | null;
+  type?: {
+    name_fr: string;
+    name_en: string;
+    name_la: string;
+  };
+  genre?: {
+    name: string;
+  };
+  family?: {
+    name: string;
+  };
+  functional_group?: {
+    group: string;
+    description: string;
+  };
+  location?: {
+    latitude: string;
+    longitude: string;
+  };
 }
 
 export default function FormSupprimerArbres() {
@@ -15,7 +37,7 @@ export default function FormSupprimerArbres() {
   const [selectedTrees, setSelectedTrees] = useState<Set<number>>(new Set());
 
   const fetchTrees = () => {
-    fetch(`${API_URL}/api/trees_pending_deletion`, {
+    fetch(`${API_URL}/api/arbre_rejet`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -33,22 +55,22 @@ export default function FormSupprimerArbres() {
     }, [])
   );
 
-  const handleSelectTree = (no_emp: number) => {
+  const handleSelectTree = (id_tree: number) => {
     setSelectedTrees((prev) => {
       const updated = new Set(prev);
-      if (updated.has(no_emp)) {
-        updated.delete(no_emp);
+      if (updated.has(id_tree)) {
+        updated.delete(id_tree);
       } else {
-        updated.add(no_emp);
+        updated.add(id_tree);
       }
       return updated;
     });
   };
 
-  const deleteTrees = () => {
+  const handleDeletionAction = () => {
     Alert.alert(
-      "Confirmation de suppression",
-      "Voulez-vous supprimer les arbres sélectionnés ou refuser leur suppression ?",
+      "Confirmation",
+      "Voulez-vous approuver ou refuser la suppression des arbres sélectionnés ?",
       [
         {
           text: "Annuler",
@@ -59,8 +81,8 @@ export default function FormSupprimerArbres() {
           style: "default",
           onPress: () => {
             Promise.all(
-              Array.from(selectedTrees).map((no_emp) =>
-                fetch(`${API_URL}/api/refuse_deletion/${no_emp}`, {
+              Array.from(selectedTrees).map((id_tree) =>
+                fetch(`${API_URL}/api/refuse_deletion/${id_tree}`, {
                   method: "POST",
                   headers: {
                     Accept: "application/json",
@@ -83,12 +105,12 @@ export default function FormSupprimerArbres() {
           },
         },
         {
-          text: "Supprimer",
+          text: "Approuver",
           style: "destructive",
           onPress: () => {
             Promise.all(
-              Array.from(selectedTrees).map((no_emp) =>
-                fetch(`${API_URL}/api/delete_tree/${no_emp}`, {
+              Array.from(selectedTrees).map((id_tree) =>
+                fetch(`${API_URL}/api/approve_deletion/${id_tree}`, {
                   method: "POST",
                   headers: {
                     Accept: "application/json",
@@ -116,24 +138,27 @@ export default function FormSupprimerArbres() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.headerText}>Sélectionnez les arbres à supprimer ou refuser</Text>
+      <Text style={styles.headerText}>Sélectionnez les arbres à approuver ou refuser</Text>
       {trees.map((item) => (
         <TouchableOpacity
-          key={item.no_emp}
+          key={item.id_tree}
           style={[
             styles.treeItem,
-            selectedTrees.has(item.no_emp) ? styles.selected : null,
+            selectedTrees.has(item.id_tree) ? styles.selected : null,
           ]}
-          onPress={() => handleSelectTree(item.no_emp)}
+          onPress={() => handleSelectTree(item.id_tree)}
         >
-            <Text style={styles.treeText}>ID: {item.id}</Text>
-          <Text style={styles.treeText}>Numéro emplacement: {item.no_emp}</Text>
-          <Text style={styles.treeText}>Emplacement: {item.emplacement}</Text>
-          {item.essence?.fr && <Text style={styles.treeText}>Nom Français: {item.essence.fr}</Text>}
+          <Text style={styles.treeText}>ID: {item.id_tree}</Text>
+          <Text style={styles.treeText}>Date Mesure: {item.date_measure || "N/A"}</Text>
+          <Text style={styles.treeText}>DHP: {item.dhp !== null ? item.dhp : "N/A"}</Text>
+          {item.type && <Text style={styles.treeText}>Type: {item.type.name_fr}</Text>}
+          {item.genre && <Text style={styles.treeText}>Genre: {item.genre.name}</Text>}
+          {item.family && <Text style={styles.treeText}>Famille: {item.family.name}</Text>}
+          <Text style={styles.treeText}>Statut: {item.approbation_status}</Text>
         </TouchableOpacity>
       ))}
       {selectedTrees.size > 0 && (
-        <Button title="Demander la suppression ou refus" onPress={deleteTrees} />
+        <Button title="Approuver ou Refuser la suppression" onPress={handleDeletionAction} />
       )}
     </ScrollView>
   );

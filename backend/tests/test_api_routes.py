@@ -1,15 +1,11 @@
-# backend/tests/test_delete_tree.py
+# backend/tests/test_api_routes.py
 
 import pytest
-from app import create_app, db
-from models import Tree, Location, Type, Genre, Family, FunctionalGroup
 from datetime import datetime
+from models import Tree, Genre, Family, FunctionalGroup, Type, Location
 
 @pytest.fixture(scope='function')
 def setup_data(db_fixture):
-    """
-    Fixture pour configurer des données initiales nécessaires aux tests.
-    """
     # Création des données nécessaires
     functional_group1 = FunctionalGroup(
         group='1A',
@@ -90,35 +86,73 @@ def setup_data(db_fixture):
     db_fixture.session.query(Location).delete()
     db_fixture.session.commit()
 
-def test_demande_suppression_arbre_success(client, db_fixture, setup_data):
-    tree = Tree.query.filter(Tree.approbation_status != "rejected").first()
-    assert tree is not None, "Aucun arbre trouvé avec approbation_status différent de 'rejected'."
-    tree_id = tree.id_tree
-    response = client.post(f'/api/demande_suppression/{tree_id}')
+
+
+def test_fetch_type_details_success(client, db_fixture, setup_data):
+    """
+    Test réussi de la route GET /api/fetch_type avec un type_fr valide.
+    """
+
+    payload = {'type': 'Catalpa de lOuest'}
+    response = client.get('/api/fetch_type', json=payload)
     assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
-    data = response.get_json()
-    assert data['message'] == "Demande envoyée", f"Message inattendu: {data['message']}"
     
-    # Vérifier que l'arbre a bien été mis à jour dans la base de données
-    updated_tree = Tree.query.get(tree_id)
-    assert updated_tree.approbation_status == "rejected", "L'arbre n'a pas été mis à jour correctement."
+    data = response.get_json()
+    assert 'name_en' in data, "La réponse doit contenir 'name_en'."
+    assert 'name_la' in data, "La réponse doit contenir 'name_la'."
+    assert data['name_en'] == 'Western Catalpa', f"Expected 'Western Catalpa', got {data['name_en']}"
+    assert data['name_la'] == 'Catalpa speciosa', f"Expected 'Catalpa speciosa', got {data['name_la']}"
 
-def test_demande_suppression_arbre_not_found(client, db_fixture, setup_data):
-    non_existent_id = 9999
-    response = client.post(f'/api/demande_suppression/{non_existent_id}')
+
+def test_get_arbre_rejet(client, db_fixture, setup_data):
+    """
+    Test de la route GET /api/arbre_rejet
+    """
+    response = client.get('/api/arbre_rejet')
+    assert response.status_code == 200, f"Statut attendu 200, obtenu {response.status_code}"
+    
+    data = response.get_json()
+    assert isinstance(data, list), "La réponse doit être une liste."
+    assert len(data) == 1, f"Nombre d'arbres rejetés attendu 1, obtenu {len(data)}"
+    
+    assert data[0]['approbation_status'] == 'rejected', "L'arbre retourné doit avoir le statut 'rejected'."
+
+
+def test_coord_tree_missing_coordinates(client, db_fixture, setup_data):
+    """
+    Test de la route GET /api/coord_tree/ sans fournir les coordonnées.
+    """
+    payload = {}
+    response = client.get('/api/coord_tree/', json=payload)
     assert response.status_code == 400, f"Statut attendu 400, obtenu {response.status_code}"
     
     data = response.get_json()
-    assert data['description'] == "message: Arbre non-trouvable", f"Message inattendu: {data['description']}"
+    assert data['description'] == "Latitude ou longitude manquante", f"Message d'erreur inattendu: {data['description']}"
 
-def test_demande_suppression_arbre_already_rejected(client, db_fixture, setup_data):
-    tree = Tree.query.filter_by(approbation_status="rejected").first()
-    assert tree is not None, "Aucun arbre trouvé avec approbation_status 'rejected'."
-    
-    tree_id = tree.id_tree
-    
-    response = client.post(f'/api/demande_suppression/{tree_id}')
+def test_coord_tree_invalid_latitude(client, db_fixture, setup_data):
+    """
+    Test de la route GET /api/coord_tree/ avec une latitude invalide.
+    """
+    payload = {
+        'latitude': '100.0',  # Latitude invalide
+        'longitude': '-73.40000'
+    }
+    response = client.get('/api/coord_tree/', json=payload)
     assert response.status_code == 400, f"Statut attendu 400, obtenu {response.status_code}"
     
     data = response.get_json()
-    assert data['description'] == "message : Demande déja envoyée", f"Message inattendu: {data['description']}"
+    assert data['description'] == "Latitude invalide.", f"Message d'erreur inattendu: {data['description']}"
+
+def test_coord_tree_invalid_longitude(client, db_fixture, setup_data):
+    """
+    Test de la route GET /api/coord_tree/ avec une longitude invalide.
+    """
+    payload = {
+        'latitude': '45.70000',
+        'longitude': '-200.0'  # Longitude invalide
+    }
+    response = client.get('/api/coord_tree/', json=payload)
+    assert response.status_code == 400, f"Statut attendu 400, obtenu {response.status_code}"
+    
+    data = response.get_json()
+    assert data['description'] == "Longitude invalide.", f"Message d'erreur inattendu: {data['description']}"
