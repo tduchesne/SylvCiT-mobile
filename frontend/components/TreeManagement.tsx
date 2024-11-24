@@ -47,7 +47,7 @@ export default function TreeManagement() {
   const [editingTree, setEditingTree] = useState<Tree | null>(null);
 
   const fetchTrees = () => {
-    fetch(`${API_URL}/api/trees`, {
+    fetch(`${API_URL}/api/list_trees`, {
       method: "GET",
       headers: {
         Accept: "application/json",
