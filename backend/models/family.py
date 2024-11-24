@@ -7,3 +7,9 @@ class Family(db.Model):
     name = db.Column(db.String(45))
 
     tree = db.relationship('Tree', back_populates='family')
+
+    def to_dict(self):
+        return {
+            'id_family': self.id_family,
+            'name': self.name
+        }

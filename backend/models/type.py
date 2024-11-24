@@ -9,3 +9,11 @@ class Type(db.Model):
     name_la = db.Column(db.String(100))
 
     tree = db.relationship('Tree', back_populates='type')
+
+    def to_dict(self):
+        return {
+            'id_type': self.id_type,
+            'name_fr': self.name_fr,
+            'name_en': self.name_en,
+            'name_la': self.name_la
+        }

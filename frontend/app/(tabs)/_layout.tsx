@@ -1,12 +1,13 @@
 import { Tabs } from "expo-router";
 import React from "react";
-
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+
+  const no_emp = '1';
 
   return (
     <Tabs
@@ -43,8 +44,8 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="ajouter_arbre"
+            <Tabs.Screen
+        name="ajouterArbre"
         options={{
           title: "Ajouter Arbre",
           tabBarIcon: ({ color, focused }) => (
@@ -71,6 +72,31 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "leaf" : "leaf"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="tree_management"
+        initialParams={{ no_emp }}
+        options={{
+          title: "Modifier Métadonnées",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "create" : "create-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="supprimer_arbres"
+        options={{
+          title: "Supprimer Arbres",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "trash" : "trash-outline"}
               color={color}
             />
           ),

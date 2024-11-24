@@ -11,8 +11,8 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Ajout d'un script pour attendre MySQL
-COPY wait-for-db.sh /app/wait-for-db.sh
-RUN chmod +x /app/wait-for-db.sh
+COPY wait_for_db.sh /app/wait_for_db.sh
+RUN chmod +x /app/wait_for_db.sh
 
 # Indique que le conteneur écoute sur le port 5000 au moment de l'exécution
 EXPOSE 5000
@@ -22,4 +22,4 @@ ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
 # Spécifie la commande à exécuter lorsque le conteneur démarre
-CMD ["/app/wait-for-db.sh", "flask", "run"]
+CMD ["/app/wait_for_db.sh", "flask", "run"]

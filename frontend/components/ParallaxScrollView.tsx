@@ -1,6 +1,7 @@
 import type { PropsWithChildren, ReactElement } from "react";
 import { StyleSheet, useColorScheme } from "react-native";
 import { Colors } from "@/constants/Colors";
+import React from "react";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -9,7 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { ThemedView } from "@/components/ThemedView";
-import React from 'react';
+
 
 
 const HEADER_HEIGHT = 230;

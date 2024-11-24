@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: b38d020b3ac8
+Revision ID: ee4f7422a863
 Revises: 
-Create Date: 2024-09-17 21:54:46.851558
+Create Date: 2024-11-24 12:36:40.122209
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b38d020b3ac8'
+revision = 'ee4f7422a863'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,54 +21,52 @@ def upgrade():
     op.create_table('family',
     sa.Column('id_family', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=45), nullable=True),
-    sa.PrimaryKeyConstraint('id_family'),
-    schema='inm5151_db'
+    sa.PrimaryKeyConstraint('id_family')
     )
     op.create_table('functional_group',
     sa.Column('id_functional_group', sa.Integer(), nullable=False),
     sa.Column('group', sa.String(length=2), nullable=True),
     sa.Column('description', sa.String(length=250), nullable=True),
-    sa.PrimaryKeyConstraint('id_functional_group'),
-    schema='inm5151_db'
+    sa.PrimaryKeyConstraint('id_functional_group')
     )
     op.create_table('genre',
     sa.Column('id_genre', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=45), nullable=True),
-    sa.PrimaryKeyConstraint('id_genre'),
-    schema='inm5151_db'
+    sa.PrimaryKeyConstraint('id_genre')
     )
     op.create_table('location',
     sa.Column('id_location', sa.Integer(), nullable=False),
-    sa.Column('latitude', sa.String(length=45), nullable=False),
-    sa.Column('longitude', sa.String(length=45), nullable=False),
-    sa.PrimaryKeyConstraint('id_location'),
-    schema='inm5151_db'
+    sa.Column('latitude', sa.Numeric(precision=21, scale=17), nullable=False),
+    sa.Column('longitude', sa.Numeric(precision=21, scale=17), nullable=False),
+    sa.PrimaryKeyConstraint('id_location')
     )
     op.create_table('type',
     sa.Column('id_type', sa.Integer(), nullable=False),
     sa.Column('name_fr', sa.String(length=100), nullable=True),
     sa.Column('name_en', sa.String(length=100), nullable=True),
     sa.Column('name_la', sa.String(length=100), nullable=True),
-    sa.PrimaryKeyConstraint('id_type'),
-    schema='inm5151_db'
+    sa.PrimaryKeyConstraint('id_type')
     )
     op.create_table('tree',
     sa.Column('id_tree', sa.Integer(), nullable=False),
-    sa.Column('date_plantation', sa.Date(), nullable=False),
+    sa.Column('date_plantation', sa.Date(), nullable=True),
     sa.Column('date_measure', sa.Date(), nullable=False),
+    sa.Column('approbation_status', sa.Enum('rejected', 'pending', 'approved', name='approbation_status_enum'), nullable=False),
+    sa.Column('commentaires_rejet', sa.String(length=254), nullable=True),
     sa.Column('details_url', sa.String(length=150), nullable=True),
+    sa.Column('image_url', sa.String(length=254), nullable=True),
     sa.Column('id_type', sa.Integer(), nullable=True),
     sa.Column('id_genre', sa.Integer(), nullable=True),
     sa.Column('id_family', sa.Integer(), nullable=True),
     sa.Column('id_functional_group', sa.Integer(), nullable=True),
-    sa.Column('id_location', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['id_family'], ['inm5151_db.family.id_family'], name='fk_tree_family'),
-    sa.ForeignKeyConstraint(['id_functional_group'], ['inm5151_db.functional_group.id_functional_group'], name='fk_tree_functional_group'),
-    sa.ForeignKeyConstraint(['id_genre'], ['inm5151_db.genre.id_genre'], name='fk_tree_genre'),
-    sa.ForeignKeyConstraint(['id_location'], ['inm5151_db.location.id_location'], name='fk_tree_id_location'),
-    sa.ForeignKeyConstraint(['id_type'], ['inm5151_db.type.id_type'], name='fk_tree_type'),
-    sa.PrimaryKeyConstraint('id_tree'),
-    schema='inm5151_db'
+    sa.Column('id_location', sa.Integer(), nullable=False),
+    sa.Column('dhp', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['id_family'], ['family.id_family'], name='fk_tree_family'),
+    sa.ForeignKeyConstraint(['id_functional_group'], ['functional_group.id_functional_group'], name='fk_tree_functional_group'),
+    sa.ForeignKeyConstraint(['id_genre'], ['genre.id_genre'], name='fk_tree_genre'),
+    sa.ForeignKeyConstraint(['id_location'], ['location.id_location'], name='fk_tree_id_location'),
+    sa.ForeignKeyConstraint(['id_type'], ['type.id_type'], name='fk_tree_type'),
+    sa.PrimaryKeyConstraint('id_tree')
     )
     with op.batch_alter_table('tree', schema=None) as batch_op:
         batch_op.create_index('fk_tree_family_idx', ['id_family'], unique=False)
@@ -89,10 +87,10 @@ def downgrade():
         batch_op.drop_index('fk_tree_functional_group_idx')
         batch_op.drop_index('fk_tree_family_idx')
 
-    op.drop_table('tree', schema='inm5151_db')
-    op.drop_table('type', schema='inm5151_db')
-    op.drop_table('location', schema='inm5151_db')
-    op.drop_table('genre', schema='inm5151_db')
-    op.drop_table('functional_group', schema='inm5151_db')
-    op.drop_table('family', schema='inm5151_db')
+    op.drop_table('tree')
+    op.drop_table('type')
+    op.drop_table('location')
+    op.drop_table('genre')
+    op.drop_table('functional_group')
+    op.drop_table('family')
     # ### end Alembic commands ###
