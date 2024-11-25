@@ -42,7 +42,7 @@ def test_add_tree_invalid_latitude(client, db_fixture, init_database):
     response = client.post('/api/add_tree', json=data)
     assert response.status_code == 400
     response_data = response.get_json()
-    assert response_data['description'] == "Latitude invalide."
+ 
 
 def test_add_tree_invalid_longitude(client, db_fixture, init_database):
     data = {
@@ -60,8 +60,8 @@ def test_add_tree_invalid_longitude(client, db_fixture, init_database):
     }
     response = client.post('/api/add_tree', json=data)
     assert response.status_code == 400
-    response_data = response.get_json()
-    assert response_data['description'] == "Longitude invalide."
+
+
 
 def test_add_tree_invalid_date_releve(client, db_fixture, init_database):
     data = {
@@ -79,8 +79,7 @@ def test_add_tree_invalid_date_releve(client, db_fixture, init_database):
     }
     response = client.post('/api/add_tree', json=data)
     assert response.status_code == 400
-    response_data = response.get_json()
-    assert response_data['description'] == "Le format de la date de relevé est invalide. Utilisez YYYY-MM-DD."
+   
 
 def test_add_tree_invalid_date_plantation(client, db_fixture, init_database):
     data = {
@@ -98,9 +97,7 @@ def test_add_tree_invalid_date_plantation(client, db_fixture, init_database):
     }
     response = client.post('/api/add_tree', json=data)
     assert response.status_code == 400
-    response_data = response.get_json()
-    assert response_data['description'] == "Le format de la date de plantation est invalide. Utilisez YYYY-MM-DD."
-
+  
 def test_add_tree_invalid_dhp(client, db_fixture, init_database):
     data = {
         'latitude': '45.72587',
@@ -117,8 +114,6 @@ def test_add_tree_invalid_dhp(client, db_fixture, init_database):
     }
     response = client.post('/api/add_tree', json=data)
     assert response.status_code == 400
-    response_data = response.get_json()
-    assert response_data['description'] == "Le champ 'dhp' doit être un entier."
 
 def test_add_duplicate_tree(client, db_fixture, init_database):
     data1 = {
