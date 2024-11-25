@@ -8,3 +8,10 @@ class FunctionalGroup(db.Model):
     description = db.Column(db.String(250))
 
     tree = db.relationship('Tree', back_populates='functional_group')
+
+    def to_dict(self):
+        return {
+            'id_functional_group': self.id_functional_group,
+            'group': self.group,
+            'description': self.description
+        }

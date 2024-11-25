@@ -9,3 +9,10 @@ class Location(db.Model):
     region = db.Column(db.String(45), nullable=True)
 
     tree = db.relationship('Tree', back_populates='location')
+
+    def to_dict(self):
+        return {
+            'id_location': self.id_location,
+            'latitude': self.latitude,
+            'longitude': self.longitude
+        }
