@@ -1,5 +1,5 @@
 
-import FormAjoutArbre from "@/components/FormAjouterArbre";
+import FormAjoutArbre from "@/components/FormAjouterArbre/FormAjouterArbre";
 import Screen from "@/components/Screen";
 import { ThemedView } from "@/components/ThemedView";
 import { Image, StyleSheet } from 'react-native';
