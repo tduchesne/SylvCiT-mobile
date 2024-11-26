@@ -213,6 +213,195 @@ export default function FormAjoutArbre() {
     iconAnchor: [16, 32],
   });
 
+  //Fonction pour envoyer les données au backend
+  const sauvegarder = () => {
+    if (!dateReleve || !longitude || !latitude) {
+      Alert.alert("Merci de remplir tous les champs obligatoires");
+    } else {
+      setIndicateur(true);
+      fetch(`${Config.API_URL}/api/add_tree`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          no_emp: empNo,
+          adresse: adresse,
+          type: typeChoisiFR,
+          dhp: dhp,
+          date_plantation: formatDate(datePlantation),
+          latitude: latitude,
+          longitude: longitude,
+          date_releve: formatDate(dateReleve),
+          genre: genreChoisi,
+          family: familyChoisi,
+          functional_group: functionalGroupChoisi,
+        }),
+      })
+        .then((reponse) => validerReponse(reponse))
+        .catch(() => {
+          setIndicateur(false);
+          Alert.alert(
+            "Erreur lors du sauvegarde des données. Merci de réessayer"
+          );
+          remettreChamps;
+        });
+    }
+  };
+
+  //Fonction qui remet les derniers valeurs entrées par l'utilisateur dans les champs
+  const remettreChamps = () => {
+    remplirChamps(
+      setEmpNo,
+      empNo,
+      setAdresse,
+      adresse,
+      setTypeChoisiFR,
+      typeChoisiFR,
+      setTypeChoisiLA,
+      typeChoisiLA,
+      setTypeChoisiEN,
+      typeChoisiEN,
+      setDhp,
+      dhp,
+      setDateReleve,
+      dateReleve,
+      setDatePlantation,
+      datePlantation,
+      setLongitude,
+      longitude,
+      setLatitude,
+      latitude,
+      setFamilyChoisi,
+      familyChoisi,
+      setFunctionalGroupChoisi,
+      functionalGroupChoisi,
+      setGenreChoisi,
+      genreChoisi
+    );
+  };
+
+  function remplirChamps(
+    setEmpNo: any,
+    empNo: any,
+    setAdresse: any,
+    adresse: any,
+    setTypeChoisiFr: any,
+    typeChoisiFR: any,
+    setTypeChoisiLA: any,
+    typeChoisiLA: any,
+    setTypeChoisiEN: any,
+    typeChoisiEN: any,
+    setDhp: any,
+    dhp: any,
+    setDateReleve: any,
+    dateReleve: any,
+    setDatePlantation: any,
+    datePlantation: any,
+    setLongitude: any,
+    longitude: any,
+    setLatitude: any,
+    latitude: any,
+    setFamilyChoisi: any,
+    familyChoisi: any,
+    setFunctionalGroupChoisi: any,
+    functionalGroupChoisi: any,
+    setGenreChoisi: any,
+    genreChoisi: any
+  ) {
+    setEmpNo(empNo);
+    setAdresse(adresse);
+    setTypeChoisiFr(typeChoisiFR);
+    setTypeChoisiLA(typeChoisiLA);
+    setTypeChoisiEN(typeChoisiEN);
+    setDhp(dhp);
+    setDateReleve(dateReleve);
+    setDatePlantation(datePlantation);
+    setLongitude(longitude);
+    setLatitude(latitude);
+    setFamilyChoisi(familyChoisi);
+    setGenreChoisi(genreChoisi);
+    setFunctionalGroupChoisi(functionalGroupChoisi);
+  }
+
+  //Fonction qui retourne la date dans le format YYYY-MM-DD
+  function formatDate(date: Date) {
+    const year = String(date.getFullYear()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  //Fonction pour vérifier la réponse du serveur
+  const validerReponse = async (response: Response) => {
+    setIndicateur(false);
+
+    if (response.ok) {
+      Alert.alert("Informations sauvegardées");
+      nettoyerChamps();
+    } else {
+      const description = await response.json();
+      Alert.alert(description["description"]);
+    }
+  };
+
+  //Fonction pour réinitialiser les champs du formulaire
+  const nettoyerChamps = () => {
+    initialiserChamps(
+      setEmpNo,
+      setAdresse,
+      setTypeChoisiFR,
+      setTypeChoisiLA,
+      setTypeChoisiEN,
+      setDhp,
+      setDateReleve,
+      setDatePlantation,
+      setLongitude,
+      setLatitude,
+      setFamilyChoisi,
+      setFunctionalGroupChoisi,
+      setGenreChoisi
+    );
+  };
+
+  function initialiserChamps(
+    setEmpNo: any,
+    setAdresse: any,
+    setTypeChoisFr: any,
+    setTypeChoisiLa: any,
+    setTypeChoisiEN: any,
+    setDhp: any,
+    setDateReleve: any,
+    setDatePlantation: any,
+    setLongitude: any,
+    setLatitude: any,
+    setFamilyChoisi: any,
+    setFunctionalGroupChoisi: any,
+    setGenreChoisi: any
+  ) {
+    setEmpNo("");
+    setAdresse("");
+    setTypeChoisFr("");
+    setTypeChoisiLa("");
+    setTypeChoisiEN("");
+    setDhp("");
+    setDateReleve(new Date());
+    setDatePlantation("");
+    setLongitude("");
+    setLatitude("");
+    setFamilyChoisi("");
+    setFunctionalGroupChoisi("");
+    setGenreChoisi("");
+  }
+
+  const annuler = () => {
+    Alert.alert("Annuler", "Voulez-vous vraiment annuler l'opération ?", [
+      { text: "Oui", onPress: () => nettoyerChamps() },
+      { text: "Non" },
+    ]);
+  };
+
   return (
     <SafeAreaView>
       <ActivityIndicator
@@ -296,8 +485,15 @@ export default function FormAjoutArbre() {
             <label style={styles.datePickerLabel}>Date relevé</label>
             <input
               type="date"
-              value={dateReleve.toISOString().substring(0, 10)}
-              onChange={(e) => setDateReleve(new Date(e.target.value))}
+              value={
+                dateReleve instanceof Date && !isNaN(dateReleve)
+                  ? dateReleve.toISOString().substring(0, 10)
+                  : ""
+              }
+              onChange={(e) => {
+                const newValue = e.target.value ? new Date(e.target.value) : "";
+                setDateReleve(newValue);
+              }}
               style={styles.datePickerInput}
             />
           </div>
@@ -307,11 +503,14 @@ export default function FormAjoutArbre() {
             <input
               type="date"
               value={
-                datePlantation
+                datePlantation instanceof Date && !isNaN(datePlantation)
                   ? datePlantation.toISOString().substring(0, 10)
                   : ""
               }
-              onChange={(e) => setDatePlantation(new Date(e.target.value))}
+              onChange={(e) => {
+                const newValue = e.target.value ? new Date(e.target.value) : "";
+                setDatePlantation(newValue);
+              }}
               style={styles.datePickerInput}
             />
           </div>
@@ -359,18 +558,10 @@ export default function FormAjoutArbre() {
 
           {/* Buttons */}
           <View style={styles.buttonContainer}>
-            <Button
-              title="Sauvegarder"
-              color="#4CAF50"
-              onPress={() => Alert.alert("Sauvegarder Pressed")}
-            />
+            <Button title="Sauvegarder" color="#4CAF50" onPress={sauvegarder} />
           </View>
           <View style={styles.buttonContainer}>
-            <Button
-              title="Annuler"
-              color="#f44336"
-              onPress={() => Alert.alert("Annuler Pressed")}
-            />
+            <Button title="Annuler" color="#f44336" onPress={annuler} />
           </View>
         </View>
       </ScrollView>
