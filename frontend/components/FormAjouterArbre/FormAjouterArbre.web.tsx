@@ -12,6 +12,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
+import Config from "../../config";
 
 let MapContainer, TileLayer, Marker, useMap, useMapEvents, Icon;
 
@@ -42,66 +43,109 @@ export default function FormAjoutArbre() {
   const [latitude, setLatitude] = useState(45.498406179029786);
   const [adresse, setAdresse] = useState("");
   const [dhp, setDhp] = useState("");
-  const [indicateur, setIndicateur] = useState(false);
-  const [genreChoisi, setGenreChoisi] = useState("");
-  const [typeChoisiFR, setTypeChoisiFR] = useState("");
-  const [functionalGroupChoisi, setFunctionalGroupChoisi] = useState("");
-  const [familyChoisi, setFamilyChoisi] = useState("");
+  const [location, setLocation] = useState("");
+  const [msgErreur, setMsgErreur] = useState("");
   const [dateReleve, setDateReleve] = useState(new Date());
   const [datePlantation, setDatePlantation] = useState("");
+  const [modalDatePreleve, setModalDatePreleve] = useState(false);
+  const [modalDatePlantation, setModalDatePlantation] = useState(false);
+  const [indicateur, setIndicateur] = useState(false);
+  const colorScheme = useColorScheme();
   const [genres, setGenres] = useState([]);
   const [types, setTypes] = useState([]);
-  const [functionalGroups, setFunctionalGroups] = useState([]);
-  const [families, setFamilies] = useState([]);
-  const colorScheme = useColorScheme();
+  const [functionalGroup, setFunctionalGroup] = useState([]);
+  const [family, setFamily] = useState([]);
+  const [genreChoisi, setGenreChoisi] = useState("");
+  const [typeChoisiFR, setTypeChoisiFR] = useState("");
+  const [typeChoisiLA, setTypeChoisiLA] = useState("");
+  const [typeChoisiEN, setTypeChoisiEN] = useState("");
+  const [functionalGroupChoisi, setFunctionalGroupChoisi] = useState("");
+  const [familyChoisi, setFamilyChoisi] = useState("");
 
   useEffect(() => {
     fetchGenres();
+    fetchFamily();
+    fetchFunctionalGroup();
     fetchTypes();
-    fetchFunctionalGroups();
-    fetchFamilies();
   }, []);
 
+  //Fonction pour importer les genres de la table genre
   const fetchGenres = async () => {
     try {
-      const response = await fetch(`/api/genre`);
+      const response = await fetch(`${Config.API_URL}/api/genre`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Impossible d'importer les genres");
+      }
       const data = await response.json();
       setGenres(data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des genres :", error);
+      Alert.alert("Error", "Impossible d'importer les genres.");
     }
   };
 
+  //Fonction pour importer les types de la table type
   const fetchTypes = async () => {
     try {
-      const response = await fetch(`/api/type`);
+      const response = await fetch(`${Config.API_URL}/api/type`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Impossible d'importer les types");
+      }
       const data = await response.json();
       setTypes(data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des types :", error);
+      Alert.alert("Error", "Impossible d'importer les types.");
     }
   };
 
-  const fetchFunctionalGroups = async () => {
+  //Fonction pour importer les functional group de la table functional group
+  const fetchFunctionalGroup = async () => {
     try {
-      const response = await fetch(`/api/functional_group`);
+      const response = await fetch(`${Config.API_URL}/api/functional_group`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Impossible d'importer les functional group");
+      }
       const data = await response.json();
-      setFunctionalGroups(data);
+      setFunctionalGroup(data);
     } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des groupes fonctionnels :",
-        error
-      );
+      Alert.alert("Error", "Impossible d'importer les function group.");
     }
   };
 
-  const fetchFamilies = async () => {
+  //Fonction pour importer les types de la table type
+  const fetchFamily = async () => {
     try {
-      const response = await fetch(`/api/family`);
+      const response = await fetch(`${Config.API_URL}/api/family`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Impossible d'importer les familles");
+      }
       const data = await response.json();
-      setFamilies(data);
+      setFamily(data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des familles :", error);
+      Alert.alert("Error", "Impossible d'importer les familles.");
     }
   };
 
@@ -219,7 +263,7 @@ export default function FormAjoutArbre() {
             onChange={(e) => setFunctionalGroupChoisi(e.target.value)}
           >
             <option value="">Choisir un groupe fonctionnel</option>
-            {functionalGroups.map((group) => (
+            {functionalGroup.map((group) => (
               <option key={group.id_functional_group} value={group.group}>
                 {group.group}
               </option>
@@ -232,7 +276,7 @@ export default function FormAjoutArbre() {
             onChange={(e) => setFamilyChoisi(e.target.value)}
           >
             <option value="">Choisir une famille</option>
-            {families.map((family) => (
+            {family.map((family) => (
               <option key={family.id_family} value={family.name}>
                 {family.name}
               </option>

@@ -11,19 +11,14 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
-//npx expo install @react-native-community/datetimepicker
 import DateTimePicker from "@react-native-community/datetimepicker";
-//npx expo install expo-image-picker
-//import * as ImagePicker from 'expo-image-picker';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Config from "../../config";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import * as Location from "expo-location";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
-//https://github.com/react-native-maps/react-native-maps
 import MapView, { Region } from "react-native-maps";
-//npx expo install @react-native-picker/picker
 import { Picker } from "@react-native-picker/picker";
 
 export default function FormAjoutArbre() {
