@@ -243,8 +243,9 @@ const styles = StyleSheet.create({
   treeLogo: {
     height: 230,
     width: 310,
-    bottom: 0,
-    left: 36,
-    position: "absolute",
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -155 }, { translateY: -115 }],
   },
 });
