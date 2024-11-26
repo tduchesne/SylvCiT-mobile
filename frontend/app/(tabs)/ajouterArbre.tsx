@@ -22,7 +22,7 @@ export default function AjouterArbre() {
   }, [userRole]);
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView style={styles.container}>
       <Screen
         title="Ajouter Arbre"
         content={
@@ -59,6 +59,9 @@ export default function AjouterArbre() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   treeLogo: {
     height: 230,
     width: 310,

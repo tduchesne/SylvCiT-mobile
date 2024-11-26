@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from "react";
 import Screen from "@/components/Screen";
-import { StyleSheet, TextInput, Modal, Image, Pressable, TouchableOpacity, useColorScheme } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  Modal,
+  Image,
+  Pressable,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import AuthScreen from "@/components/AuthScreen";
-import { useUserRole } from "@/context/UserRoleContext"; 
+import { useUserRole } from "@/context/UserRoleContext";
 import Config from "../../config";
 import ValidationScreen from "@/components/ValidationPage";
 
-import { LogBox } from 'react-native';
+import { LogBox } from "react-native";
 import { Tree } from "@/constants/Tree";
-LogBox.ignoreLogs(['Warning: ...']);
+LogBox.ignoreLogs(["Warning: ..."]);
 LogBox.ignoreAllLogs();
 
 export default function TabTwoScreen() {
   const [searchText, setSearchText] = useState("");
 
   const colorScheme = useColorScheme();
-  const isDarkMode = colorScheme === 'dark';
+  const isDarkMode = colorScheme === "dark";
 
   // sets filter option global variables
   const [uniqueYears, setUniqueYears] = useState([]);
@@ -36,13 +44,16 @@ export default function TabTwoScreen() {
   const [selectedDHP, setSelectedDHP] = useState("");
 
   const [sortedTrees, setSortedTrees] = useState<Tree[]>([]);
-  const [selectedTree, setSelectedTree] = useState<{ tree: Tree, idx: number } | null>(null);
+  const [selectedTree, setSelectedTree] = useState<{
+    tree: Tree;
+    idx: number;
+  } | null>(null);
   const [inValidation, setInValidation] = useState<boolean>(false);
 
   const openFilterModal = () => setFilterModalVisible(true);
   const closeFilterModal = () => setFilterModalVisible(false);
 
-  const { userRole } = useUserRole(); 
+  const { userRole } = useUserRole();
   const [showAuthScreen, setShowAuthScreen] = useState(false);
 
   const handleShowAuthScreen = () => {
@@ -51,7 +62,7 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     if (userRole >= 2) {
-      setShowAuthScreen(false); 
+      setShowAuthScreen(false);
     }
   }, [userRole]);
 
@@ -74,10 +85,10 @@ export default function TabTwoScreen() {
           setUniqueRegions(data.regions);
           setUniqueDHPRanges(data.dhp_ranges);
         } else {
-          console.error('Error fetching filters');
+          console.error("Error fetching filters");
         }
       } catch (error) {
-        console.error('Error fetching filters:', error);
+        console.error("Error fetching filters:", error);
       }
     };
 
@@ -86,25 +97,32 @@ export default function TabTwoScreen() {
 
   // Fetch trees with keyword and four filters as params, accepts no param
   const fetchFilteredTrees = async (keyword: string) => {
-    console.log('fetch trees');
+    console.log("fetch trees");
     console.log(selectedYear, selectedSpecies, selectedDHP);
 
     const queryParams = [];
     if (keyword) queryParams.push(`keyword=${encodeURIComponent(keyword)}`);
-    if (selectedYear) queryParams.push(`year='${encodeURIComponent(selectedYear)}'`);
-    if (selectedSpecies) queryParams.push(`species='${encodeURIComponent(selectedSpecies)}'`);
-    if (selectedRegion) queryParams.push(`region='${encodeURIComponent(selectedRegion)}'`);
-    if (selectedDHP) queryParams.push(`dhp='${encodeURIComponent(selectedDHP)}'`);
+    if (selectedYear)
+      queryParams.push(`year='${encodeURIComponent(selectedYear)}'`);
+    if (selectedSpecies)
+      queryParams.push(`species='${encodeURIComponent(selectedSpecies)}'`);
+    if (selectedRegion)
+      queryParams.push(`region='${encodeURIComponent(selectedRegion)}'`);
+    if (selectedDHP)
+      queryParams.push(`dhp='${encodeURIComponent(selectedDHP)}'`);
 
-    const queryString = queryParams.length ? `?${queryParams.join('&')}` : '';
+    const queryString = queryParams.length ? `?${queryParams.join("&")}` : "";
 
     try {
-      const response = await fetch(`${Config.API_URL}/api/trees/filter${queryString}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${Config.API_URL}/api/trees/filter${queryString}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
       if (!response.ok) {
         console.error("Error: network response not ok");
@@ -113,24 +131,22 @@ export default function TabTwoScreen() {
 
       const data = await response.json();
       setSortedTrees(data);
-    } catch (error) {
-    }
-  }
+    } catch (error) {}
+  };
 
   const handlePressItem = (item: Tree, idx: number) => {
     setSelectedTree({ tree: item, idx: idx });
-  }
+  };
 
   const handleBeginValidation = () => {
     setInValidation(true);
-  }
+  };
 
   const handleEndValidation = () => {
     setInValidation(false);
     setSelectedTree(null);
-    fetchFilteredTrees(searchText)
-  }
-
+    fetchFilteredTrees(searchText);
+  };
 
   // ================================================================ //
 
@@ -149,9 +165,14 @@ export default function TabTwoScreen() {
   };
 
   if (inValidation && selectedTree != null) {
-    return <ValidationScreen propsTreeList={sortedTrees} startIdx={selectedTree.idx} handleEndValidation={handleEndValidation} />;
-  }
-  else {
+    return (
+      <ValidationScreen
+        propsTreeList={sortedTrees}
+        startIdx={selectedTree.idx}
+        handleEndValidation={handleEndValidation}
+      />
+    );
+  } else {
     return (
       <ThemedView style={{ flex: 1 }}>
         <Screen
@@ -159,135 +180,226 @@ export default function TabTwoScreen() {
           content={
             showAuthScreen ? (
               <AuthScreen />
-            ) :
-              userRole >= 1 ? (
-                <ThemedView style={styles.container}>
-                  <ThemedView style={styles.searchBar}>
-                    <Pressable onPress={openFilterModal}
-                      style={({ pressed }) => [
-                        { opacity: pressed ? 0.5 : 1 }
-                      ]}>
-
-                      <Ionicons name="options-outline" size={24} color="gray" style={styles.filterIcon} />
-                    </Pressable>
-                    <TextInput
-                      style={styles.searchInput}
-                      placeholder="Entrer un mot-clé"
-                      placeholderTextColor="gray"
-                      value={searchText}
-                      onChangeText={setSearchText}
-                      onSubmitEditing={() => fetchFilteredTrees(searchText)}
-                    />
-                    <Ionicons name="search-outline" size={24} color="gray" style={styles.searchIcon} />
-                  </ThemedView>
-
-                  <Modal
-                    style={{ backgroundColor: isDarkMode ? '#fff' : '#000' }}
-                    visible={filterModalVisible}
-                    transparent={true}
-                    animationType="slide"
+            ) : userRole >= 1 ? (
+              <ThemedView style={styles.container}>
+                <ThemedView style={styles.searchBar}>
+                  <Pressable
+                    onPress={openFilterModal}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
                   >
-                    <ThemedView style={styles.modalBackground}>
-                      <ThemedView style={[styles.modalContent, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}>
-                        <ThemedText style={[styles.modalTitle, { color: isDarkMode ? '#fff' : '#232825' }]}>Filtrer les Arbres</ThemedText>
-                        {[
-                          { label: "Date de plantation (Année)", value: selectedYear, options: uniqueYears, setter: setSelectedYear },
-                          { label: "Espèce", value: selectedSpecies, options: uniqueSpecies, setter: setSelectedSpecies },
-                          { label: "Région", value: selectedRegion, options: uniqueRegions, setter: setSelectedRegion },
-                          { label: "DHP (Diamètre à la Hauteur Poitrine)", value: selectedDHP, options: uniqueDHPRanges, setter: setSelectedDHP }
-                        ].map(({ label, value, options, setter }, index) => (
-                          <ThemedView style={[styles.row, { backgroundColor: isDarkMode ? '#232825' : '#fff' }]}
-                            key={index}>
-                            <ThemedText style={[styles.filterLabel, { color: isDarkMode ? '#fff' : '#232825' }]}>{label}</ThemedText>
-                            <Picker selectedValue={value} onValueChange={(val) => setter(val)} style={[styles.picker, { backgroundColor: '#fff' }]}>
-                              <Picker.Item label={`Sélectionner une option`} value="" />
-                              {options.map((option, idx) => (
-                                <Picker.Item key={idx} label={option} value={option} />
+                    <Ionicons
+                      name="options-outline"
+                      size={24}
+                      color="gray"
+                      style={styles.filterIcon}
+                    />
+                  </Pressable>
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Entrer un mot-clé"
+                    placeholderTextColor="gray"
+                    value={searchText}
+                    onChangeText={setSearchText}
+                    onSubmitEditing={() => fetchFilteredTrees(searchText)}
+                  />
+                  <Ionicons
+                    name="search-outline"
+                    size={24}
+                    color="gray"
+                    style={styles.searchIcon}
+                  />
+                </ThemedView>
 
-                              ))}
-                            </Picker>
-
-                          </ThemedView>
-                        ))}
-
-                        <Pressable onPress={applyFilters}
-                          style={({ pressed }) => [
-                            styles.applyButton,
-                            { opacity: pressed ? 0.5 : 1 }
-                          ]}>
-                          <ThemedText style={styles.buttonText}>Apply Filters</ThemedText>
-                        </Pressable>
-                        <Pressable
-                          onPress={clearFilters}
-                          style={({ pressed }) => [
-                            styles.clearButton,
-                            { opacity: pressed ? 0.5 : 1 }
-                          ]}>
-                          <ThemedText style={styles.buttonText}>Clear Filters</ThemedText>
-                        </Pressable>
-                        <Pressable onPress={closeFilterModal}
-                          style={({ pressed }) => [
-                            styles.closeButton,
-                            { opacity: pressed ? 0.5 : 1 }
-                          ]}>
-                          <ThemedText style={styles.buttonText}>Close</ThemedText>
-                        </Pressable>
-                      </ThemedView>
-                    </ThemedView>
-                  </Modal>
-                  {sortedTrees.map((item, index) => (
-                    <TouchableOpacity key={`${index}-${item.id_tree}`} onPress={() => handlePressItem(item, index)}>
-                      <ThemedView style={styles.treeItem}>
-                        <ThemedView>
-                          <ThemedText style={styles.region}>{item.region}</ThemedText>
-                          <ThemedText style={styles.treeSpecies}>{item.name_la}</ThemedText>
+                <Modal
+                  style={{ backgroundColor: isDarkMode ? "#fff" : "#000" }}
+                  visible={filterModalVisible}
+                  transparent={true}
+                  animationType="slide"
+                >
+                  <ThemedView style={styles.modalBackground}>
+                    <ThemedView
+                      style={[
+                        styles.modalContent,
+                        { backgroundColor: isDarkMode ? "#232825" : "#fff" },
+                      ]}
+                    >
+                      <ThemedText
+                        style={[
+                          styles.modalTitle,
+                          { color: isDarkMode ? "#fff" : "#232825" },
+                        ]}
+                      >
+                        Filtrer les Arbres
+                      </ThemedText>
+                      {[
+                        {
+                          label: "Date de plantation (Année)",
+                          value: selectedYear,
+                          options: uniqueYears,
+                          setter: setSelectedYear,
+                        },
+                        {
+                          label: "Espèce",
+                          value: selectedSpecies,
+                          options: uniqueSpecies,
+                          setter: setSelectedSpecies,
+                        },
+                        {
+                          label: "Région",
+                          value: selectedRegion,
+                          options: uniqueRegions,
+                          setter: setSelectedRegion,
+                        },
+                        {
+                          label: "DHP (Diamètre à la Hauteur Poitrine)",
+                          value: selectedDHP,
+                          options: uniqueDHPRanges,
+                          setter: setSelectedDHP,
+                        },
+                      ].map(({ label, value, options, setter }, index) => (
+                        <ThemedView
+                          style={[
+                            styles.row,
+                            {
+                              backgroundColor: isDarkMode ? "#232825" : "#fff",
+                            },
+                          ]}
+                          key={index}
+                        >
+                          <ThemedText
+                            style={[
+                              styles.filterLabel,
+                              { color: isDarkMode ? "#fff" : "#232825" },
+                            ]}
+                          >
+                            {label}
+                          </ThemedText>
+                          <Picker
+                            selectedValue={value}
+                            onValueChange={(val) => setter(val)}
+                            style={[styles.picker, { backgroundColor: "#fff" }]}
+                          >
+                            <Picker.Item
+                              label={`Sélectionner une option`}
+                              value=""
+                            />
+                            {options.map((option, idx) => (
+                              <Picker.Item
+                                key={idx}
+                                label={option}
+                                value={option}
+                              />
+                            ))}
+                          </Picker>
                         </ThemedView>
-                        <ThemedText style={styles.date}>
-                          {new Date(item.date_plantation).toLocaleDateString()}
+                      ))}
+
+                      <Pressable
+                        onPress={applyFilters}
+                        style={({ pressed }) => [
+                          styles.applyButton,
+                          { opacity: pressed ? 0.5 : 1 },
+                        ]}
+                      >
+                        <ThemedText style={styles.buttonText}>
+                          Apply Filters
+                        </ThemedText>
+                      </Pressable>
+                      <Pressable
+                        onPress={clearFilters}
+                        style={({ pressed }) => [
+                          styles.clearButton,
+                          { opacity: pressed ? 0.5 : 1 },
+                        ]}
+                      >
+                        <ThemedText style={styles.buttonText}>
+                          Clear Filters
+                        </ThemedText>
+                      </Pressable>
+                      <Pressable
+                        onPress={closeFilterModal}
+                        style={({ pressed }) => [
+                          styles.closeButton,
+                          { opacity: pressed ? 0.5 : 1 },
+                        ]}
+                      >
+                        <ThemedText style={styles.buttonText}>Close</ThemedText>
+                      </Pressable>
+                    </ThemedView>
+                  </ThemedView>
+                </Modal>
+                {sortedTrees.map((item, index) => (
+                  <TouchableOpacity
+                    key={`${index}-${item.id_tree}`}
+                    onPress={() => handlePressItem(item, index)}
+                  >
+                    <ThemedView style={styles.treeItem}>
+                      <ThemedView>
+                        <ThemedText style={styles.region}>
+                          {item.region}
+                        </ThemedText>
+                        <ThemedText style={styles.treeSpecies}>
+                          {item.name_la}
                         </ThemedText>
                       </ThemedView>
-                    </TouchableOpacity>
-                  ))}
-                </ThemedView>
-              ) : (
-                <ThemedView>
-                  <ThemedText>
-                    Vous devez vous authentifier avec les bonnes permissions pour voir
-                    le contenu de cette page.
-                  </ThemedText>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleShowAuthScreen}>
-                    <ThemedText style={{ textDecorationLine: "underline" }}>
-                      se connecter.
-                    </ThemedText>
+                      <ThemedText style={styles.date}>
+                        {new Date(item.date_plantation).toLocaleDateString()}
+                      </ThemedText>
+                    </ThemedView>
                   </TouchableOpacity>
-                </ThemedView>
-
-              )
+                ))}
+              </ThemedView>
+            ) : (
+              <ThemedView>
+                <ThemedText>
+                  Vous devez vous authentifier avec les bonnes permissions pour
+                  voir le contenu de cette page.
+                </ThemedText>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={handleShowAuthScreen}
+                >
+                  <ThemedText style={{ textDecorationLine: "underline" }}>
+                    se connecter.
+                  </ThemedText>
+                </TouchableOpacity>
+              </ThemedView>
+            )
           }
           headerImage={
-            <Image source={require("@/assets/images/adaptive-icon.png")} style={styles.treeLogo} />
+            <Image
+              source={require("@/assets/images/adaptive-icon.png")}
+              style={styles.treeLogo}
+            />
           }
         />
         {selectedTree && (
           <ThemedView style={styles.fixedBox}>
-            <ThemedText style={styles.overlayText}>Actions Possibles</ThemedText>
+            <ThemedText style={styles.overlayText}>
+              Actions Possibles
+            </ThemedText>
             <ThemedView style={styles.buttonContainer}>
-              <Pressable style={({ pressed }) => [
-                styles.modifierButton,
-                { opacity: pressed ? 0.5 : 1 },
-              ]}>
-                <ThemedText style={styles.modifierButtonText}>Modifier</ThemedText>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.modifierButton,
+                  { opacity: pressed ? 0.5 : 1 },
+                ]}
+              >
+                <ThemedText style={styles.modifierButtonText}>
+                  Modifier
+                </ThemedText>
               </Pressable>
 
-              <Pressable style={({ pressed }) => [
-                styles.modalButton,
-                { opacity: pressed ? 0.5 : 1 },
-              ]}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.modalButton,
+                  { opacity: pressed ? 0.5 : 1 },
+                ]}
                 onPress={handleBeginValidation}
               >
-                <ThemedText style={styles.modalButtonText}>Démarrer la validation</ThemedText>
+                <ThemedText style={styles.modalButtonText}>
+                  Démarrer la validation
+                </ThemedText>
               </Pressable>
             </ThemedView>
           </ThemedView>
@@ -299,14 +411,14 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   treeLogo: {
     height: 230,
     width: 310,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
+    position: "absolute",
+    top: "50%",
+    left: "50%",
     transform: [{ translateX: -155 }, { translateY: -115 }],
   },
   searchBar: {
@@ -317,19 +429,19 @@ const styles = StyleSheet.create({
     padding: 15,
     width: "100%",
     alignSelf: "center",
-    marginVertical: 10
+    marginVertical: 10,
   },
   filterIcon: {
-    marginRight: 5
+    marginRight: 5,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
     paddingVertical: 0,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   searchIcon: {
-    marginLeft: 5
+    marginLeft: 5,
   },
   modalBackground: {
     flex: 1,
@@ -445,7 +557,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    backgroundColor:"#fff",
+    backgroundColor: "#fff",
     width: "100%",
   },
 
@@ -495,8 +607,8 @@ const styles = StyleSheet.create({
   },
   button: {
     textDecorationLine: "underline",
-    marginTop:25,
-    justifyContent:"center",
+    marginTop: 25,
+    justifyContent: "center",
     alignSelf: "center",
   },
 });

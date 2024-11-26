@@ -209,8 +209,8 @@ export default function FormAjoutArbre() {
 
   const customIcon = new Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/512/685/685025.png",
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
+    iconSize: [12, 12],
+    iconAnchor: [12, 12],
   });
 
   //Fonction pour envoyer les données au backend
@@ -403,14 +403,14 @@ export default function FormAjoutArbre() {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, width: "100%" }}>
       <ActivityIndicator
         size="large"
         color="#00ff00"
         animating={indicateur}
         style={[styles.indicateur]}
       />
-      <ScrollView>
+      <ScrollView style={{ flex: 1, width: "100%" }}>
         <View style={styles.container}>
           <TextInput
             style={styles.input}
@@ -571,14 +571,17 @@ export default function FormAjoutArbre() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
     backgroundColor: "#f9f9f9",
     borderRadius: 10,
-    margin: 10,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    width: "100%",
+    maxWidth: 1200,
+    marginHorizontal: "auto",
   },
+
   input: {
     height: 40,
     borderColor: "#ccc",
@@ -587,7 +590,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     width: "100%",
-    maxWidth: 400,
   },
   dropdown: {
     height: 40,
@@ -597,44 +599,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     width: "100%",
-    maxWidth: 400,
     fontSize: 16,
     backgroundColor: "#fff",
-  },
-  datePickerContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    maxWidth: 400,
-    marginBottom: 15,
-  },
-  datePickerLabel: {
-    fontSize: 14,
-    color: "#333",
-    fontWeight: "bold",
-    flex: 1,
-  },
-  datePickerInput: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    flex: 2,
-    marginLeft: 10,
-  },
-  buttonContainer: {
-    marginVertical: 10,
-    width: "100%",
-    maxWidth: 400,
   },
   mapContainer: {
     position: "relative",
     marginBottom: 20,
     width: "100%",
-    maxWidth: 600,
+    height: "400px",
     borderRadius: 5,
     overflow: "hidden",
   },
@@ -646,6 +618,35 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
     zIndex: 1000,
+  },
+  datePickerContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 15,
+  },
+
+  datePickerLabel: {
+    fontSize: 14,
+    color: "#333",
+    fontWeight: "bold",
+    flex: 1,
+  },
+
+  datePickerInput: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    flex: 2,
+    marginLeft: 10,
   },
 });
