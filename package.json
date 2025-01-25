@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "@types/react": "~18.2.79",
+    "expo": "^51.0.35",
+    "expo-camera": "^15.0.16",
+    "expo-image-picker": "^16.0.3",
+    "expo-router": "^3.5.23",
+    "inm5151-a2024-sylvcit": "file:",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-image-zoom-viewer": "^3.0.1",
+    "typescript": "~5.3.3"
+  },
+  "name": "inm5151-a2024-sylvcit",
+  "version": "1.0.0",
+  "scripts": {
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "devDependencies": {
+    "@types/react-native": "^0.73.0"
+  }
+}
